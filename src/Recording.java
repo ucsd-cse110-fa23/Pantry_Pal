@@ -26,13 +26,14 @@ class MealFrame extends FlowPane {
     private Label prompt;
     Stage primaryStage;
     Scene homeScene;
+    RecipeList recipeList;
 
     // Set a default style for buttons and fields - background color, font size,
     // italics
     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
 
-    MealFrame(Stage primaryStage, Scene homeScene) {
+    MealFrame(Stage primaryStage, Scene homeScene, RecipeList recipeList) {
         // header = new Header();
         // footer = new Footer();
         // this.setTop(header);
@@ -49,6 +50,7 @@ class MealFrame extends FlowPane {
 
         this.primaryStage = primaryStage;
         this.homeScene = homeScene;
+        this.recipeList = recipeList;
 
         // Add the buttons and text fields
         startButton = new Button("Record Meal Type");
@@ -82,7 +84,7 @@ class MealFrame extends FlowPane {
                 // mealType.transcribeMeal();
                 MealType.mealString = "Breakfast";
                 if (MealType.mealString != null) {
-                    IngredientsFrame ingredients = new IngredientsFrame(primaryStage, homeScene);
+                    IngredientsFrame ingredients = new IngredientsFrame(primaryStage, homeScene, recipeList);
                     Scene recordIngredients = new Scene(ingredients, 500, 600);
                     switchScene(this.primaryStage, recordIngredients);
                 }
@@ -175,13 +177,14 @@ class IngredientsFrame extends FlowPane {
     Ingredients ingredients;
     public Stage primaryStage;
     public Scene homeScene;
+    public RecipeList recipeList;
 
     // Set a default style for buttons and fields - background color, font size,
     // italics
     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
 
-    IngredientsFrame(Stage primaryStage, Scene homeScene) {
+    IngredientsFrame(Stage primaryStage, Scene homeScene, RecipeList recipeList) {
         // Set properties for the flowpane
         this.setPrefSize(370, 120);
         this.setPadding(new Insets(5, 0, 5, 5));
@@ -191,6 +194,7 @@ class IngredientsFrame extends FlowPane {
 
         this.primaryStage = primaryStage;
         this.homeScene = homeScene;
+        this.recipeList = recipeList;
 
         // Add the buttons and text fields
         startButton = new Button("Record Ingredients");
@@ -224,7 +228,7 @@ class IngredientsFrame extends FlowPane {
                 // Ingredients.transcribeIngredients();
                 Ingredients.ingredientsString = "eggs, sausage, onions";
                 if (Ingredients.ingredientsString != null) {
-                    Scene gptScene = new Scene(new MockGPT(primaryStage, homeScene), 500, 600);
+                    Scene gptScene = new Scene(new MockGPT(primaryStage, homeScene, recipeList), 500, 600);
                     switchScene(this.primaryStage, gptScene);
                 }
             // } catch (IOException e1) {
@@ -313,16 +317,16 @@ public class Recording extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         // Setting the Layout of the Window (Flow Pane)
-        MealFrame root = new MealFrame(primaryStage, primaryStage.getScene());
+        // MealFrame root = new MealFrame(primaryStage, primaryStage.getScene(), recipeList);
 
-        // Set the title of the app
-        primaryStage.setTitle("Record Meal Type");
-        // Create scene of mentioned size with the border pane
-        primaryStage.setScene(new Scene(root, 500, 600));
-        // Make window non-resizable
-        primaryStage.setResizable(false);
-        // Show the app
-        primaryStage.show();
+        // // Set the title of the app
+        // primaryStage.setTitle("Record Meal Type");
+        // // Create scene of mentioned size with the border pane
+        // primaryStage.setScene(new Scene(root, 500, 600));
+        // // Make window non-resizable
+        // primaryStage.setResizable(false);
+        // // Show the app
+        // primaryStage.show();
     }
 
     public static void main(String[] args) {

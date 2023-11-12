@@ -143,7 +143,7 @@ class AppFrame extends BorderPane {
     {
         // Add button functionality
         newRecipeButton.setOnAction(e -> {
-            MealFrame mealType = new MealFrame(this.primaryStage, this.primaryStage.getScene());
+            MealFrame mealType = new MealFrame(this.primaryStage, this.primaryStage.getScene(), recipeList);
             Scene recordMeal = new Scene(mealType, 500, 600);
             switchScene(this.primaryStage, recordMeal);
             // Create a new recipe
@@ -165,7 +165,7 @@ class MockGPT extends BorderPane {
     public Stage primaryStage;
     public Scene homeScene;
 
-    MockGPT(Stage primaryStage, Scene homeScene) {
+    MockGPT(Stage primaryStage, Scene homeScene, RecipeList recipeList) {
 
         String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial;";
 
@@ -188,6 +188,7 @@ class MockGPT extends BorderPane {
         this.recipeName = response.split("\n")[0];
         this.primaryStage = primaryStage;
         this.homeScene = homeScene;
+        this.recipeList = recipeList;
 
         addListeners();
     }
@@ -211,7 +212,8 @@ class MockGPT extends BorderPane {
             newRecipe = new Recipe();
             newRecipe.getRecipe().setText(recipeName);
             // recipeList.getChildren().add(newRecipe);
-            this.getChildren().add(newRecipe);
+            recipeList.getChildren().add(newRecipe);
+
 
             FileWriter writer = new FileWriter("recipes.csv");
             // Write new recipe at the top of the csv
