@@ -17,7 +17,7 @@ public class ChatGPT {
 
     ChatGPT(String mealType, String ingredients, int maxTokens) throws IOException, InterruptedException, URISyntaxException {
         // Set request parameters
-        this.prompt = "Make me a " + mealType + " recipe " + "with " + ingredients;
+        this.prompt = "Make me a " + mealType + " recipe " + "using " + ingredients + " with the recipe name in the first line";
         this.maxTokens = maxTokens;
         
         // Create a request body which you will pass into request object

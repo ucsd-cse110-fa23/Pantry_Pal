@@ -3,10 +3,15 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.*;
 import javafx.geometry.Insets;
 import java.io.*;
 import java.net.URISyntaxException;
+
+import javafx.geometry.Pos;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.text.*;
 
 import javax.sound.sampled.*;
 
@@ -16,22 +21,34 @@ class MealFrame extends FlowPane {
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     private Label recordingLabel;
-    MealType mealType;
-    public String mealString;
+    private Header header;
+    private Footer footer;
+    private Label prompt;
     Stage primaryStage;
+    Scene homeScene;
 
     // Set a default style for buttons and fields - background color, font size,
     // italics
     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
 
-    MealFrame(Stage primaryStage) {
+    MealFrame(Stage primaryStage, Scene homeScene) {
+        // header = new Header();
+        // footer = new Footer();
+        // this.setTop(header);
+        // this.setBottom(footer);
         // Set properties for the flowpane
         this.setPrefSize(370, 120);
         this.setPadding(new Insets(5, 0, 5, 5));
+        prompt = new Label();
+        prompt.setText("What meal type would you like: Breakfast, Lunch, or Dinner?");
+        this.getChildren().add(prompt);
         this.setVgap(10);
         this.setHgap(10);
         this.setPrefWrapLength(170);
+
+        this.primaryStage = primaryStage;
+        this.homeScene = homeScene;
 
         // Add the buttons and text fields
         startButton = new Button("Record Meal Type");
@@ -61,24 +78,21 @@ class MealFrame extends FlowPane {
         // Stop Button
         stopButton.setOnAction(e -> {
             stopRecording();
-            try {
-                mealType.transcribeMeal();
-                if (mealType.mealString != null) {
-                    IngredientsFrame ingredients = new IngredientsFrame();
+            // try {
+                // mealType.transcribeMeal();
+                MealType.mealString = "Breakfast";
+                if (MealType.mealString != null) {
+                    IngredientsFrame ingredients = new IngredientsFrame(primaryStage, homeScene);
                     Scene recordIngredients = new Scene(ingredients, 500, 600);
-                    switchScene(primaryStage, recordIngredients);
+                    switchScene(this.primaryStage, recordIngredients);
                 }
                 
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            } catch (URISyntaxException e1) {
-                e1.printStackTrace();
-            }
+            // } catch (IOException e1) {
+            //     e1.printStackTrace();
+            // } catch (URISyntaxException e1) {
+            //     e1.printStackTrace();
+            // }
         });
-    }
-
-    public void setStage(Stage primaryStage) {
-        this.primaryStage = primaryStage;
     }
 
     public void switchScene(Stage primaryStage, Scene scene) {
@@ -144,7 +158,6 @@ class MealFrame extends FlowPane {
             }
         );
         t.start();
-
     }
 
     private void stopRecording() {
@@ -160,20 +173,24 @@ class IngredientsFrame extends FlowPane {
     private TargetDataLine targetDataLine;
     private Label recordingLabel;
     Ingredients ingredients;
-    public String ingredientsString;
+    public Stage primaryStage;
+    public Scene homeScene;
 
     // Set a default style for buttons and fields - background color, font size,
     // italics
     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
 
-    IngredientsFrame() {
+    IngredientsFrame(Stage primaryStage, Scene homeScene) {
         // Set properties for the flowpane
         this.setPrefSize(370, 120);
         this.setPadding(new Insets(5, 0, 5, 5));
         this.setVgap(10);
         this.setHgap(10);
         this.setPrefWrapLength(170);
+
+        this.primaryStage = primaryStage;
+        this.homeScene = homeScene;
 
         // Add the buttons and text fields
         startButton = new Button("Record Ingredients");
@@ -203,18 +220,24 @@ class IngredientsFrame extends FlowPane {
         // Stop Button
         stopButton.setOnAction(e -> {
             stopRecording();
-            try {
-                ingredients.transcribeIngredients();
-                if (ingredients.ingredientsString != null) {
-                    new MockGPT();
+            // try {
+                // Ingredients.transcribeIngredients();
+                Ingredients.ingredientsString = "eggs, sausage, onions";
+                if (Ingredients.ingredientsString != null) {
+                    Scene gptScene = new Scene(new MockGPT(primaryStage, homeScene), 500, 600);
+                    switchScene(this.primaryStage, gptScene);
                 }
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            } catch (URISyntaxException e1) {
-                e1.printStackTrace();
-            }
+            // } catch (IOException e1) {
+            //     e1.printStackTrace();
+            // } catch (URISyntaxException e1) {
+            //     e1.printStackTrace();
+            // }
         });
     }
+
+    public void switchScene(Stage primaryStage, Scene scene) {
+        primaryStage.setScene(scene);
+    } 
 
     private AudioFormat getAudioFormat() {
         // the number of samples of audio per second.
@@ -290,7 +313,7 @@ public class Recording extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         // Setting the Layout of the Window (Flow Pane)
-        MealFrame root = new MealFrame(primaryStage);
+        MealFrame root = new MealFrame(primaryStage, primaryStage.getScene());
 
         // Set the title of the app
         primaryStage.setTitle("Record Meal Type");
