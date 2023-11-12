@@ -16,6 +16,7 @@ class Recipe extends VBox {
 
     private Label index;
     private TextField recipe;
+    private Button viewButton;
     
     Recipe() {
         this.setPrefSize(500, 20); // sets size of recipe
@@ -34,6 +35,13 @@ class Recipe extends VBox {
         index.setTextAlignment(TextAlignment.LEFT); // set alignment of text field
         recipe.setPadding(new Insets(10)); // adds some padding to the text field
         this.getChildren().add(recipe); // add textlabel to recipe
+
+        viewButton = new Button("View");
+        viewButton.setPrefSize(200, 20);
+        viewButton.setPrefHeight(Double.MAX_VALUE);
+        viewButton.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;"); // sets style of button
+        this.getChildren().add(viewButton);
+        
     }
 
     public void setRecipeIndex(int num) {
@@ -43,6 +51,10 @@ class Recipe extends VBox {
 
     public TextField getRecipe() {
         return this.recipe;
+    }
+
+    public Button getViewButton(){
+        return this.viewButton;
     }
 }
 
@@ -97,6 +109,7 @@ class AppFrame extends BorderPane {
     private Footer footer;
     public RecipeList recipeList;
     private Button newRecipeButton;
+    private Button viewButton;
     private Stage primaryStage;
     public Scene homeScene;
 
@@ -151,6 +164,13 @@ class AppFrame extends BorderPane {
             // Add recipe to recipeList
             // recipeList.getChildren().add(recipe);
         });
+
+        viewButton.setOnAction(e -> {
+
+
+        });
+
+        
     }
 }
 
