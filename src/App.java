@@ -64,7 +64,7 @@ class Footer extends HBox {
         this.setSpacing(15);
 
         // set a default style for buttons - background color, font size, italics
-        String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial;";
+        String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 12 monaco;";
 
         newRecipeButton = new Button("New Recipe"); // text displayed on add button
         newRecipeButton.setStyle(defaultButtonStyle); // styling the button
@@ -81,11 +81,11 @@ class Footer extends HBox {
 class Header extends HBox {
 
     Header() {
-        this.setPrefSize(500, 60); // Size of the header
-        this.setStyle("-fx-background-color: #F0F8FF;");
+        this.setPrefSize(500, 70); // Size of the header
+        this.setStyle("-fx-background-color: #39A7FF;");
 
         Text titleText = new Text("PantryPal"); // Text of the Header
-        titleText.setStyle("-fx-font-weight: bold; -fx-font-size: 20;");
+        titleText.setStyle("-fx-font: 24 arial; -fx-text-fill: #FFFFFF;");
         this.getChildren().add(titleText);
         this.setAlignment(Pos.CENTER); // Align the text to the Center
     }
@@ -100,8 +100,6 @@ class AppFrame extends BorderPane {
     private Stage primaryStage;
     public Scene homeScene;
 
-    // IngredientsFrame ingredients = new IngredientsFrame();
-    // Scene recordIngredients = new Scene(ingredients, 500, 600);
     AppFrame() {
         // Initialise the header Object
         header = new Header();
@@ -144,101 +142,13 @@ class AppFrame extends BorderPane {
         // Add button functionality
         newRecipeButton.setOnAction(e -> {
             MealFrame mealType = new MealFrame(this.primaryStage, this.primaryStage.getScene(), recipeList);
-            Scene recordMeal = new Scene(mealType, 500, 600);
+            Scene recordMeal = new Scene(mealType, 400, 500);
             switchScene(this.primaryStage, recordMeal);
             // Create a new recipe
             // Recipe recipe = new Recipe();
             // Add recipe to recipeList
             // recipeList.getChildren().add(recipe);
         });
-    }
-}
-
-class MockGPT extends BorderPane {
-    private Header header;
-    private Button saveButton;
-    private Recipe newRecipe;
-    private String recipeName;
-    private RecipeList recipeList;
-
-    public String response;
-    public Stage primaryStage;
-    public Scene homeScene;
-
-    MockGPT(Stage primaryStage, Scene homeScene, RecipeList recipeList) {
-
-        String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial;";
-
-        header = new Header();
-        // this.setT
-        // Set properties for the flowpane
-        this.setPrefSize(370, 120);
-        this.setPadding(new Insets(5, 0, 5, 5));
-        saveButton = new Button("Save Recipe");
-        saveButton.setStyle(defaultButtonStyle);
-        this.setBottom(saveButton);
-        
-        this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
-        this.response = "Baked hot dogs \n Ingredients: \n Hot dogs";
-        Label recipe = new Label();
-        recipe.setText(response);
-        this.setTop(header);
-        this.setCenter(recipe);
-
-        this.recipeName = response.split("\n")[0];
-        this.primaryStage = primaryStage;
-        this.homeScene = homeScene;
-        this.recipeList = recipeList;
-
-        addListeners();
-    }
-
-    public void saveRecipe(String response) {
-        try {
-            // Read and temporarily story old recipes
-            BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
-            String line = in.readLine();
-            String combine = "";
-            while (line != null) {
-                if (combine.equals("")) {
-                    combine = combine + line;
-                } else {
-                    combine = combine + "\n" + line;
-                }
-                line = in.readLine();
-            }
-            String[] recipes = combine.split("\\$");
-
-            newRecipe = new Recipe();
-            newRecipe.getRecipe().setText(recipeName);
-            // recipeList.getChildren().add(newRecipe);
-            recipeList.getChildren().add(newRecipe);
-
-
-            FileWriter writer = new FileWriter("recipes.csv");
-            // Write new recipe at the top of the csv
-            writer.write(response + "\\$");
-
-            // Rewrite the rest of the recipes below the newly added one
-            for (int i = 0; i < recipes.length - 1; i++) {
-                writer.write(recipes[i] + "\\$");
-            }
-
-            in.close();
-            writer.close();
-
-            primaryStage.setScene(homeScene);
-        }
-        catch(Exception e) {
-            System.out.println(e);
-            System.out.println("SAVE FAIL");
-        }
-        
-    }
-    public void addListeners() {
-        saveButton.setOnAction(e -> {
-            saveRecipe(response);
-        }); 
     }
 }
     
@@ -256,7 +166,7 @@ public class App extends Application {
         home.setStage(primaryStage);
 
         // Set up Home Page and Record Recipe pages
-        homeScene = new Scene(home, 500, 600);
+        homeScene = new Scene(home, 400, 500);
 
         // Create scene of mentioned size/ with the border pane
         primaryStage.setScene(homeScene);
@@ -264,6 +174,9 @@ public class App extends Application {
         primaryStage.setResizable(false);
         // Show the app
         primaryStage.show();
+
+        // String css = this.getClass().getResource("style.css").toExternalForm();
+        // homeScene.getStylesheets().add(css);
     }
 
     public static void main(String[] args) {

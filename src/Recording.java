@@ -15,45 +15,25 @@ import javafx.scene.text.*;
 
 import javax.sound.sampled.*;
 
-class MealFrame extends FlowPane {
+class Prompt extends VBox{
+    private Label text;
     private Button startButton;
     private Button stopButton;
-    private AudioFormat audioFormat;
-    private TargetDataLine targetDataLine;
+    private HBox buttonContainer = new HBox(5);
     private Label recordingLabel;
-    private Header header;
-    private Footer footer;
-    private Label prompt;
-    Stage primaryStage;
-    Scene homeScene;
-    RecipeList recipeList;
-
-    // Set a default style for buttons and fields - background color, font size,
-    // italics
-    String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
+    
+    // Set a default style for buttons and fields - background color, font size, italics
+    String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
 
-    MealFrame(Stage primaryStage, Scene homeScene, RecipeList recipeList) {
-        // header = new Header();
-        // footer = new Footer();
-        // this.setTop(header);
-        // this.setBottom(footer);
-        // Set properties for the flowpane
-        this.setPrefSize(370, 120);
-        this.setPadding(new Insets(5, 0, 5, 5));
-        prompt = new Label();
-        prompt.setText("What meal type would you like: Breakfast, Lunch, or Dinner?");
-        this.getChildren().add(prompt);
-        this.setVgap(10);
-        this.setHgap(10);
-        this.setPrefWrapLength(170);
-
-        this.primaryStage = primaryStage;
-        this.homeScene = homeScene;
-        this.recipeList = recipeList;
+    Prompt(String text) {
+        this.setSpacing(50);
+        this.text = new Label();
+        this.text.setText(text);
+        this.text.setStyle("-fx-font: 13 arial;");
 
         // Add the buttons and text fields
-        startButton = new Button("Record Meal Type");
+        startButton = new Button("Start");
         startButton.setStyle(defaultButtonStyle);
 
         stopButton = new Button("Stop");
@@ -61,8 +41,87 @@ class MealFrame extends FlowPane {
 
         recordingLabel = new Label("Recording...");
         recordingLabel.setStyle(defaultLabelStyle);
+        
+        HBox.setMargin(startButton, new Insets(5));
+        buttonContainer.setAlignment(Pos.CENTER);
+        buttonContainer.getChildren().addAll(startButton, stopButton);
+        this.getChildren().addAll(this.text, buttonContainer);
+        this.setAlignment(Pos.CENTER);
+    }
 
-        this.getChildren().addAll(startButton, stopButton, recordingLabel);
+    public Button getStartButton() {
+        return this.startButton;
+    }
+
+    public Button getStopButton() {
+        return this.stopButton;
+    }
+
+    public Label getRecordingLabel() {
+        return this.recordingLabel;
+    }
+}
+
+class RecordingFooter extends HBox{
+    
+    private Button cancelButton;
+
+    RecordingFooter() {
+        this.setPrefSize(500, 60);
+        this.setStyle("-fx-background-color: #F0F8FF;");
+        this.setSpacing(15);
+
+        // set a default style for buttons - background color, font size, italics
+        String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 12 monaco;";
+
+        cancelButton = new Button("Cancel"); // text displayed on add button
+        cancelButton.setStyle(defaultButtonStyle); // styling the button
+        
+        this.getChildren().add(cancelButton); // adding button to footer
+        this.setAlignment(Pos.CENTER); // aligning the buttons to center
+    }
+
+    public Button getCancelButton() {
+        return cancelButton;
+    }
+}
+class MealFrame extends BorderPane {
+    private Button startButton;
+    private Button stopButton;
+    private Button cancelButton;
+    private AudioFormat audioFormat;
+    private TargetDataLine targetDataLine;
+    private Label recordingLabel;
+    private Header header;
+    private RecordingFooter footer;
+    private Prompt prompt;
+    Stage primaryStage;
+    Scene homeScene;
+    RecipeList recipeList;
+
+    String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
+    String clickedButtonStyle = "-fx-background-color: #0174BE; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
+
+    MealFrame(Stage primaryStage, Scene homeScene, RecipeList recipeList) {
+        header = new Header();
+        footer = new RecordingFooter();
+        
+        // Set properties for the page
+        this.setPrefSize(370, 120);
+        prompt = new Prompt("What meal type would you like: \n Breakfast, Lunch, or Dinner?");
+        
+        this.setTop(header);
+        this.setCenter(prompt);
+        this.setBottom(footer);
+
+        startButton = prompt.getStartButton();
+        stopButton = prompt.getStopButton();
+        recordingLabel = prompt.getRecordingLabel();
+        cancelButton = footer.getCancelButton();
+
+        this.primaryStage = primaryStage;
+        this.homeScene = homeScene;
+        this.recipeList = recipeList;
 
         // Get the audio format
         audioFormat = getAudioFormat();
@@ -74,32 +133,35 @@ class MealFrame extends FlowPane {
     public void addListeners() {
         // Start Button
         startButton.setOnAction(e -> {
+            stopButton.setStyle(defaultButtonStyle);
+            startButton.setStyle(clickedButtonStyle);
             startRecording();
         });
 
         // Stop Button
         stopButton.setOnAction(e -> {
+            startButton.setStyle(defaultButtonStyle);
+            stopButton.setStyle(clickedButtonStyle);
             stopRecording();
-            // try {
-                // mealType.transcribeMeal();
-                MealType.mealString = "Breakfast";
+            try {
+                MealType.transcribeMeal();
                 if (MealType.mealString != null) {
                     IngredientsFrame ingredients = new IngredientsFrame(primaryStage, homeScene, recipeList);
-                    Scene recordIngredients = new Scene(ingredients, 500, 600);
-                    switchScene(this.primaryStage, recordIngredients);
+                    Scene recordIngredients = new Scene(ingredients, 400, 500);
+                    this.primaryStage.setScene(recordIngredients);
                 }
                 
-            // } catch (IOException e1) {
-            //     e1.printStackTrace();
-            // } catch (URISyntaxException e1) {
-            //     e1.printStackTrace();
-            // }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (URISyntaxException e1) {
+                e1.printStackTrace();
+            }
+        });
+
+        cancelButton.setOnAction(e -> {
+            primaryStage.setScene(homeScene);
         });
     }
-
-    public void switchScene(Stage primaryStage, Scene scene) {
-        primaryStage.setScene(scene);
-    } 
 
     private AudioFormat getAudioFormat() {
         // the number of samples of audio per second.
@@ -152,7 +214,7 @@ class MealFrame extends FlowPane {
                                 audioInputStream,
                                 AudioFileFormat.Type.WAVE,
                                 audioFile);
-                        recordingLabel.setVisible(false);
+                        prompt.getRecordingLabel().setVisible(false);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -168,45 +230,45 @@ class MealFrame extends FlowPane {
     }
 }
 
-class IngredientsFrame extends FlowPane {
+class IngredientsFrame extends BorderPane {
     private Button startButton;
     private Button stopButton;
+    private Button cancelButton;
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     private Label recordingLabel;
-    Ingredients ingredients;
+    private Header header;
+    private RecordingFooter footer;
+    private Prompt prompt;
+
     public Stage primaryStage;
     public Scene homeScene;
     public RecipeList recipeList;
 
-    // Set a default style for buttons and fields - background color, font size,
-    // italics
-    String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
-    String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
+    // Set a default style for buttons and fields - background color, font size, italics
+    String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
+    String clickedButtonStyle = "-fx-background-color: #0174BE; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
 
     IngredientsFrame(Stage primaryStage, Scene homeScene, RecipeList recipeList) {
-        // Set properties for the flowpane
+        header = new Header();
+        footer = new RecordingFooter();
+        
+        // Set properties for the page
         this.setPrefSize(370, 120);
-        this.setPadding(new Insets(5, 0, 5, 5));
-        this.setVgap(10);
-        this.setHgap(10);
-        this.setPrefWrapLength(170);
+        prompt = new Prompt("You have selected " + MealType.mealString + "\n List your ingredients:");
+        
+        this.setTop(header);
+        this.setCenter(prompt);
+        this.setBottom(footer);
+
+        startButton = prompt.getStartButton();
+        stopButton = prompt.getStopButton();
+        recordingLabel = prompt.getRecordingLabel();
+        cancelButton = footer.getCancelButton();
 
         this.primaryStage = primaryStage;
         this.homeScene = homeScene;
         this.recipeList = recipeList;
-
-        // Add the buttons and text fields
-        startButton = new Button("Record Ingredients");
-        startButton.setStyle(defaultButtonStyle);
-
-        stopButton = new Button("Stop");
-        stopButton.setStyle(defaultButtonStyle);
-
-        recordingLabel = new Label("Recording...");
-        recordingLabel.setStyle(defaultLabelStyle);
-
-        this.getChildren().addAll(startButton, stopButton, recordingLabel);
 
         // Get the audio format
         audioFormat = getAudioFormat();
@@ -218,24 +280,36 @@ class IngredientsFrame extends FlowPane {
     public void addListeners() {
         // Start Button
         startButton.setOnAction(e -> {
+            stopButton.setStyle(defaultButtonStyle);
+            startButton.setStyle(clickedButtonStyle);
             startRecording();
         });
 
         // Stop Button
         stopButton.setOnAction(e -> {
+            startButton.setStyle(defaultButtonStyle);
+            stopButton.setStyle(clickedButtonStyle);
             stopRecording();
-            // try {
-                // Ingredients.transcribeIngredients();
-                Ingredients.ingredientsString = "eggs, sausage, onions";
+            try {
+                Ingredients.transcribeIngredients();
                 if (Ingredients.ingredientsString != null) {
-                    Scene gptScene = new Scene(new MockGPT(primaryStage, homeScene, recipeList), 500, 600);
-                    switchScene(this.primaryStage, gptScene);
+                    Scene gptScene;
+                    try {
+                        gptScene = new Scene(new ChatGPT(MealType.mealString, Ingredients.ingredientsString, 100, primaryStage, homeScene, recipeList), 400, 500);
+                        this.primaryStage.setScene(gptScene);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
                 }
-            // } catch (IOException e1) {
-            //     e1.printStackTrace();
-            // } catch (URISyntaxException e1) {
-            //     e1.printStackTrace();
-            // }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (URISyntaxException e1) {
+                e1.printStackTrace();
+            }
+        });
+
+        cancelButton.setOnAction(e -> {
+            primaryStage.setScene(homeScene);
         });
     }
 
@@ -302,7 +376,6 @@ class IngredientsFrame extends FlowPane {
             }
         );
         t.start();
-
     }
 
     private void stopRecording() {
@@ -315,18 +388,7 @@ public class Recording extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
-        // Setting the Layout of the Window (Flow Pane)
-        // MealFrame root = new MealFrame(primaryStage, primaryStage.getScene(), recipeList);
-
-        // // Set the title of the app
-        // primaryStage.setTitle("Record Meal Type");
-        // // Create scene of mentioned size with the border pane
-        // primaryStage.setScene(new Scene(root, 500, 600));
-        // // Make window non-resizable
-        // primaryStage.setResizable(false);
-        // // Show the app
-        // primaryStage.show();
+        
     }
 
     public static void main(String[] args) {
