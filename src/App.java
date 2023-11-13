@@ -76,6 +76,19 @@ class Recipe extends VBox {
             backButton.setOnAction(e2 -> {
                 primaryStage.setScene(initial);
             });
+            Button saveButton = recipeScreen.getFooter().getSaveButton();
+            saveButton.setOnAction(e3 -> {
+                recipeScreen.save(getIndex());
+                primaryStage.setScene(initial);
+            });
+            Button deleteButton = recipeScreen.getFooter().getDeleteButton();
+            deleteButton.setOnAction(e3 -> {
+                recipeScreen.deleteRecipe(getIndex());
+                primaryStage.setScene(initial);
+                recipeList.getChildren().remove(getIndex() - 1);
+                recipeList.updateRecipeIndices();
+                
+            });
             primaryStage.setTitle("Recipe");
             primaryStage.setScene(new Scene(recipeScreen, 700, 700));
 
@@ -85,7 +98,9 @@ class Recipe extends VBox {
 }
 
 class RecipeList extends VBox {
-    RecipeList() {
+    private Stage pStage;
+    RecipeList(Stage primaryStage) {
+        this.pStage = primaryStage;
         this.setSpacing(5); // sets spacing between recipe
         this.setPrefSize(500, 560);
         this.setStyle("-fx-background-color: #F0F8FF;");
@@ -98,6 +113,33 @@ class RecipeList extends VBox {
                 ((Recipe) this.getChildren().get(i)).setRecipeIndex(index);
                 index++;
             }
+        }
+    }
+
+    public void loadOnStart() {
+         try {
+            // Read and temporarily story old recipes
+            BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
+            String line = in.readLine();
+            String combine = "";
+            while (line != null) {
+                if (combine.equals("")) {
+                    combine = combine + line;
+                } else {
+                    combine = combine + "\n" + line;
+                }
+                line = in.readLine();
+            }
+            String[] s = combine.split("\\$");
+            for (int i = 0; i < s.length; i++) {
+                Recipe startload = new Recipe(pStage, this);
+                this.getChildren().add(startload);
+                updateRecipeIndices();
+            }
+         }
+         catch(Exception e) {
+            System.out.println(e);
+            System.out.println("START FAIL");
         }
     }
 }
@@ -152,12 +194,15 @@ class AppFrame extends BorderPane {
 
     // IngredientsFrame ingredients = new IngredientsFrame();
     // Scene recordIngredients = new Scene(ingredients, 500, 600);
-    AppFrame() {
+    AppFrame(Stage primaryStage) {
         // Initialise the header Object
+        this.primaryStage = primaryStage;
         header = new Header();
 
         // Create a recipeListist Object to hold the recipes
-        recipeList = new RecipeList();
+        recipeList = new RecipeList(primaryStage);
+        recipeList.loadOnStart();
+        recipeList.updateRecipeIndices();
         
         // Initialise the Footer Object
         footer = new Footer();
@@ -181,10 +226,6 @@ class AppFrame extends BorderPane {
         newRecipeButton = footer.getNewRecipeButton();
         // Call Event Listeners for the Buttons
         addListeners();
-    }
-
-    public void setStage(Stage primaryStage) {
-        this.primaryStage = primaryStage;
     }
 
     public void switchScene(Stage primaryStage, Scene scene) {
@@ -287,7 +328,6 @@ class MockGPT extends BorderPane {
             System.out.println(e);
             System.out.println("SAVE FAIL");
         }
-        
     }
     public void addListeners() {
         saveButton.setOnAction(e -> {
@@ -368,20 +408,91 @@ class RecipePane extends BorderPane {
                 line = in.readLine();
             }
             String[] recipes = combine.split("\\$");
-            RecipeSteps current = new RecipeSteps();
-            current.getTextArea().setText(recipes[index-1]);
-            this.getChildren().add(current);
+            //RecipeSteps current = new RecipeSteps();
+            recipeSteps.getTextArea().setText(recipes[index-1]);
+            // this.getChildren().add(recipeSteps);
             in.close();
         }
         catch(Exception e){
             System.out.println("LOAD FAIL");
         }
+    }
 
+    public void save(int index) {
+        // hint 1: use try-catch block
+        // hint 2: use FileWriter
+        // hint 3: this.getChildren() gets the list of tasks
+        try {
+            BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
+            String line = in.readLine();
+            String combine = "";
+            while (line != null) {
+                if (combine.equals("")) {
+                    combine = combine + line;
+                } else {
+                    combine = combine + "\n" + line;
+                }
+                line = in.readLine();
+            }
+            String[] recipes = combine.split("\\$");
+            FileWriter writer = new FileWriter("recipes.csv");
+            for (int i = 0; i < index - 1; i++) {
+                writer.write(recipes[i] + "$");
+            }
+            // RecipeScreen should have 1 child which is the recipe
+            // Recipe recipeSteps = (Recipe) this.getChildren().get(0);
+            String recipe = recipeSteps.getTextArea().getText();
+            writer.write(recipe + "$");
+            for (int i = index - 1; i < recipes.length - 1; i++) {
+                writer.write(recipes[i] + "$");
+            }
+            in.close();
+            writer.close();
+            
+        }
+        catch(Exception e) {
+            System.out.println("SAVE FAIL");
+        }
+        // System.out.println("savetasks() not implemented!");
+    }
+
+    public void deleteRecipe(int index) {
+        // hint 1: use try-catch block
+        // hint 2: use BufferedReader and FileReader
+        // hint 3: task.getTaskName().setText() sets the text of the task
+        try {
+            BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
+            String line = in.readLine();
+            String combine = "";
+            while (line != null) {
+                if (combine.equals("")) {
+                    combine = combine + line;
+                } else {
+                    combine = combine + "\n" + line;
+                }
+                line = in.readLine();
+            }
+            in.close();
+            String[] recipes = combine.split("\\$");
+            FileWriter writer = new FileWriter("recipes.csv");
+            for (int i = 0; i < index - 1; i++) {
+                writer.write(recipes[i] + "$");
+            }
+            for (int i = index; i < recipes.length; i++) {
+                writer.write(recipes[i] + "$");
+            }
+            writer.close();
+        }
+        catch(Exception e){
+            System.out.println("LOAD FAIL");
+        }
+        // System.out.println("loadtasks() not implemented!");
     }
 }
 
 class RecipeSteps extends HBox {
     public TextArea recipeSteps;
+    public int index;
 
     RecipeSteps(){
         // this.setPrefSize(500, 500);
@@ -401,10 +512,9 @@ class RecipeSteps extends HBox {
         return this.recipeSteps;
     }
 
-  
-    
-    
-
+    public int getIndex() {
+        return index;
+    }
 }
 
 class HeaderTwo extends HBox {
@@ -472,8 +582,7 @@ public class App extends Application {
         primaryStage.setTitle("PantryPal");
 
         // Setting the Layout of the Window- Should contain a Header, Footer and the recipeList
-        AppFrame home = new AppFrame();
-        home.setStage(primaryStage);
+        AppFrame home = new AppFrame(primaryStage);
 
         // Set up Home Page and Record Recipe pages
         homeScene = new Scene(home, 500, 600);
