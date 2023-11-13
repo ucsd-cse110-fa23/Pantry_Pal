@@ -248,7 +248,7 @@ class AppFrame extends BorderPane {
     }
 }
 
-
+/* 
 class MockGPT extends BorderPane {
     private Header header;
     private Button saveButton;
@@ -340,6 +340,8 @@ class MockGPT extends BorderPane {
     }
 
 }
+
+*/
 
 class RecipePane extends BorderPane {
     private FooterTwo footer;
@@ -492,7 +494,6 @@ class RecipePane extends BorderPane {
 
 class RecipeSteps extends HBox {
     public TextArea recipeSteps;
-    public int index;
 
     RecipeSteps(){
         // this.setPrefSize(500, 500);
@@ -512,9 +513,6 @@ class RecipeSteps extends HBox {
         return this.recipeSteps;
     }
 
-    public int getIndex() {
-        return index;
-    }
 }
 
 class HeaderTwo extends HBox {
