@@ -138,7 +138,7 @@ class RecipeList extends VBox {
 
     public void loadOnStart() {
          try {
-            // Read and temporarily story old recipes
+            // Read and temporarily story old recipes 
             BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
             String line = in.readLine();
             String combine = "";
