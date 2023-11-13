@@ -111,6 +111,26 @@ class RecipeList extends VBox {
         for (int i = 0; i < this.getChildren().size(); i++) {
             if (this.getChildren().get(i) instanceof Recipe) {
                 ((Recipe) this.getChildren().get(i)).setRecipeIndex(index);
+                try {
+                    BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
+                    String line = in.readLine();
+                    String combine = "";
+                    while (line != null) {
+                        if (combine.equals("")) {
+                            combine = combine + line;
+                        } else {
+                        combine = combine + "\n" + line;
+                        }
+                        line = in.readLine();
+                    }
+                        
+                    String[] recipes = combine.split("\\$");
+                    String[] recipeLines = recipes[index-1].split("\n");
+                    ((Recipe) this.getChildren().get(i)).getRecipe().setText(recipeLines[0]);
+                }
+                catch(Exception e){
+                    System.out.println("LOAD FAIL");
+                }
                 index++;
             }
         }
