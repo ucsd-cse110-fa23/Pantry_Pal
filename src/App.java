@@ -193,6 +193,7 @@ class MockGPT extends BorderPane {
         addListeners();
     }
 
+    // bryan: can tell server to save the to csv
     public void saveRecipe(String response) {
         try {
             // Read and temporarily story old recipes

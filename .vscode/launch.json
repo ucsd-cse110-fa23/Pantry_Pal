@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "MyServer",
+            "request": "launch",
+            "mainClass": "server.MyServer",
+            "projectName": "cse-110-project_f7244502"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
@@ -15,7 +22,7 @@
             "name": "App",
             "request": "launch",
             "mainClass": "App",
-            "vmArgs": "--module-path 'C:/Users/Peter/Desktop/openjfx-21.0.1_windows-x64_bin-sdk/javafx-sdk-21.0.1/lib' --add-modules javafx.controls,javafx.fxml"
+            "vmArgs": "--module-path '/Users/bryan/Desktop/javafx-sdk-21Mac/lib' --add-modules javafx.controls,javafx.fxml"
         }
     ]
 }

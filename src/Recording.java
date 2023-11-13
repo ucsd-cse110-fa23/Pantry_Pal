@@ -28,6 +28,8 @@ class MealFrame extends FlowPane {
     Scene homeScene;
     RecipeList recipeList;
 
+    final private int RECORD_TYPE = 1;
+
     // Set a default style for buttons and fields - background color, font size,
     // italics
     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px;";
@@ -110,7 +112,8 @@ class MealFrame extends FlowPane {
         int sampleSizeInBits = 16;
 
         // the number of audio channels in this format (1 for mono, 2 for stereo).
-        int channels = 2;
+        // CHANGE TO 1 IF U ON MAC AND 2 ON WINDOWS <-----------------------------------
+        int channels = RECORD_TYPE;
 
         // whether the data is signed or unsigned.
         boolean signed = true;
@@ -169,6 +172,8 @@ class MealFrame extends FlowPane {
 }
 
 class IngredientsFrame extends FlowPane {
+    private final int RECORD_TYPE = 1;
+
     private Button startButton;
     private Button stopButton;
     private AudioFormat audioFormat;
@@ -252,7 +257,7 @@ class IngredientsFrame extends FlowPane {
         int sampleSizeInBits = 16;
 
         // the number of audio channels in this format (1 for mono, 2 for stereo).
-        int channels = 2;
+        int channels = RECORD_TYPE;
 
         // whether the data is signed or unsigned.
         boolean signed = true;
