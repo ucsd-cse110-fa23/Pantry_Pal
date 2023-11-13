@@ -303,7 +303,7 @@ class IngredientsFrame extends BorderPane {
                 if (Ingredients.ingredientsString != null) {
                     Scene gptScene;
                     try {
-                        gptScene = new Scene(new ChatGPT(MealType.mealString, Ingredients.ingredientsString, 100, primaryStage, homeScene, recipeList), 400, 500);
+                        gptScene = new Scene(new ChatGPT(MealType.mealString, Ingredients.ingredientsString, 500, primaryStage, homeScene, recipeList), 400, 500);
                         this.primaryStage.setScene(gptScene);
                     } catch (InterruptedException e1) {
                         e1.printStackTrace();
