@@ -24,6 +24,8 @@ class Prompt extends VBox{
     
     // Set a default style for buttons and fields - background color, font size, italics
     String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
+
+    // Set a default style for buttons and fields - background color, font size, italics
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
 
     Prompt(String text) {
@@ -99,6 +101,8 @@ class MealFrame extends BorderPane {
     Scene homeScene;
     RecipeList recipeList;
 
+    final private int RECORD_TYPE = 1;
+
     String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     String clickedButtonStyle = "-fx-background-color: #0174BE; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
 
@@ -144,7 +148,8 @@ class MealFrame extends BorderPane {
             stopButton.setStyle(clickedButtonStyle);
             stopRecording();
             try {
-                MealType.transcribeMeal();
+                File mealTypeAudio = new File("mealType.wav");
+                MealType.transcribeMeal(mealTypeAudio);
                 if (MealType.mealString != null) {
                     IngredientsFrame ingredients = new IngredientsFrame(primaryStage, homeScene, recipeList);
                     Scene recordIngredients = new Scene(ingredients, 400, 500);
@@ -172,7 +177,8 @@ class MealFrame extends BorderPane {
         int sampleSizeInBits = 16;
 
         // the number of audio channels in this format (1 for mono, 2 for stereo).
-        int channels = 2;
+        // CHANGE TO 1 IF U ON MAC AND 2 ON WINDOWS <-----------------------------------
+        int channels = RECORD_TYPE;
 
         // whether the data is signed or unsigned.
         boolean signed = true;
@@ -231,6 +237,8 @@ class MealFrame extends BorderPane {
 }
 
 class IngredientsFrame extends BorderPane {
+    private final int RECORD_TYPE = 1;
+
     private Button startButton;
     private Button stopButton;
     private Button cancelButton;
@@ -326,7 +334,7 @@ class IngredientsFrame extends BorderPane {
         int sampleSizeInBits = 16;
 
         // the number of audio channels in this format (1 for mono, 2 for stereo).
-        int channels = 2;
+        int channels = RECORD_TYPE;
 
         // whether the data is signed or unsigned.
         boolean signed = true;

@@ -106,7 +106,7 @@ public class ChatGPT extends BorderPane{
             }
             String[] recipes = combine.split("\\$");
 
-            newRecipe = new Recipe();
+            newRecipe = new Recipe(primaryStage);
             newRecipe.getRecipe().setText(recipeName);
             // recipeList.getChildren().add(newRecipe);
             recipeList.getChildren().add(newRecipe);

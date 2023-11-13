@@ -74,7 +74,7 @@ public class MealType {
     }
 
     // Helper method to handle an error response
-    private static void handleErrorResponse(HttpURLConnection connection) throws IOException, JSONException {
+    private static String handleErrorResponse(HttpURLConnection connection) throws IOException, JSONException {
         BufferedReader errorReader = new BufferedReader(
             new InputStreamReader(connection.getErrorStream())
         );
@@ -86,6 +86,7 @@ public class MealType {
         errorReader.close();
         String errorResult = errorResponse.toString();
         System.out.println("Error Result: " + errorResult);
+        return "RESPONSE ERROR IN MEALTYPE.JAVA WHEN TRASCRIBING MEAL TYPE";
     }
 
     public static String mealType(String foo){
@@ -97,9 +98,9 @@ public class MealType {
         else{return null;}
     }
 
-    public static void transcribeMeal() throws IOException, URISyntaxException {
+    public static String transcribeMeal(File mealTypeAudio) throws IOException, URISyntaxException {
         // Create file object from file path
-        File file = new File(FILE_PATH);
+        File file = mealTypeAudio;
 
         // Set up HTTP connection
         URL url = new URI(API_ENDPOINT).toURL();
@@ -134,22 +135,24 @@ public class MealType {
         // Get response code
         int responseCode = connection.getResponseCode();
 
-        String food = "";
+        String response = "";
         
         // Check response code and handle response accordingly
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            food = handleSuccessResponse(connection);
+            response = handleSuccessResponse(connection);
         } else {
-            handleErrorResponse(connection);
+            response = handleErrorResponse(connection);
         }
         
-        mealString = mealType(food);
+        mealString = mealType(response);
         System.out.println("Meal Type: " + mealString);
-
         // Disconnect connection
         connection.disconnect();
+        
+        return mealString;
     }
     public static void main(String[] args) throws IOException, URISyntaxException {
-        transcribeMeal();
+        File file = new File("mealType.wav");
+        transcribeMeal(file);
     }        
 }
