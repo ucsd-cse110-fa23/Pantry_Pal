@@ -62,6 +62,10 @@ class Prompt extends VBox{
     public Label getRecordingLabel() {
         return this.recordingLabel;
     }
+
+    public Label getText() {
+        return this.text;
+    }
 }
 
 class RecordingFooter extends HBox{
@@ -139,6 +143,7 @@ class MealFrame extends BorderPane {
         startButton.setOnAction(e -> {
             stopButton.setStyle(defaultButtonStyle);
             startButton.setStyle(clickedButtonStyle);
+            recordingLabel.setVisible(true);
             startRecording();
         });
 
@@ -154,6 +159,9 @@ class MealFrame extends BorderPane {
                     IngredientsFrame ingredients = new IngredientsFrame(primaryStage, homeScene, recipeList);
                     Scene recordIngredients = new Scene(ingredients, 400, 500);
                     this.primaryStage.setScene(recordIngredients);
+                } else {
+                    prompt.getText().setText("Invalid meal type. Please choose only \n Breakfast, Lunch, or Dinner.");
+                    this.setCenter(prompt);
                 }
                 
             } catch (IOException e1) {
@@ -303,7 +311,7 @@ class IngredientsFrame extends BorderPane {
                 if (Ingredients.ingredientsString != null) {
                     Scene gptScene;
                     try {
-                        gptScene = new Scene(new ChatGPT(MealType.mealString, Ingredients.ingredientsString, 100, primaryStage, homeScene, recipeList), 400, 500);
+                        gptScene = new Scene(new ChatGPT(MealType.mealString, Ingredients.ingredientsString, 10000, primaryStage, homeScene, recipeList), 400, 500);
                         this.primaryStage.setScene(gptScene);
                     } catch (InterruptedException e1) {
                         e1.printStackTrace();

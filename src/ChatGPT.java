@@ -12,6 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ButtonSkin;
 import javafx.scene.layout.BorderImage;
 import javafx.scene.layout.BorderPane;
@@ -110,8 +111,14 @@ public class ChatGPT extends BorderPane{
         this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
         Label recipe = new Label();
         recipe.setText(generatedText);
+
+        ScrollPane scroll = new ScrollPane();
+        scroll.setContent(recipe);
+        scroll.setFitToHeight(true);
+        scroll.setFitToWidth(true);
+        
         this.setTop(header);
-        this.setCenter(recipe);
+        this.setCenter(scroll);
 
         this.saveButton = footer.getSaveButton();
         this.cancelButton = footer.getCancelButton();

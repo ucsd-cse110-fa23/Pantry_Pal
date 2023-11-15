@@ -39,7 +39,7 @@ class Recipe extends VBox {
         recipe.setPadding(new Insets(10, 0, 10, 0)); // adds some padding to the text field
         this.getChildren().add(recipe); // add textlabel to recipe
 
-        viewButton = new Button("View Button");
+        viewButton = new Button("View");
         viewButton.setPrefSize(250, 20);
         viewButton.setPrefHeight(Double.MAX_VALUE);
         viewButton.setStyle("-fx-background-color: #FAE5EA; -fx-border-width: 0;"); // sets style of button
@@ -78,6 +78,7 @@ class Recipe extends VBox {
 
 }
 
+// Container to hold recipes on main page
 class RecipeList extends VBox {
     RecipeList() {
         this.setSpacing(5); // sets spacing between recipe
@@ -113,14 +114,13 @@ class RecipeList extends VBox {
             current.getTextArea().setText(recipes[index-1]);
             this.getChildren().add(current);
             in.close();
-        }
-        catch(Exception e){
+        } catch(Exception e){
             System.out.println("LOAD FAIL");
         }
-
     }
 }
 
+// Footer for main page
 class Footer extends HBox {
 
     private Button newRecipeButton;
@@ -145,6 +145,7 @@ class Footer extends HBox {
     }
 }
 
+// App Header for all pages
 class Header extends HBox {
 
     Header() {
@@ -156,6 +157,7 @@ class Header extends HBox {
         this.getChildren().add(titleText);
         this.setAlignment(Pos.CENTER); // Align the text to the Center
     }
+
 }
 
 class AppFrame extends BorderPane {
@@ -165,18 +167,17 @@ class AppFrame extends BorderPane {
     public RecipeList recipeList;
     private Button newRecipeButton;
 
-    private Button viewButton;
     private Stage primaryStage;
     public Scene homeScene;
 
     AppFrame() {
-        // Initialise the header Object
+        // Initialize the header Object
         header = new Header();
 
-        // Create a recipeListist Object to hold the recipes
+        // Create a recipeList Object to hold the recipes
         recipeList = new RecipeList();
         
-        // Initialise the Footer Object
+        // Initialize the Footer Object
         footer = new Footer();
 
         // Add a Scroller to the recipe List
@@ -191,8 +192,6 @@ class AppFrame extends BorderPane {
         this.setCenter(scroll);
         // Add footer to the bottom of the BorderPane
         this.setBottom(footer);
-
-        // need to reference recipe object
 
         // Initialise Button Variables through the getters in Footer
         newRecipeButton = footer.getNewRecipeButton();
@@ -210,13 +209,11 @@ class AppFrame extends BorderPane {
 
     public void addListeners()
     {
-        // Add button functionality
+        // New recipe button event
         newRecipeButton.setOnAction(e -> {
-            
             MealFrame mealType = new MealFrame(this.primaryStage, this.primaryStage.getScene(), recipeList);
             Scene recordMeal = new Scene(mealType, 400, 500);
-            switchScene(this.primaryStage, recordMeal);
-
+            primaryStage.setScene(recordMeal);
         });        
     }
 }
