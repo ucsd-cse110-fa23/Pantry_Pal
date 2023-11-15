@@ -72,7 +72,7 @@ public class ChatGPT extends BorderPane{
     ChatGPT(String mealType, String ingredients, int maxTokens, Stage primaryStage, Scene homeScene, RecipeList recipeList) throws IOException, InterruptedException, URISyntaxException {
         // Set request parameters
         this.prompt = "Make me a " + mealType + " recipe " + "using " + ingredients + " with the recipe name in the first line";
-        this.maxTokens = maxTokens;
+        this.maxTokens = 500;
         
         // Create a request body which you will pass into request object
         JSONObject requestBody = new JSONObject();
@@ -107,6 +107,19 @@ public class ChatGPT extends BorderPane{
         this.setPrefSize(370, 120);
         
         this.setBottom(footer);
+        String[] getTitle = generatedText.split("\n");
+        String title = getTitle[2];
+
+        
+        String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial;";
+
+        header = new Header();
+  
+        this.setPrefSize(370, 120);
+        this.setPadding(new Insets(5, 0, 5, 5));
+        saveButton = new Button("Save Recipe");
+        saveButton.setStyle(defaultButtonStyle);
+        this.setBottom(saveButton);
         
         this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
         Label recipe = new Label();
@@ -123,14 +136,14 @@ public class ChatGPT extends BorderPane{
         this.saveButton = footer.getSaveButton();
         this.cancelButton = footer.getCancelButton();
 
-        this.recipeName = generatedText.split("\n")[0];
         this.primaryStage = primaryStage;
         this.homeScene = homeScene;
         this.recipeList = recipeList;
-        addListeners();
+        this.recipeName = title;
+        addListeners(generatedText, homeScene);
     }  
 
-    public void saveRecipe(String generatedText) {
+    public void saveRecipe(String gText, RecipeList rl) {
         try {
             // Read and temporarily story old recipes
             BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
@@ -146,19 +159,21 @@ public class ChatGPT extends BorderPane{
             }
             String[] recipes = combine.split("\\$");
 
-            newRecipe = new Recipe(primaryStage);
+
+            newRecipe = new Recipe(primaryStage, rl);
             newRecipe.getRecipe().setText(recipeName);
-            System.out.println("RECIPE____" + recipeName);
-            System.out.println("____LIST" + generatedText);
+            // recipeList.getChildren().add(newRecipe);
             recipeList.getChildren().add(newRecipe);
+            recipeList.updateRecipeIndices();
+
 
             FileWriter writer = new FileWriter("recipes.csv");
             // Write new recipe at the top of the csv
-            writer.write(generatedText + "\\$");
+            writer.write(gText + "$");
 
             // Rewrite the rest of the recipes below the newly added one
-            for (int i = 0; i < recipes.length - 1; i++) {
-                writer.write(recipes[i] + "\\$");
+            for (int i = 0; i < recipes.length; i++) {
+                writer.write(recipes[i] + "$");
             }
 
             in.close();
@@ -171,12 +186,18 @@ public class ChatGPT extends BorderPane{
         }
     }
 
-    public void addListeners() {
+    public void addListeners(String text, Scene homeScene) {
         saveButton.setOnAction(e -> {
-            saveRecipe(generatedText);
-        }); 
+            saveRecipe(text, recipeList);
+            recipeList.updateRecipeIndices();
+        });
+
         cancelButton.setOnAction(e -> {
             primaryStage.setScene(homeScene);
         });
+    }
+
+    public String getResponse() {
+        return this.generatedText;
     }
 }
