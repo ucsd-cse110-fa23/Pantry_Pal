@@ -262,7 +262,7 @@ class RecipePane extends BorderPane {
     private HeaderTwo header;
     private RecipeSteps recipeSteps;
 
-    public FooterTwo getFooter(){
+    public FooterTwo getFooter() {
         return this.footer;
     }
 
@@ -282,25 +282,23 @@ class RecipePane extends BorderPane {
         // saveButton = footer.getSaveButton();
         // deleteButton = footer.getDeleteButton();
 
-        //recipeSteps.getTextArea().setText("Hello");
         backButton = footer.getBackButton();
 
         ScrollPane s = new ScrollPane(recipeSteps);
-        this.setRight(s);
         s.setFitToHeight(true);
         s.setFitToWidth(true);
 
         // Add header to the top of the BorderPane
         this.setTop(header);
         // Add scroller to the centre of the BorderPane
-        this.setCenter(recipeSteps);
+        this.setCenter(s);
         // Add footer to the bottom of the BorderPane
         this.setBottom(footer);
 
         addListeners();
     }
 
-    public void addListeners(){
+    public void addListeners() {
 
         backButton.setOnAction(e ->{
             primaryStage.setScene(homeScene);
@@ -308,7 +306,7 @@ class RecipePane extends BorderPane {
 
     }
 
-    public void loadTasks(int index){
+    public void loadTasks(int index) {
         try {
             BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
             String line = in.readLine();
@@ -333,9 +331,6 @@ class RecipePane extends BorderPane {
     }
 
     public void save(int index) {
-        // hint 1: use try-catch block
-        // hint 2: use FileWriter
-        // hint 3: this.getChildren() gets the list of tasks
         try {
             BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
             String line = in.readLine();
@@ -407,21 +402,22 @@ class RecipePane extends BorderPane {
 class RecipeSteps extends HBox {
     public TextArea recipeSteps;
 
-    RecipeSteps(){
+    RecipeSteps() {
         // this.setPrefSize(500, 500);
         // this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;"); // sets background color of task
 
 
         recipeSteps = new TextArea();
         recipeSteps.setEditable(true);
-        recipeSteps.setPrefSize(700, 700); // set size of text field
+        recipeSteps.setPrefSize(400, 500); // set size of text field
+        recipeSteps.setWrapText(true);
         recipeSteps.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;"); // set background color of texfield
         
         this.getChildren().add(recipeSteps);
 
     }
 
-    public TextArea getTextArea(){
+    public TextArea getTextArea() {
         return this.recipeSteps;
     }
 
