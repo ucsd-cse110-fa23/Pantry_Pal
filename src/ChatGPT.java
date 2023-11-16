@@ -95,6 +95,7 @@ public class ChatGPT extends BorderPane{
             request,
             HttpResponse.BodyHandlers.ofString()
         );
+        
         // Process the response
         String responseBody = response.body();
         JSONObject responseJson = new JSONObject(responseBody);
@@ -103,24 +104,14 @@ public class ChatGPT extends BorderPane{
 
         header = new Header();
         footer = new gptFooter();
-  
-        this.setPrefSize(370, 120);
         
         this.setBottom(footer);
         String[] getTitle = generatedText.split("\n");
         String title = getTitle[2];
-
-        
-        String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial;";
-
-        header = new Header();
   
         this.setPrefSize(370, 120);
         this.setPadding(new Insets(5, 0, 5, 5));
-        saveButton = new Button("Save Recipe");
-        saveButton.setStyle(defaultButtonStyle);
-        this.setBottom(saveButton);
-        
+
         this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
         Label recipe = new Label();
         recipe.setText(generatedText);
