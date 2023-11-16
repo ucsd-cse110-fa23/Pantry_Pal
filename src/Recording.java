@@ -311,7 +311,7 @@ class IngredientsFrame extends BorderPane {
                 if (Ingredients.ingredientsString != null) {
                     Scene gptScene;
                     try {
-                        gptScene = new Scene(new ChatGPT(MealType.mealString, Ingredients.ingredientsString, 10000, primaryStage, homeScene, recipeList), 400, 500);
+                        gptScene = new Scene(new ChatGPT(MealType.mealString, Ingredients.ingredientsString, 100, primaryStage, homeScene, recipeList), 400, 500);
                         this.primaryStage.setScene(gptScene);
                     } catch (InterruptedException e1) {
                         e1.printStackTrace();
@@ -336,7 +336,7 @@ class IngredientsFrame extends BorderPane {
     private AudioFormat getAudioFormat() {
         // the number of samples of audio per second.
         // 44100 represents the typical sample rate for CD-quality audio.
-        float sampleRate = 44100;
+        float sampleRate = 16000;
 
         // the number of bits in each sample of a sound that has been digitized.
         int sampleSizeInBits = 16;

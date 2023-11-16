@@ -72,7 +72,7 @@ public class ChatGPT extends BorderPane{
     ChatGPT(String mealType, String ingredients, int maxTokens, Stage primaryStage, Scene homeScene, RecipeList recipeList) throws IOException, InterruptedException, URISyntaxException {
         // Set request parameters
         this.prompt = "Make me a " + mealType + " recipe " + "using " + ingredients + " with the recipe name in the first line";
-        this.maxTokens = 500;
+        this.maxTokens = 100;
         
         // Create a request body which you will pass into request object
         JSONObject requestBody = new JSONObject();
