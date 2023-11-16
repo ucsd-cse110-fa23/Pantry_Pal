@@ -336,7 +336,7 @@ class IngredientsFrame extends BorderPane {
     private AudioFormat getAudioFormat() {
         // the number of samples of audio per second.
         // 44100 represents the typical sample rate for CD-quality audio.
-        float sampleRate = 16000;
+        float sampleRate = 44100;
 
         // the number of bits in each sample of a sound that has been digitized.
         int sampleSizeInBits = 16;
