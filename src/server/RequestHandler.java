@@ -9,8 +9,8 @@ import com.sun.net.httpserver.HttpHandler;
 
 /**
  *  This is the handler for the CSV/database 
- * get -> all and individual by keyword
- * post ->
+ * 
+ *  NEED: to connect to mongodb so that add and get is easy.
  */
 
 public class RequestHandler implements HttpHandler {

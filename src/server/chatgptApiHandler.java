@@ -61,6 +61,7 @@ public class chatgptApiHandler implements HttpHandler {
 
 
     // need to feed this method the entire prompt before calling
+    
     private String handlePost(HttpExchange httpExchange) throws IOException, InterruptedException{
       String generatedText = "no respons from chatgptHandler";
       // get the prompt from the body
