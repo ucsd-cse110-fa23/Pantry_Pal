@@ -19,7 +19,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 public class AudioHandler implements HttpHandler {
 
-    final private int RECORD_TYPE = 2;
+    final private int RECORD_TYPE = 1;
     private File audioFile;
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;

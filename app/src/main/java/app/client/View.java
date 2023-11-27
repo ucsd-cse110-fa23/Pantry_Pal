@@ -94,7 +94,7 @@ class RecordingFooter extends HBox{
 // ChatGPT response Footer
 class GptFooter extends HBox{
 
-    private Button saveButton, cancelButton;
+    private Button saveButton, cancelButton, refreshButton;
 
     String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial;";
 
@@ -109,7 +109,10 @@ class GptFooter extends HBox{
         cancelButton = new Button("Cancel");
         cancelButton.setStyle(defaultButtonStyle);
 
-        this.getChildren().addAll(saveButton, cancelButton);
+        refreshButton = new Button("Refresh");
+        refreshButton.setStyle(defaultButtonStyle);
+
+        this.getChildren().addAll(saveButton, cancelButton, refreshButton);
         this.setAlignment(Pos.CENTER);
     }
 
@@ -119,6 +122,10 @@ class GptFooter extends HBox{
 
     public Button getCancelButton() {
         return cancelButton;
+    }
+
+    public Button getRefreshButton(){
+        return refreshButton;
     }
 
 }
@@ -736,8 +743,11 @@ class GptFrame extends BorderPane {
 
     private Header header;
     private GptFooter footer;
-    private Button saveButton, cancelButton;
+    private Button saveButton, cancelButton, refreshButton;
+    private String generatedText = "Bacon Egg Sandwhich, bacon, eggs, and cheese, step 1:... Step 2:...";
     private RecipeList recipeList;
+    Label recipe = new Label();
+    //String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 75px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     
     GptFrame(RecipeList recipeList) {
         this.setPrefSize(370, 120);
@@ -749,8 +759,8 @@ class GptFrame extends BorderPane {
         
         // String[] getTitle = generatedText.split("\n");
         // String title = getTitle[2];
-        Label recipe = new Label();
-        // recipe.setText(generatedText);
+        
+        recipe.setText(generatedText);
         recipe.setWrapText(true);
         recipe.setMaxWidth(350);
         recipe.setPadding(new Insets(5));
@@ -766,6 +776,7 @@ class GptFrame extends BorderPane {
 
         saveButton = footer.getSaveButton();
         cancelButton = footer.getCancelButton();
+        refreshButton = footer.getRefreshButton();
 
         this.recipeList = recipeList;
     }
@@ -774,11 +785,42 @@ class GptFrame extends BorderPane {
         saveButton.setOnAction(e -> {
             recipeList.updateRecipeIndices();
         });
+    }
 
+    // GptFrame setters/getters
+
+    // public String getDefaultStyle() {
+    //     return defaultButtonStyle;
+    // }
+
+    // possible need for this method
+    public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler){
+        saveButton.setOnAction(eventHandler);
     }
 
     public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
         cancelButton.setOnAction(eventHandler);
+    }
+
+    public void setRefreshButtonAction(EventHandler<ActionEvent> eventHandler){
+        refreshButton.setOnAction(eventHandler);
+    }
+
+    // getters for Gpt Frame
+    public Label getRecipe(){
+        return recipe;
+    }
+
+    public Button getSaveButton(){
+        return saveButton;
+    }
+
+    public Button getCancelButton(){
+        return cancelButton;
+    }
+
+    public Button getRefreshButton(){
+        return refreshButton;
     }
 
 }
