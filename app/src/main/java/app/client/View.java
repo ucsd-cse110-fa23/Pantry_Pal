@@ -379,7 +379,7 @@ class AppFrame extends BorderPane {
 
     private Header header;
     private Footer footer;
-    public RecipeList recipeList;
+    private RecipeList recipeList;
     private Button newRecipeButton;
 
     AppFrame() {

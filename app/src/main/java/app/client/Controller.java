@@ -41,6 +41,7 @@ public class Controller {
 
         // AppFrame Event Listeners
         this.view.getAppFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
+        // this.view.getAppFrame().getRecipeList().setViewButton(this::handleViewButton);
 
         // MealFrame Event Listeners
         this.view.getMealFrame().setStartButtonAction(this::handleMealStartButton);
