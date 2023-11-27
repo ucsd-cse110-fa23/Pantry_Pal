@@ -51,7 +51,6 @@ public class ChatGPTHandler implements HttpHandler {
         outStream.close();
     }
 
-
     // need to feed this method the entire prompt before calling
     // prompt: Make me a breakfast recipe using eggs with the recipe in json format with ingredients as one string and instructions as one string 
 
@@ -106,3 +105,11 @@ public class ChatGPTHandler implements HttpHandler {
         return generatedText;
     }
 }
+
+
+
+
+
+
+
+
