@@ -35,20 +35,20 @@ public class ChatGPTHandler implements HttpHandler {
         try {
             if (method.equals("POST")) {
               response = handlePost(httpExchange);
-            }
-             else {
+            } else {
               throw new Exception("Not Valid Request Method");
             }
+            //Sending back response to the client
+            httpExchange.sendResponseHeaders(200, response.length());
+            OutputStream outStream = httpExchange.getResponseBody();
+            outStream.write(response.getBytes());
+            outStream.close();
         } catch (Exception e) {
-        System.out.println("An erroneous request");
-        response = e.toString();
-        e.printStackTrace();
+            System.out.println("An erroneous request");
+            response = e.toString();
+            e.printStackTrace();
         }
-        //Sending back response to the client
-        httpExchange.sendResponseHeaders(200, response.length());
-        OutputStream outStream = httpExchange.getResponseBody();
-        outStream.write(response.getBytes());
-        outStream.close();
+        
     }
 
     // need to feed this method the entire prompt before calling
@@ -61,8 +61,6 @@ public class ChatGPTHandler implements HttpHandler {
         Scanner scanner = new Scanner(inStream);
         
         String prompt = scanner.nextLine();
-
-        System.out.println("prompt: " + prompt);
         
         int tokens = 500;  
         // Create a request body which you will pass into request object
@@ -102,7 +100,7 @@ public class ChatGPTHandler implements HttpHandler {
         System.out.println("return" + res);
         scanner.close();
 
-        return generatedText;
+        return res;
     }
 }
 

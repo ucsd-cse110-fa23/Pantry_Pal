@@ -30,9 +30,7 @@ public class Model {
                 urlString += "?=" + query;
             }
 
-            if (route.equals("chatgpt")) {
-                
-            } else if (route.equals("whisper")) {
+            if (route.equals("whisper")) {
                 sendPOSTWhisper();
             }
 
@@ -41,27 +39,29 @@ public class Model {
             conn.setRequestMethod(method);
             conn.setDoOutput(true);
 
-            
-
-            // if (method.equals("POST") || method.equals("PUT")) {
-            //     OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-            //     // out.write(fileName);
-            //     out.flush();
-            //     out.close();
-            // }
+            if (method.equals("POST") || method.equals("PUT")) {
+                if (fileName != null) {    
+                    OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+                    out.write(fileName);
+                    out.flush();
+                    out.close();
+                }
+            }
 
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String response = in.readLine();
 
+            System.out.println("MODEL RESPONSE: " + response);
+
             if (route.equals("whisper")) {
                 response = mealType(response);
             }
-
             in.close();
             return response;
         } catch (Exception ex) {
             ex.printStackTrace();
-            return "Error: " + ex.getMessage();
+            return "Error: " + ex.toString();
+            // return "Error: " + ex.getMessage();
         }
 
     }
@@ -100,8 +100,12 @@ public class Model {
             output.flush();
             writer.append("--" + boundary + "--").append(CRLF).flush(); // End of multipart/form-data.
 
+            System.out.println("FILE LENGTH FROM CLIENT: " + uploadFile.length());
             int responseCode = ((HttpURLConnection) connection).getResponseCode();
             System.out.println("Response code: [" + responseCode + "]");
+        } catch (IOException e) {
+            String err = e.toString();
+            System.out.println("400: Client Side error: " + err);
         }
     }
     

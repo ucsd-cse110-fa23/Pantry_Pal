@@ -124,7 +124,7 @@ class GptFooter extends HBox{
         return cancelButton;
     }
 
-    public Button getRefreshButton(){
+    public Button getRefreshButton() {
         return refreshButton;
     }
 
@@ -734,8 +734,6 @@ class IngredientsFrame extends BorderPane {
         cancelButton.setOnAction(eventHandler);
     }
 
-    //String prompt = "Make me a " + mealType + " recipe " + "using " + Whisper.transcribedString + " with the recipe name in the first line";
-
 }
 
 // ChatGPT Generated Recipe Window
@@ -751,7 +749,6 @@ class GptFrame extends BorderPane {
     
     GptFrame(RecipeList recipeList) {
         this.setPrefSize(370, 120);
-        this.setPadding(new Insets(5));
         this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
 
         header = new Header("New Recipe");
@@ -783,8 +780,26 @@ class GptFrame extends BorderPane {
 
     public void addListeners(String text, Scene homeScene) {
         saveButton.setOnAction(e -> {
+            //save logic here
             recipeList.updateRecipeIndices();
         });
+    }
+
+    // Getters for Gpt Frame
+    public Label getRecipe() {
+        return recipe;
+    }
+
+    public Button getSaveButton() {
+        return saveButton;
+    }
+
+    public Button getCancelButton() {
+        return cancelButton;
+    }
+
+    public Button getRefreshButton() {
+        return refreshButton;
     }
 
     // GptFrame setters/getters
@@ -804,23 +819,6 @@ class GptFrame extends BorderPane {
 
     public void setRefreshButtonAction(EventHandler<ActionEvent> eventHandler){
         refreshButton.setOnAction(eventHandler);
-    }
-
-    // getters for Gpt Frame
-    public Label getRecipe(){
-        return recipe;
-    }
-
-    public Button getSaveButton(){
-        return saveButton;
-    }
-
-    public Button getCancelButton(){
-        return cancelButton;
-    }
-
-    public Button getRefreshButton(){
-        return refreshButton;
     }
 
 }
