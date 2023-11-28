@@ -8,6 +8,13 @@
             "type": "java",
             "name": "MyServer",
             "request": "launch",
+            "mainClass": "app.server.MyServer",
+            "projectName": "cse-110-project-team-22"
+        },
+        {
+            "type": "java",
+            "name": "MyServer",
+            "request": "launch",
             "mainClass": "server.MyServer",
             "projectName": "cse-110-project_f7244502"
         },
