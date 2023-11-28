@@ -100,14 +100,18 @@ public class ChatGPTHandler implements HttpHandler {
         System.out.println("return" + res);
         scanner.close();
 
-        return res;
+        String[] parts = res.split("\\+", 3);
+        String titleString = parts[0];
+        String ingredientString = parts[1];
+        String instructionString = parts[2];
+
+        String everything = titleString;
+        everything += "                                  ";
+        everything += ingredientString;
+        everything += "                                  ";
+        everything += instructionString;
+
+        return everything;
     }
 }
-
-
-
-
-
-
-
 

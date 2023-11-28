@@ -68,7 +68,7 @@ public class Controller {
     //================ AppFrame Event Handler ====================================================
 
     private void handleNewRecipeButton(ActionEvent event) {
-        frameController.getFrame("meal");
+        frameController.getFrame("gpt");
     }
 
     //================ MealFrame and IngredientsFrame Event Handlers ===============================
