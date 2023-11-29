@@ -1,8 +1,0 @@
-client server arch
-blank input for whisper -> error can you repeat that?
-and label recipe breakfast lunch or dinner
-src main java -> everything is in the files here
-test model 
-lib goes into 
-implment filetree(dir: 'lib' include *.jar)
-dont test view and only things that it calls
