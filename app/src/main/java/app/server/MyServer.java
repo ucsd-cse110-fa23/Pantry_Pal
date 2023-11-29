@@ -8,7 +8,7 @@ import java.util.concurrent.*;
 public class MyServer {
 
     // initialize server port and hostname
-    private static final int SERVER_PORT = 8101;
+    private static final int SERVER_PORT = 8100;
     private static final String SERVER_HOSTNAME = "localhost";
 
     public static void main(String[] args) throws IOException {
