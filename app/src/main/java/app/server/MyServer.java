@@ -23,10 +23,12 @@ public class MyServer {
         );
 
         // endpoints
-        server.createContext("/",  new RequestHandler());
+        server.createContext("/", new RequestHandler());
         server.createContext("/recording", new AudioHandler());
         server.createContext("/whisper", new WhisperHandler());
         server.createContext("/chatgpt", new ChatGPTHandler());
+        server.createContext("/login", new LoginHandler());
+        server.createContext("/signup", new SignupHandler());
 
         server.setExecutor(threadPoolExecutor);
         server.start();
