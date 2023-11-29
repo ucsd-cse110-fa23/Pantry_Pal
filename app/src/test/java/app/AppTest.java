@@ -20,7 +20,7 @@ class AppTest {
     }
 
     @Test
-    void gptRefreshTest(){
+    void gptRefreshTest() {
         String generatedText = "Bacon Egg Sandwhich, bacon, eggs, and cheese, step 1:... Step 2:...";
         String mealType = "breakfast";
         String ingredients = "bacon, eggs, sausage";
