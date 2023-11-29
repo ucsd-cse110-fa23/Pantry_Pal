@@ -1,8 +1,6 @@
 {
-    "java.project.sourcePaths": ["src"],
-    "java.project.outputPath": "bin",
+    "java.configuration.updateBuildConfiguration": "automatic",
     "java.project.referencedLibraries": [
         "lib/**/*.jar"
-    ],
-    "java.configuration.updateBuildConfiguration": "automatic"
+    ]
 }
