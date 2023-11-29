@@ -27,6 +27,8 @@ public class MyServer {
         server.createContext("/recording", new AudioHandler());
         server.createContext("/whisper", new WhisperHandler());
         server.createContext("/chatgpt", new ChatGPTHandler());
+        server.createContext("/login", new LoginHandler());
+        server.createContext("/signup", new SignupHandler());
 
         server.setExecutor(threadPoolExecutor);
         server.start();
