@@ -72,6 +72,8 @@ public class SignupHandler implements HttpHandler {
         System.out.println(username + "\n" + password);
         if (loginData != null && loginData.getString("username").equals(username)) { // Check database for username
             response =  "NAME TAKEN";
+            scanner.close();
+            return response;
         }
         loginData = new Document("_id", new ObjectId());
         loginData.append("username", username);

@@ -6,27 +6,84 @@ package app;
 import org.junit.jupiter.api.Test;
 
 import app.client.App;
+import app.client.View;
 import app.client.Controller;
 import app.client.Model;
 import app.server.ChatGPTHandler;
+import app.server.MyServer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+
 class AppTest {
-    @Test void appHasAGreeting() {
-        App classUnderTest = new App();
-        assertEquals(3, 3);
-        // assertNotNull(classUnderTest, "app should have a greeting");
+    // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
+    @Test 
+    void gptSameIngredientsTest() throws IOException {
+        String mealType = "dinner";
+        String ingredients = "steak, potatoes, butter";
+        Model model = new Model();
+        String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
+        String response = model.performRequest("POST", prompt, null, "chatgpt");
+
+        // API call should have successfully been made and returned thorugh model with the mealType and ingredients
+        assertFalse(response.equals(""));
     }
 
     @Test
-    void gptRefreshTest() {
-        String generatedText = "Bacon Egg Sandwhich, bacon, eggs, and cheese, step 1:... Step 2:...";
+    void gptBddRefreshTest() throws IOException {
+        // BDD TEST
+
+        // Scenario: I don't like the recipe generated
+        String generatedText = "Scrambled eggs with bacon and toast, Step 1:... Step 2:...";
+        // Given: I have chosen breakfast and listed bacon, eggs, and sausage
+        // When: I am given a recipe for scrambled eggs with bacon and toast
+        // And: I do not want this recipe
         String mealType = "breakfast";
         String ingredients = "bacon, eggs, sausage";
+        // Then: when I press the refresh button it will generate another recipe like a bacon egg sandwich
         Model refreshTest = new Model();
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
         String response = refreshTest.performRequest("POST", prompt, null, "chatgpt");
         assertNotEquals(response, generatedText);
+    }
+
+    // Tests signing up on a name thats taken already 
+    @Test
+    void signupTakenTest() throws IOException { 
+        MyServer.main(null);
+        Model loginTest = new Model();
+        String response = loginTest.performRequest("POST", "Bob\npassword12", null, "signup");
+        assertEquals("NAME TAKEN", response);
+        assertNotEquals("SUCCESS", response);
+    }
+
+    // Tests a valid login
+    @Test
+    void loginValidTest() throws IOException { 
+        //MyServer.main(null);
+        Model loginTest = new Model();
+        String response = loginTest.performRequest("POST", "Bob\npassword12", null, "login");
+        assertEquals("SUCCESS", response);
+    }
+
+    // Tests a invalid login password
+    @Test
+    void loginInvalidTest() throws IOException { 
+        //MyServer.main(null);
+        Model loginTest = new Model();
+        String response = loginTest.performRequest("POST", "Bob\nwrongPassword", null, "login");
+        assertEquals("PASSWORD FAILED", response);
+        assertNotEquals("SUCCESS", response);
+    }
+
+    // Tests a username that doesn't exist for login
+    @Test
+    void loginDoesntExistTest() throws IOException { 
+        //MyServer.main(null);
+        Model loginTest = new Model();
+        String response = loginTest.performRequest("POST", "fakeName\npassword12", null, "login");
+        assertEquals("NAME FAILED", response);
+        assertNotEquals("SUCCESS", response);
     }
 }
