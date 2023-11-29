@@ -11,9 +11,26 @@ import java.net.URI;
 import java.net.URLConnection;
 import java.nio.file.Files;
 
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.TargetDataLine;
+
 import java.net.URL;
 
 public class Model {
+    final private int RECORD_TYPE = 1;
+    private File audioFile;
+    private AudioFormat audioFormat;
+    private TargetDataLine targetDataLine;
+
+    Model() {
+        audioFile = new File("recording.wav");
+        audioFormat = getAudioFormat();
+    }
+
     /**
      * 
      * @param method 
@@ -21,9 +38,9 @@ public class Model {
      * @param function csv, chatgpt, whisper
      * @return
      */
-    public String performRequest(String method, String fileName, String query, String route) {
+    public String performRequest(String method, String data, String query, String route) {
 
-        // Implement your HTTP request logic here and return the response
+        // Implement HTTP request logic here and return the response
         try {
             String urlString = "http://localhost:8100/" + route;
             if (query != null) {
@@ -34,24 +51,25 @@ public class Model {
                 sendPOSTWhisper();
             }
 
+            // Establish HTTP connection
             URL url = new URI(urlString).toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method);
             conn.setDoOutput(true);
 
+            // Write any data arguments to OS if they are passed in
             if (method.equals("POST") || method.equals("PUT")) {
-                if (fileName != null) {    
+                if (data != null) {    
                     OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-                    out.write(fileName);
+                    out.write(data);
                     out.flush();
                     out.close();
                 }
             }
 
+            // Read OS once handlers have written response
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String response = in.readLine();
-
-            System.out.println("MODEL RESPONSE: " + response);
 
             if (route.equals("whisper")) {
                 response = mealType(response);
@@ -60,12 +78,12 @@ public class Model {
             return response;
         } catch (Exception ex) {
             ex.printStackTrace();
-            return "Error: " + ex.toString();
-            // return "Error: " + ex.getMessage();
+            return "Error: " + ex.getMessage();
         }
 
     }
 
+    // Given transcribed Whisper string, filter for meal type
     private String mealType(String res) {
         String mealType = res.toLowerCase();
 
@@ -75,6 +93,7 @@ public class Model {
         else { return null; }
     }
 
+    // Client-side whisper file transfer
     public static void sendPOSTWhisper() throws IOException {
         final String POST_URL = "http://localhost:8100/whisper";
         final File uploadFile = new File("recording.wav");
@@ -100,12 +119,90 @@ public class Model {
             output.flush();
             writer.append("--" + boundary + "--").append(CRLF).flush(); // End of multipart/form-data.
 
-            System.out.println("FILE LENGTH FROM CLIENT: " + uploadFile.length());
             int responseCode = ((HttpURLConnection) connection).getResponseCode();
             System.out.println("Response code: [" + responseCode + "]");
         } catch (IOException e) {
-            String err = e.toString();
-            System.out.println("400: Client Side error: " + err);
+            e.printStackTrace();
+        }
+    }
+
+    private AudioFormat getAudioFormat() {
+        // the number of samples of audio per second.
+        // 44100 represents the typical sample rate for CD-quality audio.
+        float sampleRate = 44100;
+
+        // the number of bits in each sample of a sound that has been digitized.
+        int sampleSizeInBits = 16;
+
+        // the number of audio channels in this format (1 for mono, 2 for stereo).
+        // CHANGE TO 1 IF U ON MAC AND 2 ON WINDOWS <-----------------------------------
+        int channels = RECORD_TYPE;
+
+        // whether the data is signed or unsigned.
+        boolean signed = true;
+
+        // whether the audio data is stored in big-endian or little-endian order.
+        boolean bigEndian = false;
+
+        return new AudioFormat(
+                sampleRate,
+                sampleSizeInBits,
+                channels,
+                signed,
+                bigEndian);
+    }
+
+    public void startRecording() {
+        Thread t = new Thread(
+            new Runnable() {
+                @Override
+                public void run() {
+                    try {   
+                        // the format of the TargetDataLine
+                        DataLine.Info dataLineInfo = new DataLine.Info(
+                                TargetDataLine.class,
+                                audioFormat);
+                        // the TargetDataLine used to capture audio data from the microphone
+                        targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+                        targetDataLine.open(audioFormat);
+                        targetDataLine.start();
+
+                        // the AudioInputStream that will be used to write the audio data to a file
+                        AudioInputStream audioInputStream = new AudioInputStream(
+                                targetDataLine);
+
+                        // the file that will contain the audio data
+                        AudioSystem.write(
+                                audioInputStream,
+                                AudioFileFormat.Type.WAVE,
+                                audioFile);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        );
+        t.start();
+    }
+
+    public void stopRecording() {notify();      
+        targetDataLine.stop();
+        targetDataLine.close();
+    }
+
+    public void saveRecipe(String recipeText) {
+        // String recipeName = recipeText.split("\n")[0];
+        // recipeList.getChildren().add(newRecipe);
+        // recipeList.updateRecipeIndices();
+    }
+
+    public void updateRecipeIndices(RecipeList rl) {
+        int index = 1;
+        for (int i = 0; i < rl.getChildren().size(); i++) {
+            if (rl.getChildren().get(i) instanceof Recipe) {
+                ((Recipe) rl.getChildren().get(i)).setRecipeIndex(index);
+                index++;
+            }
         }
     }
     

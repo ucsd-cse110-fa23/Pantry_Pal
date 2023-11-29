@@ -33,25 +33,23 @@ public class WhisperHandler implements HttpHandler {
         try {
             if (method.equals("POST")) {
                 System.out.println("request is being RECEIVED");
-              response = handlePost(httpExchange);
+                response = handlePost(httpExchange);
             } else {
               throw new Exception("Not Valid Request Method");
             }
-            System.out.println("HANDLE WHISPER RESPONSE: " + response);
+    
             // Sending back response to the client
             httpExchange.sendResponseHeaders(200, response.length());
             OutputStream outStream = httpExchange.getResponseBody();
             outStream.write(response.getBytes());
             outStream.close();
+
         } catch (Exception e) {
             System.out.println("An erroneous request");
-            response = e.toString();
-            System.out.println("ERROR: " + response);
             e.printStackTrace();
         }
     }
 
-    // need to feed this method the entire prompt before calling
     private String handlePost(HttpExchange httpExchange) throws IOException, InterruptedException, URISyntaxException{
         String generatedText = "post request at whisper";
 
@@ -64,7 +62,9 @@ public class WhisperHandler implements HttpHandler {
         
         InputStream input = httpExchange.getRequestBody();
         String nextLine = "";
-        System.out.println("starting bytes: " + input.available());
+        System.out.println("STARTING BYTES: " + input.available());
+
+        // Parse header until we find Content-Length then update fileSize with data received
         do {
             nextLine = readLine(input, CRLF);
             if (nextLine.startsWith("Content-Length:")) {
@@ -75,8 +75,10 @@ public class WhisperHandler implements HttpHandler {
                         )
                     );
             }
-            System.out.println("--NextLine: " + nextLine);
+            System.out.println("--NextLine--: " + nextLine);
+        // Only read until empty line, the end of the header
         } while (!nextLine.equals(""));
+        
         byte[] midFileByteArray = new byte[fileSize];
         int readOffset = 0;
         System.out.println("AVAIL BYTES: " + input.available());
@@ -93,7 +95,6 @@ public class WhisperHandler implements HttpHandler {
         }
 
         generatedText = transcribeAudio(f);
-        System.out.println("REACHED" + generatedText);
 
         return generatedText;
     }

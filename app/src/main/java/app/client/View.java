@@ -176,10 +176,8 @@ class Recipe extends VBox {
     private Label index;
     private TextField recipe;
     private Button viewButton;
-    private RecipeList recipeList;
     
-    Recipe(RecipeList rl) {
-        this.recipeList = rl;
+    Recipe() {
         this.setPrefSize(500, 20); // sets size of recipe
         this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;"); // sets background color of recipe
         
@@ -205,8 +203,8 @@ class Recipe extends VBox {
     }
 
     public void setRecipeIndex(int num) {
-        this.index.setText(num + ""); // num to String
-        this.recipe.setPromptText("Recipe ");
+        index.setText(num + ""); // num to String
+        recipe.setPromptText("Recipe ");
     }
 
     public TextField getRecipe() {
@@ -218,7 +216,7 @@ class Recipe extends VBox {
     }
 
     public int getIndex() {
-        return Integer.valueOf(this.index.getText().toString());
+        return Integer.valueOf(index.getText().toString());
     }
     
     // View button opens full description corresponding to that recipe
@@ -237,38 +235,6 @@ class RecipeList extends VBox {
         this.setStyle("-fx-background-color: #F0F8FF;");
     }
 
-    public void updateRecipeIndices() {
-        int index = 1;
-        for (int i = 0; i < this.getChildren().size(); i++) {
-            if (this.getChildren().get(i) instanceof Recipe) {
-                ((Recipe) this.getChildren().get(i)).setRecipeIndex(index);
-                try {
-                    BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
-                    String line = in.readLine();
-                    String combine = "";
-                    while (line != null) {
-                        if (combine.equals("")) {
-                            combine = combine + line;
-                        } else {
-                        combine = combine + "\n" + line;
-                        }
-                        line = in.readLine();
-                    }
-                        
-                    String[] recipes = combine.split("\\$");
-                    String[] recipeLines = recipes[index-1].split("\n");
-                    ((Recipe) this.getChildren().get(i)).getRecipe().setText(recipeLines[0]);
-
-                    in.close();
-                }
-                catch(Exception e){
-                    System.out.println("LOAD FAIL");
-                }
-                index++;
-            }
-        }
-    }
-
     public void loadOnStart() {
          try {
             // Read and temporarily story old recipes 
@@ -285,9 +251,9 @@ class RecipeList extends VBox {
             }
             String[] s = combine.split("\\$");
             for (int i = 0; i < s.length; i++) {
-                Recipe startload = new Recipe(this);
+                Recipe startload = new Recipe();
                 this.getChildren().add(startload);
-                updateRecipeIndices();
+                // updateRecipeIndices();
             }
             in.close();
          }
@@ -398,7 +364,7 @@ class AppFrame extends BorderPane {
         // Create a RecipeList Object to hold the recipes
         recipeList = new RecipeList();
         recipeList.loadOnStart();
-        recipeList.updateRecipeIndices();
+        // recipeList.updateRecipeIndices();
         
         // Add a Scroller to the recipeList
         ScrollPane scroll = new ScrollPane();
@@ -743,11 +709,11 @@ class GptFrame extends BorderPane {
     private GptFooter footer;
     private Button saveButton, cancelButton, refreshButton;
     private String generatedText = "Bacon Egg Sandwhich, bacon, eggs, and cheese, step 1:... Step 2:...";
-    private RecipeList recipeList;
-    Label recipe = new Label();
+    private Recipe newRecipe;
+    private Label recipeText = new Label();
     //String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 75px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     
-    GptFrame(RecipeList recipeList) {
+    GptFrame() {
         this.setPrefSize(370, 120);
         this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
 
@@ -757,13 +723,13 @@ class GptFrame extends BorderPane {
         // String[] getTitle = generatedText.split("\n");
         // String title = getTitle[2];
         
-        recipe.setText(generatedText);
-        recipe.setWrapText(true);
-        recipe.setMaxWidth(350);
-        recipe.setPadding(new Insets(5));
+        recipeText.setText(generatedText);
+        recipeText.setWrapText(true);
+        recipeText.setMaxWidth(350);
+        recipeText.setPadding(new Insets(5));
 
         ScrollPane scroll = new ScrollPane();
-        scroll.setContent(recipe);
+        scroll.setContent(recipeText);
         scroll.setFitToHeight(true);
         scroll.setFitToWidth(true);
         
@@ -775,19 +741,10 @@ class GptFrame extends BorderPane {
         cancelButton = footer.getCancelButton();
         refreshButton = footer.getRefreshButton();
 
-        this.recipeList = recipeList;
     }
 
-    public void addListeners(String text, Scene homeScene) {
-        saveButton.setOnAction(e -> {
-            //save logic here
-            recipeList.updateRecipeIndices();
-        });
-    }
-
-    // Getters for Gpt Frame
-    public Label getRecipe() {
-        return recipe;
+    public Label getRecipeText() {
+        return recipeText;
     }
 
     public Button getSaveButton() {
@@ -802,11 +759,9 @@ class GptFrame extends BorderPane {
         return refreshButton;
     }
 
-    // GptFrame setters/getters
-
-    // public String getDefaultStyle() {
-    //     return defaultButtonStyle;
-    // }
+    public Recipe getNewRecipe() {
+        return newRecipe;
+    }
 
     // possible need for this method
     public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler){
@@ -838,7 +793,7 @@ public class View {
         home = new AppFrame();
         meal = new MealFrame();
         ingredients = new IngredientsFrame();
-        gpt = new GptFrame(home.getRecipeList());
+        gpt = new GptFrame();
         recipe = new RecipeFrame();
     }
 

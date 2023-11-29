@@ -58,7 +58,11 @@ public class Controller {
         view.getGptFrame().setCancelButtonAction(this::handleGptCancelButton);
         view.getGptFrame().setRefreshButtonAction(this::handleGptRefreshButton);
 
-        // view.getRecipeFrame().set
+        // RecipeFrame Event Listeners
+        view.getRecipeFrame().setSaveButtonAction(null);
+        view.getRecipeFrame().setDeleteButtonAction(null);
+        view.getRecipeFrame().setCancelButtonAction(null);
+
     }
 
     public FrameController getFrameController() {
@@ -74,7 +78,7 @@ public class Controller {
     //================ MealFrame and IngredientsFrame Event Handlers ===============================
 
     private void handleMealStartButton(ActionEvent event) {
-        model.performRequest("POST", null, null, "recording");
+        model.startRecording();
 
         Button startButton = view.getMealFrame().getStartButton();
         Button stopButton = view.getMealFrame().getStopButton();
@@ -88,8 +92,9 @@ public class Controller {
         Button stopButton = view.getMealFrame().getStopButton();
         startButton.setStyle(view.getMealFrame().getDefaultStyle());
         stopButton.setStyle(view.getMealFrame().getClickedStyle());
+        model.stopRecording();
 
-        String response = model.performRequest("GET", null, "meal", "recording");
+        // String response = model.performRequest("GET", null, "meal", "recording");
 
         // System.out.println("TRANSCRIPTION: " + mealType);
         mealType = meal();
@@ -98,7 +103,7 @@ public class Controller {
         if (mealType.equals("breakfast") || mealType.equals("lunch") || mealType.equals("dinner")) {
             // Update prompt for IngredientsFrame to include meal type then change the frame
             view.getIngredientsFrame().getPrompt().getText().setText("You have selected " + mealType + "\n List your ingredients:");
-            frameController.getFrame(response);
+            frameController.getFrame("ingredients");
         } else {
             // Keep frame if meal type not detected then prompt to try again
             view.getMealFrame().getPrompt().getText().setText("Invalid input. Please select either \n Breakfast, Lunch, or Dinner.");
@@ -153,7 +158,13 @@ public class Controller {
     //=============== GptFrame Event Handlers =============================
 
     private void handleGptSaveButton(ActionEvent event) {
-
+        String recipeText = view.getGptFrame().getRecipeText().getText();
+        String recipeName = recipeText.split("\n")[0];
+        Recipe newRecipe = new Recipe();
+        newRecipe.getRecipe().setText(recipeName);
+        
+        view.getAppFrame().getRecipeList().getChildren().add(newRecipe);
+        model.updateRecipeIndices(view.getAppFrame().getRecipeList());
     }
 
     // takes the same input for mealtype and ingredients,
@@ -166,7 +177,7 @@ public class Controller {
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
         String response = model.performRequest("POST", prompt, null, "chatgpt");
         System.out.println("CONTROLLER RESPONSE: " + response);
-        view.getGptFrame().getRecipe().setText(response);
+        view.getGptFrame().getRecipeText().setText(response);
     }
 
     // Cancels the request for ChatGPT, goes back to home screen to restart
