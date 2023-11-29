@@ -710,7 +710,7 @@ class GptFrame extends BorderPane {
     private Button saveButton, cancelButton, refreshButton;
     private String generatedText = "Bacon Egg Sandwhich, bacon, eggs, and cheese, step 1:... Step 2:...";
     private Recipe newRecipe;
-    private Label recipeText = new Label();
+    private TextArea recipeText = new TextArea();
     //String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 75px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     
     GptFrame() {
@@ -743,7 +743,7 @@ class GptFrame extends BorderPane {
 
     }
 
-    public Label getRecipeText() {
+    public TextArea getRecipeText() {
         return recipeText;
     }
 

@@ -39,10 +39,24 @@ public class ChatGPTHandler implements HttpHandler {
               throw new Exception("Not Valid Request Method");
             }
             //Sending back response to the client
-            httpExchange.sendResponseHeaders(200, response.length());
-            OutputStream outStream = httpExchange.getResponseBody();
-            outStream.write(response.getBytes());
-            outStream.close();
+            //httpExchange.sendResponseHeaders(200, response.length());
+
+            try {
+                byte[] bs = response.getBytes("UTF-8");
+                httpExchange.sendResponseHeaders(200, bs.length);
+                OutputStream os = httpExchange.getResponseBody();
+                os.write(bs);
+                os.close();
+            } catch (IOException ex) {
+                System.out.println(ex.toString());
+            }
+
+
+
+
+            // OutputStream outStream = httpExchange.getResponseBody();
+            // outStream.write(response.getBytes());
+            // outStream.close();
         } catch (Exception e) {
             System.out.println("An erroneous request");
             response = e.toString();
@@ -100,14 +114,18 @@ public class ChatGPTHandler implements HttpHandler {
         System.out.println("return" + res);
         scanner.close();
 
+        // String[] parts = res.split("\\+", 3);
+        // String titleString = parts[0];
+        // String ingredientString = parts[1];
+        // String instructionString = parts[2];
+
+        // String everything = titleString;
+        // everything += "                                  ";
+        // everything += ingredientString;
+        // everything += "                                  ";
+        // everything += instructionString;
+
         return res;
     }
 }
-
-
-
-
-
-
-
 

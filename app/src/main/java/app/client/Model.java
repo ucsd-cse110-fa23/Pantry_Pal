@@ -26,7 +26,7 @@ public class Model {
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
 
-    Model() {
+    public Model() {
         audioFile = new File("recording.wav");
         audioFormat = getAudioFormat();
     }
