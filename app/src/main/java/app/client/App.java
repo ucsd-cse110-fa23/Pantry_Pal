@@ -6,7 +6,7 @@ import javafx.stage.Stage;
     
 public class App extends Application {
 
-    Scene loginScene, homeScene, mealScene, ingredScene, gptScene, recipeScene;
+    Scene sortScene, loginScene, homeScene, mealScene, ingredScene, gptScene, recipeScene;
     
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -20,6 +20,7 @@ public class App extends Application {
         Controller controller = new Controller(view, model, primaryStage);
 
         // Create new Scenes for each Page
+        sortScene = new Scene(view.getSortFrame(), 400, 500);
         loginScene = new Scene(view.getLoginFrame(), 400, 500);
         homeScene = new Scene(view.getHomeFrame(), 400, 500);
         mealScene = new Scene(view.getMealFrame(), 400, 500);
@@ -28,6 +29,7 @@ public class App extends Application {
         recipeScene = new Scene(view.getRecipeFrame(), 400, 500);
 
         // Add each scene to the frameController to switch scenes on button click
+        controller.getFrameController().addFrame("sort", sortScene);
         controller.getFrameController().addFrame("login", loginScene);
         controller.getFrameController().addFrame("home", homeScene);
         controller.getFrameController().addFrame("meal", mealScene);

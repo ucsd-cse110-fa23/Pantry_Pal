@@ -181,9 +181,8 @@ class RecipeFooter extends HBox {
 class Sort extends VBox{
 
     private Label text;
-    private Button alphaButton, chronoButton, rchronoButton;
+    private Button alphaButton, ralphaButton, chronoButton, rchronoButton;
     private HBox buttonContainer = new HBox(5);
-    private Label recordingLabel;
     
     // Set a default style for buttons and fields - background color, font size, italics
     String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
@@ -197,9 +196,12 @@ class Sort extends VBox{
         this.text.setText(text);
         this.text.setStyle("-fx-font: 13 arial;");
 
-        // Add Start and Stop Buttons
+        // Add Buttons
         alphaButton = new Button("Sort Alphabetically");
         alphaButton.setStyle(defaultButtonStyle);
+
+        ralphaButton = new Button("Sort Reverse Alphabetically");
+        ralphaButton.setStyle(defaultButtonStyle);
 
         chronoButton = new Button("Sort Chronologically");
         chronoButton.setStyle(defaultButtonStyle);
@@ -210,13 +212,17 @@ class Sort extends VBox{
         HBox.setMargin(alphaButton, new Insets(5));
 
         buttonContainer.setAlignment(Pos.CENTER);
-        buttonContainer.getChildren().addAll(alphaButton, chronoButton, rchronoButton);
+        buttonContainer.getChildren().addAll(alphaButton, ralphaButton, chronoButton, rchronoButton);
         this.getChildren().addAll(this.text, buttonContainer);
         this.setAlignment(Pos.CENTER);
     }
 
     public Button getAlphaButton() {
         return alphaButton;
+    }
+
+    public Button getRAlphaButton() {
+        return ralphaButton;
     }
 
     public Button getChronoButton() {
@@ -442,7 +448,7 @@ class LoginContent extends VBox {
 // Sort Recipes Window
 class SortFrame extends BorderPane {
 
-    private Button alphaButton, chronoButton, rchronoButton, cancelButton;
+    private Button alphaButton, ralphaButton, chronoButton, rchronoButton, cancelButton;
     private Header header;
     private RecordingFooter footer;
     private Sort sort;
@@ -455,13 +461,14 @@ class SortFrame extends BorderPane {
         
         // Set properties for the page
         this.setPrefSize(370, 120);
-        sort = new Sort("How would you like to sort your recipe: \n Alphabetically, Chronologically, or Reverse Chronologically?");
+        sort = new Sort("How would you like to sort your recipe: \n Alphabetically, Reverse Alphabetically, Chronologically, or Reverse Chronologically?");
         
         this.setTop(header);
         this.setCenter(sort);
         this.setBottom(footer);
 
         alphaButton = sort.getAlphaButton();
+        ralphaButton = sort.getRAlphaButton();
         chronoButton = sort.getChronoButton();
         rchronoButton = sort.getRChronoButton();
         cancelButton = footer.getCancelButton();
@@ -469,6 +476,10 @@ class SortFrame extends BorderPane {
 
     public Button getAlphaButton() {
         return alphaButton;
+    }
+
+    public Button getRAlphaButton() {
+        return ralphaButton;
     }
 
     public Button getChronoButton() {
@@ -495,6 +506,10 @@ class SortFrame extends BorderPane {
     // Writes audio into "recording.wav"
     public void setAlphaButtonAction(EventHandler<ActionEvent> eventHandler) {
         alphaButton.setOnAction(eventHandler);
+    }
+
+    public void setRAlphaButtonAction(EventHandler<ActionEvent> eventHandler) {
+        ralphaButton.setOnAction(eventHandler);
     }
 
     // Needs to detect either "Breakfast," "Lunch," or "Dinner" to move to next Frame
