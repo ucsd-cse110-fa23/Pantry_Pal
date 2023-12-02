@@ -5,10 +5,6 @@ import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 // Handles switching Scenes upon clicking buttons
@@ -108,10 +104,13 @@ public class Controller {
 
         model.stopRecording();
 
-        mealType = mealType();
+        mealType = model.performRequest("POST", null, null, "whisper");
+        mealType = model.mealType(mealType);
+        System.out.println("MEALTYPE CONTROLLER: " + mealType);
 
-        // Change scenes after getting response
-        if (mealType.equals("breakfast") || mealType.equals("lunch") || mealType.equals("dinner")) {
+        if (mealType.equals("")) {
+            view.getMealFrame().getPrompt().getText().setText("Invalid input. Please select either \n Breakfast, Lunch, or Dinner.");
+        } else if (mealType.equals("breakfast") || mealType.equals("lunch") || mealType.equals("dinner")) {
             // Update prompt for IngredientsFrame to include meal type then change the frame
             view.getIngredientsFrame().getPrompt().getText().setText("You have selected " + mealType + "\n List your ingredients:");
             frameController.getFrame("ingredients");
@@ -120,14 +119,8 @@ public class Controller {
             view.getMealFrame().getPrompt().getText().setText("What meal type would you like: \n Breakfast, Lunch, or Dinner?");
             startButton.setStyle(view.getMealFrame().getDefaultStyle());
             stopButton.setStyle(view.getMealFrame().getDefaultStyle());
-        } else {
-            view.getMealFrame().getPrompt().getText().setText("Invalid input. Please select either \n Breakfast, Lunch, or Dinner.");
         }
 
-    }
-
-    private String mealType() {
-        return model.performRequest("POST", null, null, "whisper");
     }
 
     private void handleMealCancelButton(ActionEvent event) {
@@ -188,7 +181,6 @@ public class Controller {
         frameController.getFrame("home");
     }
     
-    
     //=============== GptFrame Event Handlers =============================
 
     private void handleGptSaveButton(ActionEvent event) {
@@ -233,13 +225,15 @@ public class Controller {
 
     private void handleRecipeSaveButton(ActionEvent event) {
         String updatedRecipe = view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
-
-        //Make post request and save updatedRecipe as second param
+        //Make PUT request and save updatedRecipe as second param
+        String response = model.performRequest("PUT", updatedRecipe, null, "");
+        System.out.println("[PUT RESPONSE] " + response);
     }
 
     private void handleRecipeDeleteButton(ActionEvent event) {
         int delim = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().indexOf("\n");
         String recipeTitle = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().substring(0, delim);
-        // model.performRequest("DELETE", null, recipeTitle, "");
+        String response = model.performRequest("DELETE", null, recipeTitle, "");
+        System.out.println("[DELETE RESPONSE] " + response);
     }
 }

@@ -77,9 +77,6 @@ public class Model {
             String response = in.readLine();
             System.out.println("[[MODEL RESPONSE]]: " + response);
 
-            if (route.equals("whisper")) {
-                response = mealType(response);
-            }
             in.close();
             return response;
         } catch (Exception ex) {
@@ -90,13 +87,13 @@ public class Model {
     }
 
     // Given transcribed Whisper string, filter for meal type
-    private String mealType(String res) {
+    public String mealType(String res) {
         String mealType = res.toLowerCase();
 
         if (mealType.contains("breakfast")) { return "breakfast"; }
         else if (mealType.contains("lunch")) { return "lunch"; }
         else if (mealType.contains("dinner")) { return "dinner"; }
-        else { return null; }
+        else { return ""; }
     }
 
     // Client-side whisper file transfer
