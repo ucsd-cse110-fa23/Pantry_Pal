@@ -52,8 +52,6 @@ public class ChatGPTHandler implements HttpHandler {
             }
 
 
-
-
             // OutputStream outStream = httpExchange.getResponseBody();
             // outStream.write(response.getBytes());
             // outStream.close();
@@ -115,17 +113,6 @@ public class ChatGPTHandler implements HttpHandler {
         System.out.println("generated text:" + generatedText);
         System.out.println("return" + res);
         scanner.close();
-
-        // String[] parts = res.split("\\+", 3);
-        // String titleString = parts[0];
-        // String ingredientString = parts[1];
-        // String instructionString = parts[2];
-
-        // String everything = titleString;
-        // everything += "                                  ";
-        // everything += ingredientString;
-        // everything += "                                  ";
-        // everything += instructionString;
 
         return res;
     }
