@@ -29,6 +29,8 @@ import static com.mongodb.client.model.Updates.*;
 public class RequestHandler implements HttpHandler {
   private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
   private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
+  private String URI = MongoURI;
+
 
   // general method and calls certain methods to handle http request
   public void handle(HttpExchange httpExchange) throws IOException {
@@ -78,13 +80,14 @@ public class RequestHandler implements HttpHandler {
       value = URLDecoder.decode(value, "UTF-8");
       System.out.println("DECODED VALUE: " + value);
       
-      try (MongoClient mongoClient = MongoClients.create(peterURI)) {
+      try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
 
         Document recipe = collection.find(new Document("title", value)).first();
         if (recipe != null) {
-          response = recipe.getString("ingredients");
+          response = recipe.getString("title");
+          response += "+" + recipe.getString("ingredients");
           response += "+" + recipe.getString("instructions");
           System.out.println(response);
         } else {
@@ -135,7 +138,7 @@ public class RequestHandler implements HttpHandler {
 
     String response = "valid post";
 
-    try (MongoClient mongoClient = MongoClients.create(peterURI)) {
+    try (MongoClient mongoClient = MongoClients.create(URI)) {
       MongoDatabase database = mongoClient.getDatabase("PantryPal");
       MongoCollection<Document> collection = database.getCollection("recipes");
       
@@ -181,7 +184,7 @@ public class RequestHandler implements HttpHandler {
     String instructions = body.substring(sDelim+1);
 
     String response = "Not valid put";
-    try (MongoClient mongoClient = MongoClients.create(MongoURI)) {
+    try (MongoClient mongoClient = MongoClients.create(URI)) {
       MongoDatabase database = mongoClient.getDatabase("PantryPal");
       MongoCollection<Document> collection = database.getCollection("recipes");
       
@@ -210,7 +213,7 @@ public class RequestHandler implements HttpHandler {
       String value = query.substring(query.indexOf("=") + 1);
       value = URLDecoder.decode(value, "UTF-8");
 
-      try (MongoClient mongoClient = MongoClients.create(MongoURI)) {
+      try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
 

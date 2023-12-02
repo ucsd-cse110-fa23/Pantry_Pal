@@ -18,6 +18,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.TargetDataLine;
 
+
+import java.net.URLEncoder;
 import java.net.URL;
 
 public class Model {
@@ -43,12 +45,13 @@ public class Model {
         // Implement HTTP request logic here and return the response
         try {
             String urlString = "http://localhost:8100/" + route;
+
             if (query != null) {
+                query = URLEncoder.encode(query, "UTF-8");
                 urlString += "?=" + query;
             }
 
             // Establish HTTP connection
-
             URL url = new URI(urlString).toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
