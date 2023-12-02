@@ -43,6 +43,7 @@ class Header extends HBox {
 class Footer extends HBox {
 
     private Button newRecipeButton;
+    private Button sortButton;
 
     Footer() {
         this.setPrefSize(500, 60);
@@ -54,13 +55,20 @@ class Footer extends HBox {
 
         newRecipeButton = new Button("New Recipe"); // text displayed on add button
         newRecipeButton.setStyle(defaultButtonStyle); // styling the button
+
+        sortButton = new Button("Sort Recipes"); // text displayed on add button
+        sortButton.setStyle(defaultButtonStyle); // styling the button
         
-        this.getChildren().add(newRecipeButton); // adding button to footer
+        this.getChildren().addAll(newRecipeButton, sortButton); // adding button to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
     }
 
     public Button getNewRecipeButton() {
         return newRecipeButton;
+    }
+
+    public Button getSortButton() {
+        return sortButton;
     }
 
 }
@@ -169,6 +177,61 @@ class RecipeFooter extends HBox {
 }
 
 //===================== CONTENT ===================================================
+
+class Sort extends VBox{
+
+    private Label text;
+    private Button alphaButton, chronoButton, rchronoButton;
+    private HBox buttonContainer = new HBox(5);
+    private Label recordingLabel;
+    
+    // Set a default style for buttons and fields - background color, font size, italics
+    String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
+
+    // Set a default style for buttons and fields - background color, font size, italics
+    String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
+
+    Sort(String text) {
+        this.setSpacing(50);
+        this.text = new Label();
+        this.text.setText(text);
+        this.text.setStyle("-fx-font: 13 arial;");
+
+        // Add Start and Stop Buttons
+        alphaButton = new Button("Sort Alphabetically");
+        alphaButton.setStyle(defaultButtonStyle);
+
+        chronoButton = new Button("Sort Chronologically");
+        chronoButton.setStyle(defaultButtonStyle);
+
+        rchronoButton = new Button("Sort Reverse Chronologically");
+        rchronoButton.setStyle(defaultButtonStyle);
+        
+        HBox.setMargin(alphaButton, new Insets(5));
+
+        buttonContainer.setAlignment(Pos.CENTER);
+        buttonContainer.getChildren().addAll(alphaButton, chronoButton, rchronoButton);
+        this.getChildren().addAll(this.text, buttonContainer);
+        this.setAlignment(Pos.CENTER);
+    }
+
+    public Button getAlphaButton() {
+        return alphaButton;
+    }
+
+    public Button getChronoButton() {
+        return chronoButton;
+    }
+
+    public Button getRChronoButton() {
+        return rchronoButton;
+    }
+
+    public Label getText() {
+        return text;
+    }
+
+}
 
 // Recipe Title Displayed on Home Page
 class Recipe extends VBox {
@@ -376,6 +439,79 @@ class LoginContent extends VBox {
 
 //=============================== FRAMES =========================================
 
+// Sort Recipes Window
+class SortFrame extends BorderPane {
+
+    private Button alphaButton, chronoButton, rchronoButton, cancelButton;
+    private Header header;
+    private RecordingFooter footer;
+    private Sort sort;
+
+    String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
+
+    SortFrame() {
+        header = new Header("Sorting Recipe");
+        footer = new RecordingFooter();
+        
+        // Set properties for the page
+        this.setPrefSize(370, 120);
+        sort = new Sort("How would you like to sort your recipe: \n Alphabetically, Chronologically, or Reverse Chronologically?");
+        
+        this.setTop(header);
+        this.setCenter(sort);
+        this.setBottom(footer);
+
+        alphaButton = sort.getAlphaButton();
+        chronoButton = sort.getChronoButton();
+        rchronoButton = sort.getRChronoButton();
+        cancelButton = footer.getCancelButton();
+    }
+
+    public Button getAlphaButton() {
+        return alphaButton;
+    }
+
+    public Button getChronoButton() {
+        return chronoButton;
+    }
+
+    public Button getRChronoButton() {
+        return rchronoButton;
+    }
+
+    public Button getCancelButton() {
+        return cancelButton;
+    }
+
+    // Getter to change Start/Stop button style
+    public String getDefaultStyle() {
+        return defaultButtonStyle;
+    }
+
+    public Sort getSort() {
+        return sort;
+    }
+
+    // Writes audio into "recording.wav"
+    public void setAlphaButtonAction(EventHandler<ActionEvent> eventHandler) {
+        alphaButton.setOnAction(eventHandler);
+    }
+
+    // Needs to detect either "Breakfast," "Lunch," or "Dinner" to move to next Frame
+    public void setChronoButtonAction(EventHandler<ActionEvent> eventHandler) {
+        chronoButton.setOnAction(eventHandler);
+    }
+
+    public void setRChronoButtonAction(EventHandler<ActionEvent> eventHandler) {
+        rchronoButton.setOnAction(eventHandler);
+    }
+
+    // Cancel Button goes to Home Page
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
+    }
+}
+
 // Logic Page Window Upon App Start
 class LoginFrame extends BorderPane {
 
@@ -420,6 +556,7 @@ class HomeFrame extends BorderPane {
     private Footer footer;
     private RecipeList recipeList;
     private Button newRecipeButton;
+    private Button sortButton;
 
     HomeFrame() {
         // Initialize the Header Object
@@ -443,6 +580,7 @@ class HomeFrame extends BorderPane {
 
         // Initialise Button Variables through the getters in Footer
         newRecipeButton = footer.getNewRecipeButton();
+        sortButton = footer.getSortButton();
     }
 
     public RecipeList getRecipeList() {
@@ -453,8 +591,16 @@ class HomeFrame extends BorderPane {
         return newRecipeButton;
     }
 
+    public Button getSortButton() {
+        return sortButton;
+    }
+
     public void setNewRecipeButtonAction(EventHandler<ActionEvent> eventHandler) {
         newRecipeButton.setOnAction(eventHandler);
+    }
+
+    public void setSortButtonAction(EventHandler<ActionEvent> eventHandler) {
+        sortButton.setOnAction(eventHandler);
     }
 
 }
@@ -751,6 +897,7 @@ class GptFrame extends BorderPane {
 
 public class View {
 
+    SortFrame sort;
     LoginFrame login;
     HomeFrame home;
     MealFrame meal;
@@ -761,6 +908,7 @@ public class View {
     public View () {
 
         // // Setting the Layout of the Window- Should contain a Header, Footer and content for each Frame
+        sort = new SortFrame();
         login = new LoginFrame();
         home = new HomeFrame();
         meal = new MealFrame();
@@ -768,6 +916,10 @@ public class View {
         gpt = new GptFrame();
         recipe = new RecipeFrame();
         
+    }
+
+    public SortFrame getSortFrame() {
+        return sort;
     }
 
     public HomeFrame getHomeFrame() {
