@@ -30,6 +30,7 @@ public class RequestHandler implements HttpHandler {
   private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
   private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
   private String URI = peterURI;
+  private String databaseName = "recipesdbasd";
 
 
   // general method and calls certain methods to handle http request
@@ -73,14 +74,15 @@ public class RequestHandler implements HttpHandler {
 
     if (query != null) {
       // gets the query from the url 
-      String value = query.substring(query.indexOf("=") + 1);
-      System.out.println("GET VALUE: " + value);
+      String value = query.substring(query.indexOf("?") + 1);
       value = URLDecoder.decode(value, "UTF-8");
-      System.out.println("DECODED VALUE: " + value);
+      Map<String, String> paramMap = QueryParser.parseQuery(value);
+      String username = paramMap.get("u");
+      value = (String) paramMap.get("q");
       
       try (MongoClient mongoClient = MongoClients.create(URI)) {
-        MongoDatabase database = mongoClient.getDatabase("PantryPal");
-        MongoCollection<Document> collection = database.getCollection("recipes");
+        MongoDatabase database = mongoClient.getDatabase(databaseName);
+        MongoCollection<Document> collection = database.getCollection(username);
 
         Document recipe = collection.find(new Document("title", value)).first();
         if (recipe != null) {
@@ -115,37 +117,40 @@ public class RequestHandler implements HttpHandler {
     StringBuilder reqBody = new StringBuilder();
 
     while(scanner.hasNext()) {
-      String nl = scanner.nextLine();
+      String nl = URLDecoder.decode(scanner.nextLine(), "UTF-8");
       reqBody.append(nl);
     }
   
-    // get the title, ingredients, instructions
+    // Get the title, ingredients, instructions
     String body = reqBody.toString();
+    String username = body.split("\\&")[0];
+    body = body.split("\\&")[2];
+
     System.out.println("REQ BODY: " + body);
     int fDelim = body.indexOf("+");
     int sDelim = body.indexOf("+",fDelim+1);
-    int tDelim = body.indexOf("+",sDelim+1);
+    // int tDelim = body.indexOf("+",sDelim+1);
 
     String title = body.substring(0,fDelim);
     String ingredients = body.substring(fDelim+1, sDelim);
-    String instructions = body.substring(sDelim+1,tDelim);
-    String user = body.substring(tDelim + 1);
+    String instructions = body.substring(sDelim+1);
+    // String user = body.substring(tDelim + 1);
     
     System.out.println("TITLE: " + title);
     System.out.println("INGRED: " + ingredients);
     System.out.println("INSTRUCT: " + instructions);
-    System.out.println("USER:" + user);
+    // System.out.println("USER:" + user);
     String response = "valid post";
 
     try (MongoClient mongoClient = MongoClients.create(URI)) {
-      MongoDatabase database = mongoClient.getDatabase("PantryPal");
-      MongoCollection<Document> collection = database.getCollection("recipes");
+      MongoDatabase database = mongoClient.getDatabase(databaseName);
+      MongoCollection<Document> collection = database.getCollection(username);
       
       Document recipe = new Document("_id", new ObjectId());
       recipe.append("title", title);
       recipe.append("ingredients", ingredients);
       recipe.append("instructions",instructions);
-      recipe.append("user",user);
+      // recipe.append("user",user);
 
       collection.insertOne(recipe);
       response = "valid posts";
@@ -168,30 +173,32 @@ public class RequestHandler implements HttpHandler {
     StringBuilder reqBody = new StringBuilder();
 
     while(scanner.hasNext()) {
-      String nl = scanner.nextLine();
+      String nl = URLDecoder.decode(scanner.nextLine(), "UTF-8");
       reqBody.append(nl);
     }
   
-    // get the title, ingredients, instructions
+    // Get the title, ingredients, instructions
     String body = reqBody.toString();
-    System.out.println("REQ BODY: " + body);
+    String username = body.split("\\&")[0];
+    body = body.split("\\&")[2];
+
     int fDelim = body.indexOf("+");
     int sDelim = body.indexOf("+",fDelim+1);
-    int tDelim = body.indexOf("+",sDelim+1);
+    // int tDelim = body.indexOf("+",sDelim+1);
 
     String title = body.substring(0,fDelim);
     String ingredients = body.substring(fDelim+1, sDelim);
-    String instructions = body.substring(sDelim+1,tDelim);
-    String user = body.substring(tDelim + 1);
+    String instructions = body.substring(sDelim+1);
+    // String user = body.substring(tDelim + 1);
 
     String response = "Not valid put";
     try (MongoClient mongoClient = MongoClients.create(URI)) {
-      MongoDatabase database = mongoClient.getDatabase("PantryPal");
-      MongoCollection<Document> collection = database.getCollection("recipes");
+      MongoDatabase database = mongoClient.getDatabase(databaseName);
+      MongoCollection<Document> collection = database.getCollection(username);
 
       Bson filter = eq("title", title);
-      Bson filter2 = eq("user",user);
-      filter = combine(filter,filter2);
+      // Bson filter2 = eq("user",user);
+      // filter = combine(filter,filter2);
 
       Bson nameUpdate = set("title",title);
       Bson updateOperation = set("ingredients", ingredients);
@@ -215,12 +222,15 @@ public class RequestHandler implements HttpHandler {
     System.out.println(query);
 
     if (query != null) {
-      String value = query.substring(query.indexOf("=") + 1);
+      String value = query.substring(query.indexOf("?") + 1);
       value = URLDecoder.decode(value, "UTF-8");
+      Map<String, String> paramMap = QueryParser.parseQuery(value);
+      String username = paramMap.get("u");
+      value = (String) paramMap.get("q");
 
       try (MongoClient mongoClient = MongoClients.create(URI)) {
-        MongoDatabase database = mongoClient.getDatabase("PantryPal");
-        MongoCollection<Document> collection = database.getCollection("recipes");
+        MongoDatabase database = mongoClient.getDatabase(databaseName);
+        MongoCollection<Document> collection = database.getCollection(username);
 
         collection.findOneAndDelete(new Document("title", value));
         response = "valid delete";

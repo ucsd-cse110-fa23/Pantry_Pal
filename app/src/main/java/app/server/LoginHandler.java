@@ -1,21 +1,12 @@
 package app.server;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.Scanner;
-
+import java.io.*;
+import java.net.*;
+import java.util.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-
-
 import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -23,19 +14,9 @@ import com.mongodb.client.MongoDatabase;
 
 public class LoginHandler implements HttpHandler {
 
-    private MongoClient mongoClient;
-    private MongoDatabase recipeDatabase;
-    private String uri = "mongodb://azakaria:ILWaFDvRjUEUjpcJ@ac-ytzddhr-shard-00-00.rzzq5s2.mongodb.net:27017,ac-ytzddhr-shard-00-01.rzzq5s2.mongodb.net:27017,ac-ytzddhr-shard-00-02.rzzq5s2.mongodb.net:27017/?ssl=true&replicaSet=atlas-11uj01-shard-0&authSource=admin&retryWrites=true&w=majority";
-
-    // LoginHandler() {
-    //     // Move the creation of resources inside the constructor
-    //     try {
-    //         mongoClient = MongoClients.create(uri);
-    //         recipeDatabase = mongoClient.getDatabase("recipesdbasd");
-    //     } catch(Exception err) {
-    //         System.out.println("MongoDB failed");
-    //     }
-    // }
+    private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
+    private String anthonyURI = "mongodb://azakaria:ILWaFDvRjUEUjpcJ@ac-ytzddhr-shard-00-00.rzzq5s2.mongodb.net:27017,ac-ytzddhr-shard-00-01.rzzq5s2.mongodb.net:27017,ac-ytzddhr-shard-00-02.rzzq5s2.mongodb.net:27017/?ssl=true&replicaSet=atlas-11uj01-shard-0&authSource=admin&retryWrites=true&w=majority";
+    private String uri = peterURI;
 
     // general method and calls certain methods to handle http request
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -48,25 +29,25 @@ public class LoginHandler implements HttpHandler {
             } else {
               throw new Exception("Not Valid Request Method");
             }
+
+            // Sending back response to the client
+            httpExchange.sendResponseHeaders(200, response.length());
+            OutputStream outStream = httpExchange.getResponseBody();
+            outStream.write(response.getBytes());
+            outStream.close();
         } catch (Exception e) {
             System.out.println("An erroneous request");
-            response = e.toString();
             e.printStackTrace();
         }
-
-        // Sending back response to the client
-        httpExchange.sendResponseHeaders(200, response.length());
-        OutputStream outStream = httpExchange.getResponseBody();
-        outStream.write(response.getBytes());
-        outStream.close();
-
     }
     
     private String handlePost(HttpExchange httpExchange) throws IOException {
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);
-        String username = scanner.nextLine(); // Gets username
-        String password = scanner.nextLine(); // Gets password
+        String data = scanner.nextLine(); 
+        data = URLDecoder.decode(data, "UTF-8");
+        String username = data.split("\\&")[0]; // Gets username
+        String password = data.split("\\&")[1]; // Gets password
         String response = "Login Request Received";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {

@@ -168,7 +168,7 @@ class RecipeFooter extends HBox {
 
 }
 
-//===================== MISCELLANEOUS ===================================================
+//===================== CONTENT ===================================================
 
 // Recipe Title Displayed on Home Page
 class Recipe extends VBox {
@@ -235,51 +235,30 @@ class RecipeList extends VBox {
         this.setStyle("-fx-background-color: #F0F8FF;");
     }
 
-    public void loadOnStart() {
-         try {
-            // Read and temporarily story old recipes 
-            BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
-            String line = in.readLine();
-            String combine = "";
-            while (line != null) {
-                if (combine.equals("")) {
-                    combine = combine + line;
-                } else {
-                    combine = combine + "\n" + line;
-                }
-                line = in.readLine();
-            }
-            String[] s = combine.split("\\$");
-            for (int i = 0; i < s.length; i++) {
-                Recipe startload = new Recipe();
-                this.getChildren().add(startload);
-                // updateRecipeIndices();
-            }
-            in.close();
-         }
-         catch(Exception e) {
-            System.out.println(e);
-            System.out.println("START FAIL");
-        }
-    }
 }
 
 // Content of full recipe description
-class RecipeSteps extends HBox {
+class RecipeSteps extends VBox {
 
-    public TextArea recipeSteps;
+    private Label recipeName;
+    private TextArea recipeSteps;
 
     RecipeSteps() {
         // this.setPrefSize(500, 500);
         // this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;"); // sets background color of task
-
+        recipeName = new Label();
         recipeSteps = new TextArea();
         recipeSteps.setEditable(true);
         recipeSteps.setPrefSize(400, 500); // set size of text field
         recipeSteps.setWrapText(true);
         recipeSteps.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;"); // set background color of texfield
         
-        this.getChildren().add(recipeSteps);
+        this.getChildren().addAll(recipeName, recipeSteps);
+        // this.getChildren().add(recipeSteps);
+    }
+
+    public Label getRecipeName() {
+        return recipeName;
     }
 
     public TextArea getTextArea() {
@@ -345,17 +324,104 @@ class Prompt extends VBox{
 
 }
 
+// Fields for Login Page
+class LoginContent extends VBox {
+
+    private TextField username;
+    private PasswordField password;
+    private Label userLabel, passLabel;
+    private Button createAccountButton, loginButton;
+
+    LoginContent() {
+
+        this.setPrefWidth(10);
+
+        username = new TextField();
+        password = new PasswordField();
+
+        userLabel = new Label("Username");
+        userLabel.setTextAlignment(TextAlignment.CENTER);
+
+        passLabel = new Label("Password");
+        passLabel.setTextAlignment(TextAlignment.CENTER);
+
+        createAccountButton = new Button("Create Account");
+        loginButton = new Button("Login");
+
+        HBox buttonContainer = new HBox();
+        buttonContainer.setAlignment(Pos.CENTER);
+        buttonContainer.getChildren().addAll(loginButton, createAccountButton);
+
+        this.getChildren().addAll(userLabel, username, passLabel,password, buttonContainer);
+
+    }
+    
+    public TextField getUsername() {
+        return username;
+    }
+
+    public PasswordField getPassword() {
+        return password;
+    }
+
+    public Button getLoginButton() {
+        return loginButton;
+    }
+
+    public Button getCreateAccountButton() {
+        return createAccountButton;
+    }
+
+}
+
 //=============================== FRAMES =========================================
 
+// Logic Page Window Upon App Start
+class LoginFrame extends BorderPane {
+
+    private Header header;
+    private LoginContent loginContent;
+    private Button loginButton, createAccountButton;
+
+    LoginFrame() {
+        
+        this.setPrefSize(370, 120);
+        this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
+            
+        header = new Header("PantryPal Login");
+        loginContent = new LoginContent();
+
+        this.setTop(header);
+        this.setCenter(loginContent);
+
+        loginButton = loginContent.getLoginButton();
+        createAccountButton = loginContent.getCreateAccountButton();
+
+    }
+
+    public LoginContent getLoginContent() {
+        return loginContent;
+    }
+
+    public void setLoginButtonAction(EventHandler<ActionEvent> event) {
+        loginButton.setOnAction(event);
+    }
+
+    public void setCreateAccountButtonAction(EventHandler<ActionEvent> event) {
+        createAccountButton.setOnAction(event);
+    }
+
+}
+
 // Home Page Window
-class AppFrame extends BorderPane {
+class HomeFrame extends BorderPane {
 
     private Header header;
     private Footer footer;
     private RecipeList recipeList;
     private Button newRecipeButton;
 
-    AppFrame() {
+    HomeFrame() {
         // Initialize the Header Object
         header = new Header("PantryPal");
         // Initialize the Footer Object
@@ -363,8 +429,6 @@ class AppFrame extends BorderPane {
 
         // Create a RecipeList Object to hold the recipes
         recipeList = new RecipeList();
-        recipeList.loadOnStart();
-        // recipeList.updateRecipeIndices();
         
         // Add a Scroller to the recipeList
         ScrollPane scroll = new ScrollPane();
@@ -451,102 +515,6 @@ class RecipeFrame extends BorderPane {
         deleteButton.setOnAction(eventHandler);
     }
 
-    // recipeScreen.loadTasks(getIndex());
-    // saveButton.setOnAction(e3 -> {
-    //     recipeScreen.save(getIndex());
-    // });
-    // deleteButton.setOnAction(e3 -> {
-    //     recipeScreen.deleteRecipe(getIndex());
-    //     recipeList.getChildren().remove(getIndex() - 1);
-    //     recipeList.updateRecipeIndices();
-        
-    // });
-    public void loadTasks(int index) {
-        try {
-            BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
-            String line = in.readLine();
-            String combine = "";
-            while (line != null) {
-                if (combine.equals("")) {
-                    combine = combine + line;
-                } else {
-                    combine = combine + "\n" + line;
-                }
-                line = in.readLine();
-            }
-            String[] recipes = combine.split("\\$");
-            //RecipeSteps current = new RecipeSteps();
-            recipeSteps.getTextArea().setText(recipes[index-1]);
-            // this.getChildren().add(recipeSteps);
-            in.close();
-        }
-        catch(Exception e){
-            System.out.println("LOAD FAIL");
-        }
-    }
-
-    public void save(int index) {
-        try {
-            BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
-            String line = in.readLine();
-            String combine = "";
-            while (line != null) {
-                if (combine.equals("")) {
-                    combine = combine + line;
-                } else {
-                    combine = combine + "\n" + line;
-                }
-                line = in.readLine();
-            }
-            String[] recipes = combine.split("\\$");
-            FileWriter writer = new FileWriter("recipes.csv");
-            for (int i = 0; i < index - 1; i++) {
-                writer.write(recipes[i] + "$");
-            }
-            // RecipeScreen should have 1 child which is the recipe
-            // Recipe recipeSteps = (Recipe) this.getChildren().get(0);
-            String recipe = recipeSteps.getTextArea().getText();
-            writer.write(recipe + "$");
-            for (int i = index - 1; i < recipes.length - 1; i++) {
-                writer.write(recipes[i] + "$");
-            }
-            in.close();
-            writer.close();
-            
-        }
-        catch(Exception e) {
-            System.out.println("SAVE FAIL");
-        }
-    }
-
-    public void deleteRecipe(int index) {
-        try {
-            BufferedReader in = new BufferedReader(new FileReader("recipes.csv"));
-            String line = in.readLine();
-            String combine = "";
-            while (line != null) {
-                if (combine.equals("")) {
-                    combine = combine + line;
-                } else {
-                    combine = combine + "\n" + line;
-                }
-                line = in.readLine();
-            }
-            in.close();
-            String[] recipes = combine.split("\\$");
-            FileWriter writer = new FileWriter("recipes.csv");
-            for (int i = 0; i < index - 1; i++) {
-                writer.write(recipes[i] + "$");
-            }
-            for (int i = index; i < recipes.length; i++) {
-                writer.write(recipes[i] + "$");
-            }
-            writer.close();
-        }
-        catch(Exception e){
-            System.out.println("LOAD FAIL");
-        }
-    }
 }
 
 // Record Meal Type Window
@@ -779,110 +747,30 @@ class GptFrame extends BorderPane {
 
 }
 
-
-// Login Frame
-
-class LoginFrame extends BorderPane{
-    private LoginContent loginContent;
-    private Header header;
-
-    LoginFrame(){
-        this.setPrefSize(370, 120);
-        this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
-            
-        header = new Header("PantryPal Login");
-
-        loginContent = new LoginContent();
-
-        this.setCenter(loginContent);
-        
-        this.setTop(header);
-
-    }
-
-}
-
-class LoginContent extends VBox{
-    private TextField username;
-    private PasswordField password;
-    private Label userLabel, passLabel;
-    private Button createAccountButton, loginButton;
-
-    LoginContent(){
-        this.setPrefWidth(10);
-
-        username = new TextField();
-        password = new PasswordField();
-
-        userLabel = new Label("Username");
-        userLabel.setTextAlignment(TextAlignment.CENTER);
-
-
-        passLabel = new Label("Password");
-        passLabel.setTextAlignment(TextAlignment.CENTER);
-
-
-        createAccountButton = new Button("Create Account");
-        loginButton = new Button("Login");
-
-        HBox buttonContainer = new HBox();
-        buttonContainer.setAlignment(Pos.CENTER);
-
-        buttonContainer.getChildren().addAll(loginButton, createAccountButton);
-
-        this.getChildren().addAll(userLabel, username, passLabel,password, buttonContainer);
-
-    }
-
-    public void setUsername(TextField user){
-        username = user;
-    }
-
-    public void setPassword(PasswordField pass){
-        password = pass;
-    }
-    
-    public TextField getUsername(){
-        return username;
-    }
-
-    public PasswordField getPasswordField(){
-        return password;
-    }
-
-    public Button getCreateAccountButton(){
-        return createAccountButton;
-    }
-
-    public Button getLoginButton(){
-        return loginButton;
-    }
-
-}
-
-
 //=============================== VIEW ======================================
 
 public class View {
 
-    AppFrame home;
+    LoginFrame login;
+    HomeFrame home;
     MealFrame meal;
     IngredientsFrame ingredients;
     GptFrame gpt;
     RecipeFrame recipe;
-    LoginFrame login;
     
     public View () {
+
         // // Setting the Layout of the Window- Should contain a Header, Footer and content for each Frame
-        home = new AppFrame();
+        login = new LoginFrame();
+        home = new HomeFrame();
         meal = new MealFrame();
         ingredients = new IngredientsFrame();
         gpt = new GptFrame();
         recipe = new RecipeFrame();
-        login = new LoginFrame();
+        
     }
 
-    public AppFrame getAppFrame() {
+    public HomeFrame getHomeFrame() {
         return home;
     }
 
@@ -902,7 +790,7 @@ public class View {
         return recipe;
     }
 
-    public LoginFrame getLoginFrame(){
+    public LoginFrame getLoginFrame() {
         return login;
     }
 

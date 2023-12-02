@@ -30,17 +30,22 @@ public class Controller {
     private View view;
     private Model model;
     private FrameController frameController;
-    private String mealType;
-    private String ingredients;
+    private String username, password, mealType, ingredients;
     private String fullRecipe;
+    private RecipeList recipeList;
 
     public Controller(View view, Model model, Stage primaryStage) {
         this.view = view;
         this.model = model;
         frameController = new FrameController(primaryStage);
+        recipeList = view.getHomeFrame().getRecipeList();
 
-        // AppFrame Event Listeners
-        view.getAppFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
+        // LoginFrame Event Listeners
+        view.getLoginFrame().setLoginButtonAction(this::handleLoginButton);
+        view.getLoginFrame().setCreateAccountButtonAction(this::handleCreateAccountButton);
+
+        // HomeFrame Event Listeners
+        view.getHomeFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
 
         // MealFrame Event Listeners
         view.getMealFrame().setStartButtonAction(this::handleMealStartButton);
@@ -68,7 +73,36 @@ public class Controller {
         return frameController;
     }
 
-    //================ AppFrame Event Handler ====================================================
+    //================ LoginFrame Event Handlers ====================================================
+
+    private void handleLoginButton(ActionEvent event) {
+        username = view.getLoginFrame().getLoginContent().getUsername().getText();
+        password = view.getLoginFrame().getLoginContent().getPassword().getText();
+
+        String response = model.performRequest("POST", username, password, null, null, "login");
+        if (response.equals("SUCCESS")) {
+            String recipes = model.performRequest("GET", username, null, null, username, "loadRecipeHandler");
+            loadRecipes(recipes);
+            frameController.getFrame("home");
+            System.out.println("|||Frame changed|||");
+        } else {
+            System.out.println("[LOGIN RESPONSE] " + response);
+        }
+    }
+
+    private void handleCreateAccountButton(ActionEvent event) {
+        username = view.getLoginFrame().getLoginContent().getUsername().getText();
+        password = view.getLoginFrame().getLoginContent().getPassword().getText();
+
+        String response = model.performRequest("POST", username, password, null, null, "signup");
+        if (response.equals("SUCCESS")) {
+            frameController.getFrame("home");
+        } else {
+            System.out.println("[LOGIN RESPONSE] " + response);
+        }
+    }
+
+    //================ AppFrame Event Handlers ====================================================
 
     private void handleNewRecipeButton(ActionEvent event) {
         frameController.getFrame("meal");
@@ -78,9 +112,8 @@ public class Controller {
         Button target = (Button) event.getTarget();
         Recipe recipe = (Recipe) target.getParent();
         String recipeTitle = recipe.getRecipe().getText();
-        System.out.println("RECIPE TITLE: " + recipeTitle);
-        String recipeText = model.performRequest("GET", null, recipeTitle, "");
-        view.getRecipeFrame().getRecipeSteps().getTextArea().setText(recipeText);
+        String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
+        displayRecipe(recipeText);
 
         frameController.getFrame("recipe");
     }
@@ -104,7 +137,7 @@ public class Controller {
 
         model.stopRecording();
 
-        mealType = model.performRequest("POST", null, null, "whisper");
+        mealType = model.performRequest("POST", null, null, null, null, "whisper");
         mealType = model.mealType(mealType);
         System.out.println("MEALTYPE CONTROLLER: " + mealType);
 
@@ -154,12 +187,12 @@ public class Controller {
 
         model.stopRecording();
 
-        ingredients = model.performRequest("POST", null, null, "whisper");
+        ingredients = model.performRequest("POST", null, null, null, null, "whisper");
 
         // Create prompt with mealType and ingredients and pass to ChatGPT API
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
         System.out.println("PROMPT +++ " + prompt);
-        String response = model.performRequest("POST", prompt, null, "chatgpt");
+        String response = model.performRequest("POST", username, password, prompt, null, "chatgpt");
         fullRecipe = response;
         response = response.replace("+", "\n");
         view.getGptFrame().getRecipeText().setText(response);
@@ -189,10 +222,10 @@ public class Controller {
         newRecipe.getRecipe().setText(recipeName);
         newRecipe.setViewButtonAction(this::handleViewButton);
         
-        view.getAppFrame().getRecipeList().getChildren().add(0,newRecipe);
-        model.updateRecipeIndices(view.getAppFrame().getRecipeList());
+        recipeList.getChildren().add(0,newRecipe);
+        updateRecipeIndices();
         
-        model.performRequest("POST", fullRecipe, null, "");
+        model.performRequest("POST", username, password, fullRecipe, null, "");
 
         // Redirect back to Home Page
         frameController.getFrame("home");
@@ -201,14 +234,10 @@ public class Controller {
     // takes the same input for mealtype and ingredients,
     // tells ChatGPT to regenerate response with the set of ingredients
     private void handleGptRefreshButton(ActionEvent event) {
-        // MOCK INPUTS
-        mealType = "breakfast";
-        ingredients = "bacon, eggs, sausage";
-        //---------------------------
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = model.performRequest("POST", prompt, null, "chatgpt");
+        String response = model.performRequest("POST", username, password, prompt, null, "chatgpt");
         fullRecipe = response;
-        response = response.replace("+", "\n");
+        displayRecipe(response);
         view.getGptFrame().getRecipeText().setText(response);
     }
 
@@ -226,14 +255,54 @@ public class Controller {
     private void handleRecipeSaveButton(ActionEvent event) {
         String updatedRecipe = view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
         //Make PUT request and save updatedRecipe as second param
-        String response = model.performRequest("PUT", updatedRecipe, null, "");
+        String response = model.performRequest("PUT", username, password, updatedRecipe, null, "");
         System.out.println("[PUT RESPONSE] " + response);
     }
 
     private void handleRecipeDeleteButton(ActionEvent event) {
         int delim = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().indexOf("\n");
         String recipeTitle = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().substring(0, delim);
-        String response = model.performRequest("DELETE", null, recipeTitle, "");
+        String response = model.performRequest("DELETE", username, null, null, recipeTitle, "");
+        updateRecipeIndices();
         System.out.println("[DELETE RESPONSE] " + response);
+    }
+
+    //================== HELPER METHODS ========================================
+    private void displayRecipe(String recipe) {
+        try {
+            String recipeName = recipe.split("\\+")[0];
+            String recipeText = recipe.substring(recipe.indexOf("\\+") + 1);
+            recipeText = recipeText.replace("\\+", "\n");
+            view.getRecipeFrame().getRecipeSteps().getRecipeName().setText(recipeName);
+            view.getRecipeFrame().getRecipeSteps().getTextArea().setText(recipeText);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadRecipes(String recipes) {
+        if (recipes != null) {
+            String[] recipesArr = { recipes};
+            if (recipes.contains("+")) {
+                recipesArr = recipes.split("+");
+            }
+            for (int i = 0; i < recipesArr.length; i++) {
+                Recipe newRecipe = new Recipe();
+                newRecipe.getRecipe().setText(recipesArr[i]);
+                newRecipe.setViewButtonAction(this::handleViewButton);
+                recipeList.getChildren().add(0,newRecipe);
+                updateRecipeIndices();
+            }
+        }
+    }
+
+    public void updateRecipeIndices() {
+        int index = 1;
+        for (int i = 0; i < recipeList.getChildren().size(); i++) {
+            if (recipeList.getChildren().get(i) instanceof Recipe) {
+                ((Recipe) recipeList.getChildren().get(i)).setRecipeIndex(index);
+                index++;
+            }
+        }
     }
 }

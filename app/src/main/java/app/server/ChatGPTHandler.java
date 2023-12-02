@@ -71,8 +71,9 @@ public class ChatGPTHandler implements HttpHandler {
         // get the prompt from the body
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);
-        
-        String prompt = scanner.nextLine();
+    
+        String data = URLDecoder.decode(scanner.nextLine(), "UTF-8"); 
+        String prompt = data.split("\\&")[2];
         
         int tokens = 500;  
         // Create a request body which you will pass into request object
