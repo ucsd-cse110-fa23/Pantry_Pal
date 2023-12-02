@@ -47,15 +47,17 @@ public class Model {
                 urlString += "?=" + query;
             }
 
-            if (route.equals("whisper")) {
-                sendPOSTWhisper();
-            }
-
             // Establish HTTP connection
+
             URL url = new URI(urlString).toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod(method);
-            conn.setDoOutput(true);
+
+            if (route.equals("whisper")) {
+                sendPOSTWhisper(conn);
+            } else {
+                conn.setRequestMethod(method);
+                conn.setDoOutput(true);
+            }
 
             // Write any data arguments to OS if they are passed in
             if (method.equals("POST") || method.equals("PUT")) {
@@ -70,6 +72,7 @@ public class Model {
             // Read OS once handlers have written response
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String response = in.readLine();
+            System.out.println("[[MODEL RESPONSE]]: " + response);
 
             if (route.equals("whisper")) {
                 response = mealType(response);
@@ -94,14 +97,15 @@ public class Model {
     }
 
     // Client-side whisper file transfer
-    public static void sendPOSTWhisper() throws IOException {
+    public static void sendPOSTWhisper(HttpURLConnection connection) throws IOException {
         final String POST_URL = "http://localhost:8100/whisper";
         final File uploadFile = new File("recording.wav");
 
         String boundary = Long.toHexString(System.currentTimeMillis()); 
         String CRLF = "\r\n";
         String charset = "UTF-8";
-        URLConnection connection = new URL(POST_URL).openConnection();
+        // URLConnection connection = new URL(POST_URL).openConnection();
+        connection.setRequestMethod("POST");
         connection.setDoOutput(true);
         connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
         
@@ -117,10 +121,10 @@ public class Model {
             writer.append(CRLF).flush();
             Files.copy(uploadFile.toPath(), output);
             output.flush();
-            writer.append("--" + boundary + "--").append(CRLF).flush(); // End of multipart/form-data.
 
             int responseCode = ((HttpURLConnection) connection).getResponseCode();
             System.out.println("Response code: [" + responseCode + "]");
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -185,9 +189,11 @@ public class Model {
         t.start();
     }
 
-    public void stopRecording() {notify();      
-        targetDataLine.stop();
-        targetDataLine.close();
+    public void stopRecording() {  
+        if (targetDataLine.isActive() || targetDataLine.isOpen()) {
+            targetDataLine.stop();
+            targetDataLine.close();
+        }
     }
 
     public void saveRecipe(String recipeText) {

@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Model",
+            "request": "launch",
+            "mainClass": "app.client.Model",
+            "projectName": "app"
+        },
+        {
+            "type": "java",
             "name": "MyServer",
             "request": "launch",
             "mainClass": "app.server.MyServer",
@@ -18,20 +25,20 @@
             "mainClass": "client.Model",
             "projectName": "CSE110Refactor_5084aaec"
         },
-        {
-            "type": "java",
-            "name": "MyServer",
-            "request": "launch",
-            "mainClass": "server.MyServer",
-            "projectName": "CSE110Refactor_5084aaec"
-        },
-        {
-            "type": "java",
-            "name": "MyServer",
-            "request": "launch",
-            "mainClass": "server.MyServer",
-            "projectName": "cse-110-project_f7244502"
-        },
+        // {
+        //     "type": "java",
+        //     "name": "MyServer",
+        //     "request": "launch",
+        //     "mainClass": "server.MyServer",
+        //     "projectName": "CSE110Refactor_5084aaec"
+        // },
+        // {
+        //     "type": "java",
+        //     "name": "MyServer",
+        //     "request": "launch",
+        //     "mainClass": "server.MyServer",
+        //     "projectName": "cse-110-project_f7244502"
+        // },
         {
             "type": "java",
             "name": "Current File",

@@ -74,7 +74,9 @@ public class RequestHandler implements HttpHandler {
     if (query != null) {
       // gets the query from the url 
       String value = query.substring(query.indexOf("=") + 1);
+      System.out.println("GET VALUE: " + value);
       value = URLDecoder.decode(value, "UTF-8");
+      System.out.println("DECODED VALUE: " + value);
       
       try (MongoClient mongoClient = MongoClients.create(peterURI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
@@ -121,15 +123,19 @@ public class RequestHandler implements HttpHandler {
   
     // get the title, ingredients, instructions
     String body = reqBody.toString();
+    System.out.println("REQ BODY: " + body);
     int fDelim = body.indexOf("+");
     String title = body.substring(0,fDelim);
+    System.out.println("TITLE: " + title);
     int sDelim = body.indexOf("+",fDelim+1);
     String ingredients = body.substring(fDelim+1, sDelim);
+    System.out.println("INGRED: " + ingredients);
     String instructions = body.substring(sDelim+1);
+    System.out.println("INSTRUCT: " + instructions);
 
     String response = "valid post";
 
-    try (MongoClient mongoClient = MongoClients.create(MongoURI)) {
+    try (MongoClient mongoClient = MongoClients.create(peterURI)) {
       MongoDatabase database = mongoClient.getDatabase("PantryPal");
       MongoCollection<Document> collection = database.getCollection("recipes");
       

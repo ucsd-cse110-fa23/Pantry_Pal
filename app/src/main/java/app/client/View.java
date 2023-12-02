@@ -421,6 +421,10 @@ class RecipeFrame extends BorderPane {
         this.setBottom(footer);
     }
 
+    public RecipeSteps getRecipeSteps() {
+        return recipeSteps;
+    }
+
     public Button getCancelButton() {
         return cancelButton;
     }
@@ -707,7 +711,7 @@ class GptFrame extends BorderPane {
     private Header header;
     private GptFooter footer;
     private Button saveButton, cancelButton, refreshButton;
-    private String generatedText = "Bacon Egg Sandwhich, bacon, eggs, and cheese, step 1:... Step 2:...";
+    private String generatedText = "TWO Bacon, Eggs, and Sausage Breakfast+4 slices bacon, 2 eggs, 2 sausage links+1. In a medium skillet over medium heat, cook the bacon until crispy. 2. Remove bacon from skillet, leaving renderings in the pan. Add sausage and cook until browned on both sides. 3. Push sausage to one side and crack two eggs into the other side. Fry over medium heat until desired doneness. 4. Serve bacon, eggs, and sausage together.";
     private Recipe newRecipe;
     private TextArea recipeText = new TextArea();
     //String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 75px; -fx-pref-height: 50px; -fx-border-radius: 10px";
@@ -718,9 +722,6 @@ class GptFrame extends BorderPane {
 
         header = new Header("New Recipe");
         footer = new GptFooter();
-        
-        // String[] getTitle = generatedText.split("\n");
-        // String title = getTitle[2];
         
         recipeText.setText(generatedText);
         recipeText.setWrapText(true);

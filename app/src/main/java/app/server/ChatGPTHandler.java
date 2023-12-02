@@ -100,9 +100,11 @@ public class ChatGPTHandler implements HttpHandler {
         );
         // Process the response
         String responseBody = response.body();
+        System.out.println("||RESPONSE BODY|| " + responseBody);
         JSONObject responseJson = new JSONObject(responseBody);
         JSONArray choices = responseJson.getJSONArray("choices");
         generatedText = choices.getJSONObject(0).getString("text");
+        System.out.println("++GENTEXT++ " + generatedText);
         JSONObject toJson = new JSONObject(generatedText);
 
         String res = toJson.getString("title");
