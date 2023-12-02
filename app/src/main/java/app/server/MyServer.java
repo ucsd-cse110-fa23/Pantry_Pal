@@ -29,6 +29,7 @@ public class MyServer {
         server.createContext("/chatgpt", new ChatGPTHandler());
         server.createContext("/login", new LoginHandler());
         server.createContext("/signup", new SignupHandler());
+        server.createContext("/loadRecipe", new loadRecipeHandler());
 
         server.setExecutor(threadPoolExecutor);
         server.start();
