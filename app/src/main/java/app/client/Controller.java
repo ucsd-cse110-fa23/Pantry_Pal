@@ -398,16 +398,18 @@ public class Controller {
         }
         clearRecipes();
         for (int i = 0; i < recipes.size(); i++) {
-            String re = recipes.get(i).getRecipe().toString();
-            titles.add(re.substring(0, re.indexOf("\n")));
+            titles.add(recipes.get(i).getRecipe().toString());
         }
         Collections.sort(titles);
         for (int i = 0; i < titles.size(); i++) {
             for (int j = 0; j < recipes.size(); j++) {
                 String re = recipes.get(j).getRecipe().toString();
-                re = re.substring(0, re.indexOf("\n"));
                 if (titles.get(i).equals(re)) {
-                    recipeList.getChildren().add(recipes.get(j));
+                    Recipe newRecipe = new Recipe();
+                    newRecipe.getRecipe().setText(re);
+                    newRecipe.setViewButtonAction(this::handleViewButton);
+                    recipeList.getChildren().add(0,newRecipe);
+                    updateRecipeIndices();
                 }
             }
         }
@@ -415,15 +417,23 @@ public class Controller {
     }
 
     public void reverse() {
-        ArrayList<Recipe> recipes = new ArrayList<>();
+        ArrayList<String> recipes = new ArrayList<>();
         for (int i = 0; i < recipeList.getChildren().size(); i++) {
             if (recipeList.getChildren().get(i) instanceof Recipe) {
-                recipes.add(((Recipe) recipeList.getChildren().get(i)));
+                recipes.add(((Recipe) recipeList.getChildren().get(i)).getRecipe().toString());
             }
         }
         clearRecipes();
         for(int i = recipes.size() - 1; i > -1; i--) {
-            recipeList.getChildren().add(recipes.get(i));
+            Recipe newRecipe = new Recipe();
+            newRecipe.getRecipe().setText(recipes.get(i));
+            newRecipe.setViewButtonAction(this::handleViewButton);
+            recipeList.getChildren().add(0,newRecipe);
+            updateRecipeIndices();
+            // recipes.get(i).setViewButtonAction(this::handleViewButton);
+            // recipeList.getChildren().add(0, r);
+            // recipeList.getChildren().add(0, recipes.get(i));
+            
         }
         updateRecipeIndices();
     }
