@@ -67,21 +67,25 @@ public class SignupHandler implements HttpHandler {
         String password = scanner.nextLine(); // Gets password
         String response = "Signup Request Received";
 
-        MongoCollection<Document> recipeCollection = recipeDatabase.getCollection(username);
-        Document loginData = recipeCollection.find(new Document("username", username)).first();
-        System.out.println(username + "\n" + password);
-        if (loginData != null && loginData.getString("username").equals(username)) { // Check database for username
-            response =  "NAME TAKEN";
-            scanner.close();
-            return response;
-        }
-        loginData = new Document("_id", new ObjectId());
-        loginData.append("username", username);
-        loginData.append("password", password);
-        recipeCollection.insertOne(loginData);
-        response = "SUCCESS";
+        try (MongoClient mongoClient = MongoClients.create(uri)) {
+            MongoDatabase recipeDatabase = mongoClient.getDatabase("recipesdbasd");
+            MongoCollection<Document> recipeCollection = recipeDatabase.getCollection(username);
 
-        scanner.close();
+            Document loginData = recipeCollection.find(new Document("username", username)).first();
+            System.out.println(username + "\n" + password);
+            if (loginData != null && loginData.getString("username").equals(username)) { // Check database for username
+                response =  "NAME TAKEN";
+                scanner.close();
+                return response;
+            }
+            loginData = new Document("_id", new ObjectId());
+            loginData.append("username", username);
+            loginData.append("password", password);
+            recipeCollection.insertOne(loginData);
+            response = "SUCCESS";
+
+            scanner.close();
+        }
         return response;
     }
 

@@ -30,9 +30,9 @@ public class Controller {
     private View view;
     private Model model;
     private FrameController frameController;
-    private Button button;
     private String mealType;
     private String ingredients;
+    private String fullRecipe;
 
     public Controller(View view, Model model, Stage primaryStage) {
         this.view = view;
@@ -41,7 +41,6 @@ public class Controller {
 
         // AppFrame Event Listeners
         view.getAppFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
-        // view.getAppFrame().getRecipeList().setViewButton(this::handleViewButton);
 
         // MealFrame Event Listeners
         view.getMealFrame().setStartButtonAction(this::handleMealStartButton);
@@ -59,10 +58,10 @@ public class Controller {
         view.getGptFrame().setRefreshButtonAction(this::handleGptRefreshButton);
 
         // RecipeFrame Event Listeners
-        view.getRecipeFrame().setSaveButtonAction(null);
-        view.getRecipeFrame().setDeleteButtonAction(null);
-        view.getRecipeFrame().setCancelButtonAction(null);
-
+        view.getRecipeFrame().setCancelButtonAction(this::handleRecipeCancelButton);
+        view.getRecipeFrame().setSaveButtonAction(this::handleRecipeSaveButton);
+        view.getRecipeFrame().setDeleteButtonAction(this::handleRecipeDeleteButton);
+        
     }
 
     public FrameController getFrameController() {
@@ -72,19 +71,29 @@ public class Controller {
     //================ AppFrame Event Handler ====================================================
 
     private void handleNewRecipeButton(ActionEvent event) {
-        frameController.getFrame("gpt");
+        frameController.getFrame("meal");
     }
 
+    private void handleViewButton(ActionEvent event) {
+        Button target = (Button) event.getTarget();
+        Recipe recipe = (Recipe) target.getParent();
+        String recipeTitle = recipe.getRecipe().getText();
+        System.out.println("RECIPE TITLE: " + recipeTitle);
+        String recipeText = model.performRequest("GET", null, recipeTitle, "");
+        view.getRecipeFrame().getRecipeSteps().getTextArea().setText(recipeText);
+
+        frameController.getFrame("recipe");
+    }
     //================ MealFrame and IngredientsFrame Event Handlers ===============================
 
     private void handleMealStartButton(ActionEvent event) {
-        model.startRecording();
-
         Button startButton = view.getMealFrame().getStartButton();
         Button stopButton = view.getMealFrame().getStopButton();
         startButton.setStyle(view.getMealFrame().getClickedStyle());
         stopButton.setStyle(view.getMealFrame().getDefaultStyle());
         view.getMealFrame().getRecordingLabel().setVisible(true);
+
+        model.startRecording();
     }
 
     private void handleMealStopButton(ActionEvent event) {
@@ -92,35 +101,35 @@ public class Controller {
         Button stopButton = view.getMealFrame().getStopButton();
         startButton.setStyle(view.getMealFrame().getDefaultStyle());
         stopButton.setStyle(view.getMealFrame().getClickedStyle());
+
         model.stopRecording();
 
-        // String response = model.performRequest("GET", null, "meal", "recording");
+        mealType = model.performRequest("POST", null, null, "whisper");
+        mealType = model.mealType(mealType);
+        System.out.println("MEALTYPE CONTROLLER: " + mealType);
 
-        // System.out.println("TRANSCRIPTION: " + mealType);
-        mealType = meal();
-        System.out.println("MEALTYPE: " + mealType);
-        // Change scenes after getting response
-        if (mealType.equals("breakfast") || mealType.equals("lunch") || mealType.equals("dinner")) {
+        if (mealType.equals("")) {
+            view.getMealFrame().getPrompt().getText().setText("Invalid input. Please select either \n Breakfast, Lunch, or Dinner.");
+        } else if (mealType.equals("breakfast") || mealType.equals("lunch") || mealType.equals("dinner")) {
             // Update prompt for IngredientsFrame to include meal type then change the frame
             view.getIngredientsFrame().getPrompt().getText().setText("You have selected " + mealType + "\n List your ingredients:");
             frameController.getFrame("ingredients");
-        } else {
-            // Keep frame if meal type not detected then prompt to try again
-            view.getMealFrame().getPrompt().getText().setText("Invalid input. Please select either \n Breakfast, Lunch, or Dinner.");
-        }
-    }
 
-    private String meal() {
-        return model.performRequest("POST", null, null, "whisper");
+            // Reset prompt and button styles
+            view.getMealFrame().getPrompt().getText().setText("What meal type would you like: \n Breakfast, Lunch, or Dinner?");
+            startButton.setStyle(view.getMealFrame().getDefaultStyle());
+            stopButton.setStyle(view.getMealFrame().getDefaultStyle());
+        }
+
     }
 
     private void handleMealCancelButton(ActionEvent event) {
-        button = view.getMealFrame().getCancelButton();
-
         Button startButton = view.getMealFrame().getStartButton();
         Button stopButton = view.getMealFrame().getStopButton();
         startButton.setStyle(view.getMealFrame().getDefaultStyle());
         stopButton.setStyle(view.getMealFrame().getDefaultStyle());
+
+        model.stopRecording();
 
         // Redirect back to Home Page
         frameController.getFrame("home");
@@ -129,22 +138,40 @@ public class Controller {
     //=================== IngredientsFrame Event Handlers ==================================
 
     private void handleIngredientsStartButton(ActionEvent event) {
-    //     model.performRequest("POST", null, "ingredients", "recording");
-    //     Button startButton = view.getMealFrame().getStartButton();
-    //     Button stopButton = view.getMealFrame().getStopButton();
-    //     startButton.setStyle(view.getMealFrame().getDefaultStyle());
-    //     stopButton.setStyle(view.getMealFrame().getDefaultStyle());
+        Button startButton = view.getIngredientsFrame().getStartButton();
+        Button stopButton = view.getIngredientsFrame().getStopButton();
+        startButton.setStyle(view.getIngredientsFrame().getClickedStyle());
+        stopButton.setStyle(view.getIngredientsFrame().getDefaultStyle());
+
+        model.startRecording();
     }
 
     private void handleIngredientsStopButton(ActionEvent event) {
-    //     String response = model.performRequest("GET", "gpt", null, null);
+        Button startButton = view.getIngredientsFrame().getStartButton();
+        Button stopButton = view.getIngredientsFrame().getStopButton();
+        startButton.setStyle(view.getIngredientsFrame().getDefaultStyle());
+        stopButton.setStyle(view.getIngredientsFrame().getClickedStyle());
 
-    //     // Change scenes after getting response
-    //     frameController.getFrame(response);
+        model.stopRecording();
+
+        ingredients = model.performRequest("POST", null, null, "whisper");
+
+        // Create prompt with mealType and ingredients and pass to ChatGPT API
+        String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
+        System.out.println("PROMPT +++ " + prompt);
+        String response = model.performRequest("POST", prompt, null, "chatgpt");
+        fullRecipe = response;
+        response = response.replace("+", "\n");
+        view.getGptFrame().getRecipeText().setText(response);
+
+        // Change scenes after getting response
+        frameController.getFrame("gpt");
+
+        startButton.setStyle(view.getIngredientsFrame().getDefaultStyle());
+        stopButton.setStyle(view.getIngredientsFrame().getDefaultStyle());
     }
 
     private void handleIngredientsCancelButton(ActionEvent event) {
-
         Button startButton = view.getMealFrame().getStartButton();
         Button stopButton = view.getMealFrame().getStopButton();
         startButton.setStyle(view.getMealFrame().getDefaultStyle());
@@ -154,17 +181,21 @@ public class Controller {
         frameController.getFrame("home");
     }
     
-    
     //=============== GptFrame Event Handlers =============================
 
     private void handleGptSaveButton(ActionEvent event) {
-        String recipeText = view.getGptFrame().getRecipeText().getText();
-        String recipeName = recipeText.split("\n")[0];
+        String recipeName = view.getGptFrame().getRecipeText().getText().split("\n")[0];
         Recipe newRecipe = new Recipe();
         newRecipe.getRecipe().setText(recipeName);
+        newRecipe.setViewButtonAction(this::handleViewButton);
         
-        view.getAppFrame().getRecipeList().getChildren().add(newRecipe);
+        view.getAppFrame().getRecipeList().getChildren().add(0,newRecipe);
         model.updateRecipeIndices(view.getAppFrame().getRecipeList());
+        
+        model.performRequest("POST", fullRecipe, null, "");
+
+        // Redirect back to Home Page
+        frameController.getFrame("home");
     }
 
     // takes the same input for mealtype and ingredients,
@@ -176,16 +207,33 @@ public class Controller {
         //---------------------------
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
         String response = model.performRequest("POST", prompt, null, "chatgpt");
-        System.out.println("CONTROLLER RESPONSE: " + response);
+        fullRecipe = response;
         response = response.replace("+", "\n");
         view.getGptFrame().getRecipeText().setText(response);
     }
 
     // Cancels the request for ChatGPT, goes back to home screen to restart
-    private void handleGptCancelButton(ActionEvent event){
+    private void handleGptCancelButton(ActionEvent event) {
         frameController.getFrame("home");
     }
 
     //================ RecipeFrame Event Handlers =============================
 
+    private void handleRecipeCancelButton(ActionEvent event) {
+        frameController.getFrame("home");
+    }
+
+    private void handleRecipeSaveButton(ActionEvent event) {
+        String updatedRecipe = view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
+        //Make PUT request and save updatedRecipe as second param
+        String response = model.performRequest("PUT", updatedRecipe, null, "");
+        System.out.println("[PUT RESPONSE] " + response);
+    }
+
+    private void handleRecipeDeleteButton(ActionEvent event) {
+        int delim = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().indexOf("\n");
+        String recipeTitle = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().substring(0, delim);
+        String response = model.performRequest("DELETE", null, recipeTitle, "");
+        System.out.println("[DELETE RESPONSE] " + response);
+    }
 }

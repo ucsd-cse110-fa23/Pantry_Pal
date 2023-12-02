@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.PasswordField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -421,6 +422,10 @@ class RecipeFrame extends BorderPane {
         this.setBottom(footer);
     }
 
+    public RecipeSteps getRecipeSteps() {
+        return recipeSteps;
+    }
+
     public Button getCancelButton() {
         return cancelButton;
     }
@@ -707,7 +712,7 @@ class GptFrame extends BorderPane {
     private Header header;
     private GptFooter footer;
     private Button saveButton, cancelButton, refreshButton;
-    private String generatedText = "Bacon Egg Sandwhich, bacon, eggs, and cheese, step 1:... Step 2:...";
+    private String generatedText = "TWO Bacon, Eggs, and Sausage Breakfast+4 slices bacon, 2 eggs, 2 sausage links+1. In a medium skillet over medium heat, cook the bacon until crispy. 2. Remove bacon from skillet, leaving renderings in the pan. Add sausage and cook until browned on both sides. 3. Push sausage to one side and crack two eggs into the other side. Fry over medium heat until desired doneness. 4. Serve bacon, eggs, and sausage together.";
     private Recipe newRecipe;
     private TextArea recipeText = new TextArea();
     //String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 75px; -fx-pref-height: 50px; -fx-border-radius: 10px";
@@ -718,9 +723,6 @@ class GptFrame extends BorderPane {
 
         header = new Header("New Recipe");
         footer = new GptFooter();
-        
-        // String[] getTitle = generatedText.split("\n");
-        // String title = getTitle[2];
         
         recipeText.setText(generatedText);
         recipeText.setWrapText(true);
@@ -777,6 +779,88 @@ class GptFrame extends BorderPane {
 
 }
 
+
+// Login Frame
+
+class LoginFrame extends BorderPane{
+    private LoginContent loginContent;
+    private Header header;
+
+    LoginFrame(){
+        this.setPrefSize(370, 120);
+        this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
+            
+        header = new Header("PantryPal Login");
+
+        loginContent = new LoginContent();
+
+        this.setCenter(loginContent);
+        
+        this.setTop(header);
+
+    }
+
+}
+
+class LoginContent extends VBox{
+    private TextField username;
+    private PasswordField password;
+    private Label userLabel, passLabel;
+    private Button createAccountButton, loginButton;
+
+    LoginContent(){
+        this.setPrefWidth(10);
+
+        username = new TextField();
+        password = new PasswordField();
+
+        userLabel = new Label("Username");
+        userLabel.setTextAlignment(TextAlignment.CENTER);
+
+
+        passLabel = new Label("Password");
+        passLabel.setTextAlignment(TextAlignment.CENTER);
+
+
+        createAccountButton = new Button("Create Account");
+        loginButton = new Button("Login");
+
+        HBox buttonContainer = new HBox();
+        buttonContainer.setAlignment(Pos.CENTER);
+
+        buttonContainer.getChildren().addAll(loginButton, createAccountButton);
+
+        this.getChildren().addAll(userLabel, username, passLabel,password, buttonContainer);
+
+    }
+
+    public void setUsername(TextField user){
+        username = user;
+    }
+
+    public void setPassword(PasswordField pass){
+        password = pass;
+    }
+    
+    public TextField getUsername(){
+        return username;
+    }
+
+    public PasswordField getPasswordField(){
+        return password;
+    }
+
+    public Button getCreateAccountButton(){
+        return createAccountButton;
+    }
+
+    public Button getLoginButton(){
+        return loginButton;
+    }
+
+}
+
+
 //=============================== VIEW ======================================
 
 public class View {
@@ -786,6 +870,7 @@ public class View {
     IngredientsFrame ingredients;
     GptFrame gpt;
     RecipeFrame recipe;
+    LoginFrame login;
     
     public View () {
         // // Setting the Layout of the Window- Should contain a Header, Footer and content for each Frame
@@ -794,6 +879,7 @@ public class View {
         ingredients = new IngredientsFrame();
         gpt = new GptFrame();
         recipe = new RecipeFrame();
+        login = new LoginFrame();
     }
 
     public AppFrame getAppFrame() {
@@ -814,6 +900,10 @@ public class View {
 
     public RecipeFrame getRecipeFrame() {
         return recipe;
+    }
+
+    public LoginFrame getLoginFrame(){
+        return login;
     }
 
 }

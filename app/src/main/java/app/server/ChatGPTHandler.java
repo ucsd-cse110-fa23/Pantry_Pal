@@ -52,8 +52,6 @@ public class ChatGPTHandler implements HttpHandler {
             }
 
 
-
-
             // OutputStream outStream = httpExchange.getResponseBody();
             // outStream.write(response.getBytes());
             // outStream.close();
@@ -100,9 +98,11 @@ public class ChatGPTHandler implements HttpHandler {
         );
         // Process the response
         String responseBody = response.body();
+        System.out.println("||RESPONSE BODY|| " + responseBody);
         JSONObject responseJson = new JSONObject(responseBody);
         JSONArray choices = responseJson.getJSONArray("choices");
         generatedText = choices.getJSONObject(0).getString("text");
+        System.out.println("++GENTEXT++ " + generatedText);
         JSONObject toJson = new JSONObject(generatedText);
 
         String res = toJson.getString("title");
@@ -113,17 +113,6 @@ public class ChatGPTHandler implements HttpHandler {
         System.out.println("generated text:" + generatedText);
         System.out.println("return" + res);
         scanner.close();
-
-        // String[] parts = res.split("\\+", 3);
-        // String titleString = parts[0];
-        // String ingredientString = parts[1];
-        // String instructionString = parts[2];
-
-        // String everything = titleString;
-        // everything += "                                  ";
-        // everything += ingredientString;
-        // everything += "                                  ";
-        // everything += instructionString;
 
         return res;
     }

@@ -27,15 +27,15 @@ public class LoginHandler implements HttpHandler {
     private MongoDatabase recipeDatabase;
     private String uri = "mongodb://azakaria:ILWaFDvRjUEUjpcJ@ac-ytzddhr-shard-00-00.rzzq5s2.mongodb.net:27017,ac-ytzddhr-shard-00-01.rzzq5s2.mongodb.net:27017,ac-ytzddhr-shard-00-02.rzzq5s2.mongodb.net:27017/?ssl=true&replicaSet=atlas-11uj01-shard-0&authSource=admin&retryWrites=true&w=majority";
 
-    LoginHandler() {
-        // Move the creation of resources inside the constructor
-        try {
-            mongoClient = MongoClients.create(uri);
-            recipeDatabase = mongoClient.getDatabase("recipesdbasd");
-        } catch(Exception err) {
-            System.out.println("MongoDB failed");
-        }
-    }
+    // LoginHandler() {
+    //     // Move the creation of resources inside the constructor
+    //     try {
+    //         mongoClient = MongoClients.create(uri);
+    //         recipeDatabase = mongoClient.getDatabase("recipesdbasd");
+    //     } catch(Exception err) {
+    //         System.out.println("MongoDB failed");
+    //     }
+    // }
 
     // general method and calls certain methods to handle http request
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -68,21 +68,27 @@ public class LoginHandler implements HttpHandler {
         String username = scanner.nextLine(); // Gets username
         String password = scanner.nextLine(); // Gets password
         String response = "Login Request Received";
-        MongoCollection<Document> recipeCollection = recipeDatabase.getCollection(username);
-        Document loginData = recipeCollection.find(new Document("username", username)).first();
-        System.out.println(username + "\n" + password);
 
-        if (loginData != null && loginData.getString("username").equals(username)) { // Check database for username
-            if(password.equals(loginData.getString("password"))) { // If the password for the username matches in the DB
-                response = "SUCCESS"; // Returns DB info...
+        try (MongoClient mongoClient = MongoClients.create(uri)) {
+            MongoDatabase recipeDatabase = mongoClient.getDatabase("recipesdbasd");
+            MongoCollection<Document> recipeCollection = recipeDatabase.getCollection(username);
+
+            Document loginData = recipeCollection.find(new Document("username", username)).first();
+            System.out.println(username + "\n" + password);
+
+            if (loginData != null && loginData.getString("username").equals(username)) { // Check database for username
+                if(password.equals(loginData.getString("password"))) { // If the password for the username matches in the DB
+                    response = "SUCCESS"; // Returns DB info...
+                } else {
+                    response = "PASSWORD FAILED"; // Incorrect password.
+                }
             } else {
-                response = "PASSWORD FAILED"; // Incorrect password.
+                response = "NAME FAILED"; // Non-existent name.
             }
-        } else {
-            response = "NAME FAILED"; // Non-existent name.
-        }
 
-        scanner.close();
+            scanner.close();
+        }
+        
         return response;
     }
 
