@@ -1,1 +1,1 @@
-Our code bade is in app > src > main > java > app > client > App
+Run the app through ./gradlew run
