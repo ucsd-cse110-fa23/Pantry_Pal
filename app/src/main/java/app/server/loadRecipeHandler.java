@@ -87,7 +87,9 @@ public class loadRecipeHandler implements HttpHandler{
                 if (a.containsKey("username")) {
                   continue;
                 }
-                response += "+" + a.getString("title");
+                
+                response += "-" + a.getString("title");
+
             }
             // taking out the first + 
           response = response.substring(1);
@@ -99,7 +101,6 @@ public class loadRecipeHandler implements HttpHandler{
       System.out.println("received get request on server with value " + value);
       System.out.println("response is " + response);
     }
-
     return response;
 
   }

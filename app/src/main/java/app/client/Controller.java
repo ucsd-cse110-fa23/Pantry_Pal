@@ -381,17 +381,21 @@ public class Controller {
     }
 
     public void loadRecipes(String recipes) {
+        System.out.println("WE MADE IT");
         if (recipes != null) {
             String[] recipesArr = { recipes};
-            if (recipes.contains("+")) {
-                recipesArr = recipes.split("+");
+            if (recipes.contains("-")) {
+                recipesArr = recipes.split("-");
+                System.out.println("CONTAIN");
             }
             for (int i = 0; i < recipesArr.length; i++) {
+                System.out.println("For 1");
                 Recipe newRecipe = new Recipe();
                 newRecipe.getRecipe().setText(recipesArr[i]);
                 newRecipe.setViewButtonAction(this::handleViewButton);
                 recipeList.getChildren().add(0,newRecipe);
                 updateRecipeIndices();
+                System.out.println("For 2");
             }
         }
     }
@@ -421,8 +425,8 @@ public class Controller {
         if (recipes != null) {
             String[] recipesArr = {recipes};
             String[] reverseRecipesArr = recipesArr;
-            if (recipes.contains("+")) {
-                recipesArr = recipes.split("+");
+            if (recipes.contains("-")) {
+                recipesArr = recipes.split("-");
                 reverseRecipesArr = recipesArr;
                 Arrays.sort(reverseRecipesArr);
             }
@@ -440,8 +444,8 @@ public class Controller {
         if (recipes != null) {
             String[] recipesArr = {recipes};
             String[] reverseRecipesArr = recipesArr;
-            if (recipes.contains("+")) {
-                recipesArr = recipes.split("+");
+            if (recipes.contains("-")) {
+                recipesArr = recipes.split("-");
                 reverseRecipesArr = recipesArr;
                 Arrays.sort(recipesArr);
                 for (int i = 0; i < recipesArr.length; i++) {
@@ -462,8 +466,8 @@ public class Controller {
         if (recipes != null) {
             String[] recipesArr = {recipes};
             String[] reverseRecipesArr = recipesArr;
-            if (recipes.contains("+")) {
-                recipesArr = recipes.split("+");
+            if (recipes.contains("-")) {
+                recipesArr = recipes.split("-");
                 reverseRecipesArr = recipesArr;
                 for (int i = 0; i < recipesArr.length; i++) {
                     reverseRecipesArr[recipesArr.length - 1 - i] = recipesArr[i];
