@@ -30,6 +30,7 @@ public class MyServer {
         server.createContext("/login", new LoginHandler());
         server.createContext("/signup", new SignupHandler());
         server.createContext("/loadRecipe", new loadRecipeHandler());
+        server.createContext("/dalle", new DallEHandler());
 
         server.setExecutor(threadPoolExecutor);
         server.start();
