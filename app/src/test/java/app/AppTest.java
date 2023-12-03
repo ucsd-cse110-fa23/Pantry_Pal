@@ -86,4 +86,11 @@ class AppTest {
         assertEquals("NAME FAILED", response);
         assertNotEquals("SUCCESS", response);
     }
+
+    @Test
+    void getMealTypeTest(){
+        Model mealtype = new Model();
+        String response = mealtype.performRequest("GET", null, "breakfast", "mealtype");
+        assertEquals("test",response);
+    }
 }

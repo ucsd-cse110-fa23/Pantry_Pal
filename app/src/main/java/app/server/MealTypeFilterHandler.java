@@ -14,6 +14,8 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Filters.and;
@@ -22,7 +24,7 @@ import static com.mongodb.client.model.Updates.*;
 
 
 
-public class loadRecipeHandler implements HttpHandler{
+public class MealTypeFilterHandler implements HttpHandler{
     private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
     private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
     private String URI = MongoURI;
@@ -53,8 +55,8 @@ public class loadRecipeHandler implements HttpHandler{
     /**
    * 
    *  Finds the recipes with user attached to them
-   *  expects http://localhost:8100/?mealtype=mealtype&user=user
-   *  return: title_1 + mealtype_1 + ... + title_n + mealtype_n 
+   *  expects: http://localhost:8100/?mealtype=mealtype&user=user
+   *  return: title_1 + mealtype_1  + ... + title_n + mealtype_n
    */
   private String handleGet(HttpExchange httpExchange) throws IOException {
     String response = "Invalid GET request";
@@ -63,16 +65,20 @@ public class loadRecipeHandler implements HttpHandler{
 
     if (query != null) {
       // gets the query from the url 
-      String value = query.substring(query.indexOf("=") + 1);
-      System.out.println("GET VALUE: " + value);
+      String value = query;
       value = URLDecoder.decode(value, "UTF-8");
-      System.out.println("DECODED VALUE: " + value);
+      Map<String,String> map = QueryParser.parseQuery(value);
+
+      String user = map.get("user");
+      String mealtype = map.get("mealtype");
       
       try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
 
-        FindIterable<Document> recipe = collection.find(new Document("user", value));
+        Bson filter = Filters.and(Filters.eq("mealtype",mealtype),Filters.eq("user", user));
+        
+        FindIterable<Document> recipe = collection.find(filter);
         
         if (recipe != null) {
             response = "";
