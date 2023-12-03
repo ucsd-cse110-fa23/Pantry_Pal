@@ -7,10 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Arrays;
-
 // Handles switching Scenes upon clicking buttons
 class FrameController {
     private Map<String, Scene> frameMap;
@@ -44,20 +40,12 @@ public class Controller {
         frameController = new FrameController(primaryStage);
         recipeList = view.getHomeFrame().getRecipeList();
 
-        // SortFrame Event Listeners
-        view.getSortFrame().setAlphaButtonAction(this::handleSortAlphaButton);
-        view.getSortFrame().setRAlphaButtonAction(this::handleSortRAlphaButton);
-        view.getSortFrame().setChronoButtonAction(this::handleSortChronoButton);
-        view.getSortFrame().setRChronoButtonAction(this::handleSortRChronoButton);
-        view.getSortFrame().setCancelButtonAction(this::handleSortCancelButton);
-
         // LoginFrame Event Listeners
         view.getLoginFrame().setLoginButtonAction(this::handleLoginButton);
         view.getLoginFrame().setCreateAccountButtonAction(this::handleCreateAccountButton);
 
         // HomeFrame Event Listeners
         view.getHomeFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
-        view.getHomeFrame().setSortButtonAction(this::handleSortButton);
 
         // MealFrame Event Listeners
         view.getMealFrame().setStartButtonAction(this::handleMealStartButton);
@@ -83,94 +71,6 @@ public class Controller {
 
     public FrameController getFrameController() {
         return frameController;
-    }
-
-    //================ SortFrame Event Handlers ====================================================
-
-    private void handleSortAlphaButton(ActionEvent event) {
-        recipeList.getChildren().clear();
-        username = view.getLoginFrame().getLoginContent().getUsername().getText();
-        password = view.getLoginFrame().getLoginContent().getPassword().getText();
-
-        String response = model.performRequest("POST", username, password, null, null, "login");
-        if (response.equals("SUCCESS")) {
-            String recipes = model.performRequest("GET", username, null, null, username, "loadRecipeHandler");
-
-            sortAlphabetically(recipes);
-
-            frameController.getFrame("home");
-            System.out.println("|||Frame changed|||");
-        } else {
-            System.out.println("[LOGIN RESPONSE] " + response);
-        }
-
-        // Redirect back to Home Page
-        frameController.getFrame("home");
-    }
-
-    private void handleSortRAlphaButton(ActionEvent event) {
-        recipeList.getChildren().clear();
-        username = view.getLoginFrame().getLoginContent().getUsername().getText();
-        password = view.getLoginFrame().getLoginContent().getPassword().getText();
-
-        String response = model.performRequest("POST", username, password, null, null, "login");
-        if (response.equals("SUCCESS")) {
-            String recipes = model.performRequest("GET", username, null, null, username, "loadRecipeHandler");
-
-            sortRAlphabetically(recipes);
-
-            frameController.getFrame("home");
-            System.out.println("|||Frame changed|||");
-        } else {
-            System.out.println("[LOGIN RESPONSE] " + response);
-        }
-
-        // Redirect back to Home Page
-        frameController.getFrame("home");
-    }
-
-    private void handleSortChronoButton(ActionEvent event) {
-        recipeList.getChildren().clear();
-        username = view.getLoginFrame().getLoginContent().getUsername().getText();
-        password = view.getLoginFrame().getLoginContent().getPassword().getText();
-
-        String response = model.performRequest("POST", username, password, null, null, "login");
-        if (response.equals("SUCCESS")) {
-            String recipes = model.performRequest("GET", username, null, null, username, "loadRecipeHandler");
-            loadRecipes(recipes);
-            frameController.getFrame("home");
-            System.out.println("|||Frame changed|||");
-        } else {
-            System.out.println("[LOGIN RESPONSE] " + response);
-        }
-
-        // Redirect back to Home Page
-        frameController.getFrame("home");
-    }
-
-    private void handleSortRChronoButton(ActionEvent event) {
-        recipeList.getChildren().clear();
-        username = view.getLoginFrame().getLoginContent().getUsername().getText();
-        password = view.getLoginFrame().getLoginContent().getPassword().getText();
-
-        String response = model.performRequest("POST", username, password, null, null, "login");
-        if (response.equals("SUCCESS")) {
-            String recipes = model.performRequest("GET", username, null, null, username, "loadRecipeHandler");
-            
-            sortRChronological(recipes);
-
-            frameController.getFrame("home");
-            System.out.println("|||Frame changed|||");
-        } else {
-            System.out.println("[LOGIN RESPONSE] " + response);
-        }
-
-        // Redirect back to Home Page
-        frameController.getFrame("home");
-    }
-
-    private void handleSortCancelButton(ActionEvent event) {
-        frameController.getFrame("home");
     }
 
     //================ LoginFrame Event Handlers ====================================================
@@ -208,10 +108,6 @@ public class Controller {
         frameController.getFrame("meal");
     }
 
-    private void handleSortButton(ActionEvent event) {
-        frameController.getFrame("sort");
-    }
-
     private void handleViewButton(ActionEvent event) {
         Button target = (Button) event.getTarget();
         Recipe recipe = (Recipe) target.getParent();
@@ -221,7 +117,6 @@ public class Controller {
 
         frameController.getFrame("recipe");
     }
-
     //================ MealFrame and IngredientsFrame Event Handlers ===============================
 
     private void handleMealStartButton(ActionEvent event) {
@@ -342,7 +237,7 @@ public class Controller {
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
         String response = model.performRequest("POST", username, password, prompt, null, "chatgpt");
         fullRecipe = response;
-        displayRecipe(response);
+        response = response.replace("+", "\n");
         view.getGptFrame().getRecipeText().setText(response);
     }
 
@@ -386,21 +281,17 @@ public class Controller {
     }
 
     public void loadRecipes(String recipes) {
-        System.out.println("WE MADE IT");
         if (recipes != null) {
             String[] recipesArr = { recipes};
             if (recipes.contains("-")) {
                 recipesArr = recipes.split("-");
-                System.out.println("CONTAIN");
             }
             for (int i = 0; i < recipesArr.length; i++) {
-                System.out.println("For 1");
                 Recipe newRecipe = new Recipe();
                 newRecipe.getRecipe().setText(recipesArr[i]);
                 newRecipe.setViewButtonAction(this::handleViewButton);
                 recipeList.getChildren().add(0,newRecipe);
                 updateRecipeIndices();
-                System.out.println("For 2");
             }
         }
     }
@@ -411,58 +302,6 @@ public class Controller {
             if (recipeList.getChildren().get(i) instanceof Recipe) {
                 ((Recipe) recipeList.getChildren().get(i)).setRecipeIndex(index);
                 index++;
-            }
-        }
-    }
-
-    public void sortAlphabetically(String recipes) {
-        if (recipes != null) {
-            String[] recipesArr = {recipes};
-            String[] reverseRecipesArr = recipesArr;
-            if (recipes.contains("-")) {
-                recipesArr = recipes.split("-");
-                reverseRecipesArr = recipesArr;
-                Arrays.sort(reverseRecipesArr);
-            }
-            for (int i = 0; i < reverseRecipesArr.length; i++) {
-                Recipe newRecipe = new Recipe();
-                newRecipe.getRecipe().setText(reverseRecipesArr[i]);
-                newRecipe.setViewButtonAction(this::handleViewButton);
-                recipeList.getChildren().add(newRecipe);
-                updateRecipeIndices();
-            }
-        }
-    }
-
-    public void sortRAlphabetically(String recipes) {
-        if (recipes != null) {
-            String[] recipesArr = {recipes};
-            if (recipes.contains("-")) {
-                recipesArr = recipes.split("-");
-                Arrays.sort(recipesArr);
-            }
-            for (int i = 0; i < recipesArr.length; i++) {
-                Recipe newRecipe = new Recipe();
-                newRecipe.getRecipe().setText(recipesArr[i]);
-                newRecipe.setViewButtonAction(this::handleViewButton);
-                recipeList.getChildren().add(0,newRecipe);
-                updateRecipeIndices();
-            }
-        }
-    }
-
-    public void sortRChronological(String recipes) {
-        if (recipes != null) {
-            String[] recipesArr = {recipes};
-            if (recipes.contains("-")) {
-                recipesArr = recipes.split("-");
-            }
-            for (int i = 0; i < recipesArr.length; i++) {
-                Recipe newRecipe = new Recipe();
-                newRecipe.getRecipe().setText(recipesArr[i]);
-                newRecipe.setViewButtonAction(this::handleViewButton);
-                recipeList.getChildren().add(newRecipe);
-                updateRecipeIndices();
             }
         }
     }
