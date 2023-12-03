@@ -9,7 +9,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
-import java.net.URI;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -67,7 +66,7 @@ public class RequestHandler implements HttpHandler {
   /**
    * need to change to get for the correct user
    * 
-   * @return the actual detailed recipe 
+   * @return title+ingredients+instructions+mealtype
    * 
    */
   private String handleGet(HttpExchange httpExchange) throws IOException {
@@ -77,20 +76,27 @@ public class RequestHandler implements HttpHandler {
 
     if (query != null) {
       // gets the query from the url 
-      String value = query.substring(query.indexOf("=") + 1);
-      System.out.println("GET VALUE: " + value);
+      String value = query;
       value = URLDecoder.decode(value, "UTF-8");
-      System.out.println("DECODED VALUE: " + value);
+
+      Map<String,String> map  = QueryParser.parseQuery(value);
+      for (Map.Entry<String, String> entry : map.entrySet()) {
+            System.out.println("Key: " + entry.getKey() + " | Value: " + entry.getValue());
+      }
+
+      String title = map.get("title");
+      String user = map.get("user");
       
       try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
-
-        Document recipe = collection.find(new Document("title", value)).first();
+        Bson filter = Filters.and(Filters.eq("title",title),Filters.eq("user", user));
+        Document recipe = collection.find(filter).first();
         if (recipe != null) {
           response = recipe.getString("title");
           response += "+" + recipe.getString("ingredients");
           response += "+" + recipe.getString("instructions");
+          response += "+" + recipe.getString("mealtype");
           System.out.println(response);
         } else {
           System.out.println("null find");
@@ -231,13 +237,17 @@ public class RequestHandler implements HttpHandler {
     System.out.println();
 
     if (query != null) {
-      String value = query.substring(query.indexOf("=") + 1);
+      String value = query;
       value = URLDecoder.decode(value, "UTF-8");
 
       System.out.println("decoded" + value);
-      int delim = value.indexOf("-");
-      String title = value.substring(0,delim);
-      String user = value.substring(delim + 1);
+      Map<String,String> map  = QueryParser.parseQuery(value);
+      for (Map.Entry<String, String> entry : map.entrySet()) {
+            System.out.println("Key: " + entry.getKey() + " | Value: " + entry.getValue());
+      }
+
+      String title = map.get("title");
+      String user = map.get("user");
 
       System.out.println("title: " + title + " User: " + user);
 

@@ -113,7 +113,7 @@ public class ChatGPTHandler implements HttpHandler {
         System.out.println("generated text:" + generatedText);
         System.out.println("return" + res);
         scanner.close();
-
+        res = res.replace("&", " and ");
         return res;
     }
 }
