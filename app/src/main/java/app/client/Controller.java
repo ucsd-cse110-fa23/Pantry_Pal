@@ -97,7 +97,6 @@ public class Controller {
 
             sortAlphabetically(recipes);
 
-            // loadRecipes(recipes);
             frameController.getFrame("home");
             System.out.println("|||Frame changed|||");
         } else {
@@ -119,7 +118,6 @@ public class Controller {
 
             sortRAlphabetically(recipes);
 
-            // loadRecipes(recipes);
             frameController.getFrame("home");
             System.out.println("|||Frame changed|||");
         } else {
@@ -160,7 +158,6 @@ public class Controller {
             
             sortRChronological(recipes);
 
-            // loadRecipes(recipes);
             frameController.getFrame("home");
             System.out.println("|||Frame changed|||");
         } else {
@@ -421,31 +418,6 @@ public class Controller {
     }
 
     public void sortAlphabetically(String recipes) {
-        // ArrayList<Recipe> recipes = new ArrayList<>();
-        // ArrayList<String> titles = new ArrayList<>();
-        // for (int i = 0; i < recipeList.getChildren().size(); i++) {
-        //     if (recipeList.getChildren().get(i) instanceof Recipe) {
-        //         recipes.add(((Recipe) recipeList.getChildren().get(i)));
-        //     }
-        // }
-        // clearRecipes();
-        // for (int i = 0; i < recipes.size(); i++) {
-        //     titles.add(recipes.get(i).getRecipe().toString());
-        // }
-        // Collections.sort(titles);
-        // for (int i = 0; i < titles.size(); i++) {
-        //     for (int j = 0; j < recipes.size(); j++) {
-        //         String re = recipes.get(j).getRecipe().toString();
-        //         if (titles.get(i).equals(re)) {
-        //             Recipe newRecipe = new Recipe();
-        //             newRecipe.getRecipe().setText(re);
-        //             newRecipe.setViewButtonAction(this::handleViewButton);
-        //             recipeList.getChildren().add(0,newRecipe);
-        //             updateRecipeIndices();
-        //         }
-        //     }
-        // }
-        // updateRecipeIndices();
         if (recipes != null) {
             String[] recipesArr = {recipes};
             String[] reverseRecipesArr = recipesArr;
