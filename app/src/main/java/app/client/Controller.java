@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Arrays;
 
 // Handles switching Scenes upon clicking buttons
 class FrameController {
@@ -86,15 +87,44 @@ public class Controller {
     //================ SortFrame Event Handlers ====================================================
 
     private void handleSortAlphaButton(ActionEvent event) {
-        sortAlphabetically();
+        clearRecipes();
+        username = view.getLoginFrame().getLoginContent().getUsername().getText();
+        password = view.getLoginFrame().getLoginContent().getPassword().getText();
+
+        String response = model.performRequest("POST", username, password, null, null, "login");
+        if (response.equals("SUCCESS")) {
+            String recipes = model.performRequest("GET", username, null, null, username, "loadRecipeHandler");
+
+            sortAlphabetically(recipes);
+
+            // loadRecipes(recipes);
+            frameController.getFrame("home");
+            System.out.println("|||Frame changed|||");
+        } else {
+            System.out.println("[LOGIN RESPONSE] " + response);
+        }
 
         // Redirect back to Home Page
         frameController.getFrame("home");;
     }
 
     private void handleSortRAlphaButton(ActionEvent event) {
-        sortAlphabetically();
-        reverse();
+        clearRecipes();
+        username = view.getLoginFrame().getLoginContent().getUsername().getText();
+        password = view.getLoginFrame().getLoginContent().getPassword().getText();
+
+        String response = model.performRequest("POST", username, password, null, null, "login");
+        if (response.equals("SUCCESS")) {
+            String recipes = model.performRequest("GET", username, null, null, username, "loadRecipeHandler");
+
+            sortRAlphabetically(recipes);
+
+            // loadRecipes(recipes);
+            frameController.getFrame("home");
+            System.out.println("|||Frame changed|||");
+        } else {
+            System.out.println("[LOGIN RESPONSE] " + response);
+        }
 
         // Redirect back to Home Page
         frameController.getFrame("home");;
@@ -127,13 +157,15 @@ public class Controller {
         String response = model.performRequest("POST", username, password, null, null, "login");
         if (response.equals("SUCCESS")) {
             String recipes = model.performRequest("GET", username, null, null, username, "loadRecipeHandler");
-            loadRecipes(recipes);
+            
+            sortRChronological(recipes);
+
+            // loadRecipes(recipes);
             frameController.getFrame("home");
             System.out.println("|||Frame changed|||");
         } else {
             System.out.println("[LOGIN RESPONSE] " + response);
         }
-        reverse();
 
         // Redirect back to Home Page
         frameController.getFrame("home");;
@@ -388,53 +420,90 @@ public class Controller {
         }
     }
 
-    public void sortAlphabetically() {
-        ArrayList<Recipe> recipes = new ArrayList<>();
-        ArrayList<String> titles = new ArrayList<>();
-        for (int i = 0; i < recipeList.getChildren().size(); i++) {
-            if (recipeList.getChildren().get(i) instanceof Recipe) {
-                recipes.add(((Recipe) recipeList.getChildren().get(i)));
+    public void sortAlphabetically(String recipes) {
+        // ArrayList<Recipe> recipes = new ArrayList<>();
+        // ArrayList<String> titles = new ArrayList<>();
+        // for (int i = 0; i < recipeList.getChildren().size(); i++) {
+        //     if (recipeList.getChildren().get(i) instanceof Recipe) {
+        //         recipes.add(((Recipe) recipeList.getChildren().get(i)));
+        //     }
+        // }
+        // clearRecipes();
+        // for (int i = 0; i < recipes.size(); i++) {
+        //     titles.add(recipes.get(i).getRecipe().toString());
+        // }
+        // Collections.sort(titles);
+        // for (int i = 0; i < titles.size(); i++) {
+        //     for (int j = 0; j < recipes.size(); j++) {
+        //         String re = recipes.get(j).getRecipe().toString();
+        //         if (titles.get(i).equals(re)) {
+        //             Recipe newRecipe = new Recipe();
+        //             newRecipe.getRecipe().setText(re);
+        //             newRecipe.setViewButtonAction(this::handleViewButton);
+        //             recipeList.getChildren().add(0,newRecipe);
+        //             updateRecipeIndices();
+        //         }
+        //     }
+        // }
+        // updateRecipeIndices();
+        if (recipes != null) {
+            String[] recipesArr = {recipes};
+            String[] reverseRecipesArr = recipesArr;
+            if (recipes.contains("+")) {
+                recipesArr = recipes.split("+");
+                reverseRecipesArr = recipesArr;
+                Arrays.sort(reverseRecipesArr);
+            }
+            for (int i = 0; i < reverseRecipesArr.length; i++) {
+                Recipe newRecipe = new Recipe();
+                newRecipe.getRecipe().setText(reverseRecipesArr[i]);
+                newRecipe.setViewButtonAction(this::handleViewButton);
+                recipeList.getChildren().add(0,newRecipe);
+                updateRecipeIndices();
             }
         }
-        clearRecipes();
-        for (int i = 0; i < recipes.size(); i++) {
-            titles.add(recipes.get(i).getRecipe().toString());
-        }
-        Collections.sort(titles);
-        for (int i = 0; i < titles.size(); i++) {
-            for (int j = 0; j < recipes.size(); j++) {
-                String re = recipes.get(j).getRecipe().toString();
-                if (titles.get(i).equals(re)) {
-                    Recipe newRecipe = new Recipe();
-                    newRecipe.getRecipe().setText(re);
-                    newRecipe.setViewButtonAction(this::handleViewButton);
-                    recipeList.getChildren().add(0,newRecipe);
-                    updateRecipeIndices();
-                }
-            }
-        }
-        updateRecipeIndices();
     }
 
-    public void reverse() {
-        ArrayList<String> recipes = new ArrayList<>();
-        for (int i = 0; i < recipeList.getChildren().size(); i++) {
-            if (recipeList.getChildren().get(i) instanceof Recipe) {
-                recipes.add(((Recipe) recipeList.getChildren().get(i)).getRecipe().toString());
+    public void sortRAlphabetically(String recipes) {
+        if (recipes != null) {
+            String[] recipesArr = {recipes};
+            String[] reverseRecipesArr = recipesArr;
+            if (recipes.contains("+")) {
+                recipesArr = recipes.split("+");
+                reverseRecipesArr = recipesArr;
+                Arrays.sort(recipesArr);
+                for (int i = 0; i < recipesArr.length; i++) {
+                    reverseRecipesArr[recipesArr.length - 1 - i] = recipesArr[i];
+                }
+            }
+            for (int i = 0; i < reverseRecipesArr.length; i++) {
+                Recipe newRecipe = new Recipe();
+                newRecipe.getRecipe().setText(reverseRecipesArr[i]);
+                newRecipe.setViewButtonAction(this::handleViewButton);
+                recipeList.getChildren().add(0,newRecipe);
+                updateRecipeIndices();
             }
         }
-        clearRecipes();
-        for(int i = recipes.size() - 1; i > -1; i--) {
-            Recipe newRecipe = new Recipe();
-            newRecipe.getRecipe().setText(recipes.get(i));
-            newRecipe.setViewButtonAction(this::handleViewButton);
-            recipeList.getChildren().add(0,newRecipe);
-            updateRecipeIndices();
-            // recipes.get(i).setViewButtonAction(this::handleViewButton);
-            // recipeList.getChildren().add(0, r);
-            // recipeList.getChildren().add(0, recipes.get(i));
-            
+    }
+
+    public void sortRChronological(String recipes) {
+        if (recipes != null) {
+            String[] recipesArr = {recipes};
+            String[] reverseRecipesArr = recipesArr;
+            if (recipes.contains("+")) {
+                recipesArr = recipes.split("+");
+                reverseRecipesArr = recipesArr;
+                for (int i = 0; i < recipesArr.length; i++) {
+                    reverseRecipesArr[recipesArr.length - 1 - i] = recipesArr[i];
+                }
+            }
+            for (int i = 0; i < reverseRecipesArr.length; i++) {
+                Recipe newRecipe = new Recipe();
+                newRecipe.getRecipe().setText(reverseRecipesArr[i]);
+                newRecipe.setViewButtonAction(this::handleViewButton);
+                recipeList.getChildren().add(0,newRecipe);
+                updateRecipeIndices();
+            }
         }
-        updateRecipeIndices();
     }
 }
