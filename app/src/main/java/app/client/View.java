@@ -410,6 +410,8 @@ class LoginContent extends VBox {
 
         userLabel = new Label("Username");
         userLabel.setTextAlignment(TextAlignment.CENTER);
+        username.setPromptText("Username");
+        password.setPromptText("Password");
 
         passLabel = new Label("Password");
         passLabel.setTextAlignment(TextAlignment.CENTER);

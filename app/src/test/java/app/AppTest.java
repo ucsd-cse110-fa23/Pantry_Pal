@@ -17,6 +17,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 
 class AppTest {
+    /* Tests whether QueryParser accurately parses HTTP query in the format 
+     * http://localhost:8100/route?u=username&q=query
+     */
+    @Test
+    void queryParamParseTest() throws IOException {
+        // mock-router handler is set up to return String formatted username,query from request
+        String username = "user";
+        String query = "search";
+        String route = "mock-route";
+        Model model = new Model();
+        String response = model.performRequest("GET", username, null, null, query, route);
+        assertTrue(response.equals("user,search"));
+    }
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
     @Test 
     void gptSameIngredientsTest() throws IOException {

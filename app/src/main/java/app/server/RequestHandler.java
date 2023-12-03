@@ -34,7 +34,6 @@ public class RequestHandler implements HttpHandler {
   private String URI = peterURI;
   private String databaseName = "recipesdbasd";
 
-
   // general method and calls certain methods to handle http request
   public void handle(HttpExchange httpExchange) throws IOException {
     String response = "Request Received";

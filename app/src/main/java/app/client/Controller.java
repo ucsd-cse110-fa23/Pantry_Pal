@@ -88,6 +88,8 @@ public class Controller {
         } else {
             System.out.println("[LOGIN RESPONSE] " + response);
         }
+
+        // String recipes = model.performRequest("GET", username, null, null, username, "mock-route");
     }
 
     private void handleCreateAccountButton(ActionEvent event) {
@@ -117,7 +119,7 @@ public class Controller {
 
         frameController.getFrame("recipe");
     }
-    //================ MealFrame and IngredientsFrame Event Handlers ===============================
+    //================ MealFrame Event Handlers ===============================
 
     private void handleMealStartButton(ActionEvent event) {
         Button startButton = view.getMealFrame().getStartButton();
