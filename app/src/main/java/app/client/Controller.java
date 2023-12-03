@@ -44,11 +44,12 @@ public class Controller {
         frameController = new FrameController(primaryStage);
         recipeList = view.getHomeFrame().getRecipeList();
 
-        // LoginFrame Event Listeners
+        // SortFrame Event Listeners
         view.getSortFrame().setAlphaButtonAction(this::handleSortAlphaButton);
         view.getSortFrame().setRAlphaButtonAction(this::handleSortRAlphaButton);
         view.getSortFrame().setChronoButtonAction(this::handleSortChronoButton);
         view.getSortFrame().setRChronoButtonAction(this::handleSortRChronoButton);
+        view.getSortFrame().setCancelButtonAction(this::handleSortCancelButton);
 
         // LoginFrame Event Listeners
         view.getLoginFrame().setLoginButtonAction(this::handleLoginButton);
@@ -87,7 +88,7 @@ public class Controller {
     //================ SortFrame Event Handlers ====================================================
 
     private void handleSortAlphaButton(ActionEvent event) {
-        clearRecipes();
+        recipeList.getChildren().clear();
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
 
@@ -104,11 +105,11 @@ public class Controller {
         }
 
         // Redirect back to Home Page
-        frameController.getFrame("home");;
+        frameController.getFrame("home");
     }
 
     private void handleSortRAlphaButton(ActionEvent event) {
-        clearRecipes();
+        recipeList.getChildren().clear();
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
 
@@ -125,11 +126,11 @@ public class Controller {
         }
 
         // Redirect back to Home Page
-        frameController.getFrame("home");;
+        frameController.getFrame("home");
     }
 
     private void handleSortChronoButton(ActionEvent event) {
-        clearRecipes();
+        recipeList.getChildren().clear();
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
 
@@ -144,11 +145,11 @@ public class Controller {
         }
 
         // Redirect back to Home Page
-        frameController.getFrame("home");;
+        frameController.getFrame("home");
     }
 
     private void handleSortRChronoButton(ActionEvent event) {
-        clearRecipes();
+        recipeList.getChildren().clear();
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
 
@@ -165,7 +166,11 @@ public class Controller {
         }
 
         // Redirect back to Home Page
-        frameController.getFrame("home");;
+        frameController.getFrame("home");
+    }
+
+    private void handleSortCancelButton(ActionEvent event) {
+        frameController.getFrame("home");
     }
 
     //================ LoginFrame Event Handlers ====================================================
@@ -410,17 +415,6 @@ public class Controller {
         }
     }
 
-    public void clearRecipes() {
-        int index = 0;
-        for (int i = 0; i < recipeList.getChildren().size(); i++) {
-            if (recipeList.getChildren().get(index) instanceof Recipe) {
-                recipeList.getChildren().remove(index);
-            } else {
-                index++;
-            }
-        }
-    }
-
     public void sortAlphabetically(String recipes) {
         if (recipes != null) {
             String[] recipesArr = {recipes};
@@ -434,7 +428,7 @@ public class Controller {
                 Recipe newRecipe = new Recipe();
                 newRecipe.getRecipe().setText(reverseRecipesArr[i]);
                 newRecipe.setViewButtonAction(this::handleViewButton);
-                recipeList.getChildren().add(0,newRecipe);
+                recipeList.getChildren().add(newRecipe);
                 updateRecipeIndices();
             }
         }
@@ -443,18 +437,13 @@ public class Controller {
     public void sortRAlphabetically(String recipes) {
         if (recipes != null) {
             String[] recipesArr = {recipes};
-            String[] reverseRecipesArr = recipesArr;
             if (recipes.contains("-")) {
                 recipesArr = recipes.split("-");
-                reverseRecipesArr = recipesArr;
                 Arrays.sort(recipesArr);
-                for (int i = 0; i < recipesArr.length; i++) {
-                    reverseRecipesArr[recipesArr.length - 1 - i] = recipesArr[i];
-                }
             }
-            for (int i = 0; i < reverseRecipesArr.length; i++) {
+            for (int i = 0; i < recipesArr.length; i++) {
                 Recipe newRecipe = new Recipe();
-                newRecipe.getRecipe().setText(reverseRecipesArr[i]);
+                newRecipe.getRecipe().setText(recipesArr[i]);
                 newRecipe.setViewButtonAction(this::handleViewButton);
                 recipeList.getChildren().add(0,newRecipe);
                 updateRecipeIndices();
@@ -465,19 +454,14 @@ public class Controller {
     public void sortRChronological(String recipes) {
         if (recipes != null) {
             String[] recipesArr = {recipes};
-            String[] reverseRecipesArr = recipesArr;
             if (recipes.contains("-")) {
                 recipesArr = recipes.split("-");
-                reverseRecipesArr = recipesArr;
-                for (int i = 0; i < recipesArr.length; i++) {
-                    reverseRecipesArr[recipesArr.length - 1 - i] = recipesArr[i];
-                }
             }
-            for (int i = 0; i < reverseRecipesArr.length; i++) {
+            for (int i = 0; i < recipesArr.length; i++) {
                 Recipe newRecipe = new Recipe();
-                newRecipe.getRecipe().setText(reverseRecipesArr[i]);
+                newRecipe.getRecipe().setText(recipesArr[i]);
                 newRecipe.setViewButtonAction(this::handleViewButton);
-                recipeList.getChildren().add(0,newRecipe);
+                recipeList.getChildren().add(newRecipe);
                 updateRecipeIndices();
             }
         }
