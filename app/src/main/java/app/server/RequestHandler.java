@@ -9,10 +9,13 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import java.net.URI;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Filters.and;
@@ -29,7 +32,7 @@ import static com.mongodb.client.model.Updates.*;
 public class RequestHandler implements HttpHandler {
   private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
   private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-  private String URI = peterURI;
+  private String URI = MongoURI;
 
 
   // general method and calls certain methods to handle http request
@@ -62,6 +65,7 @@ public class RequestHandler implements HttpHandler {
   }
     
   /**
+   * need to change to get for the correct user
    * 
    * @return the actual detailed recipe 
    * 
@@ -103,7 +107,7 @@ public class RequestHandler implements HttpHandler {
   /**
    *  getting the entire string of the recipe and need to parse for title, set title field and then set text
    * 
-   * EXPECT: USER+TITLE+INGREDIENTS+INSTRUCTIONS
+   * EXPECT: TITLE+INGREDIENTS+INSTRUCTIONS+USER+MEALTYPE
    *  
    * @param httpExchange
    * @return
@@ -125,16 +129,19 @@ public class RequestHandler implements HttpHandler {
     int fDelim = body.indexOf("+");
     int sDelim = body.indexOf("+",fDelim+1);
     int tDelim = body.indexOf("+",sDelim+1);
+    int delim4 = body.indexOf("+", tDelim+1);
 
     String title = body.substring(0,fDelim);
     String ingredients = body.substring(fDelim+1, sDelim);
     String instructions = body.substring(sDelim+1,tDelim);
-    String user = body.substring(tDelim + 1);
+    String user = body.substring(tDelim + 1,delim4);
+    String mealtype = body.substring(delim4+1);
     
     System.out.println("TITLE: " + title);
     System.out.println("INGRED: " + ingredients);
     System.out.println("INSTRUCT: " + instructions);
     System.out.println("USER:" + user);
+    System.out.println("MEALTYPE: " + mealtype);
     String response = "valid post";
 
     try (MongoClient mongoClient = MongoClients.create(URI)) {
@@ -146,6 +153,7 @@ public class RequestHandler implements HttpHandler {
       recipe.append("ingredients", ingredients);
       recipe.append("instructions",instructions);
       recipe.append("user",user);
+      recipe.append("mealtype",mealtype);
 
       collection.insertOne(recipe);
       response = "valid posts";
@@ -208,21 +216,38 @@ public class RequestHandler implements HttpHandler {
     return response;
   }
 
+  /**
+   * Exepects: query paramater in URL, need title and user delimitted by a +, but mgiht need to change + to a -
+   *  need to get the correct tuser
+   */
+
+  
   private String handleDelete(HttpExchange httpExchange) throws IOException{
     String response = "Invalid delete request";
     URI uri = httpExchange.getRequestURI();
     String query = uri.getRawQuery();
+    
     System.out.println(query);
+    System.out.println();
 
     if (query != null) {
       String value = query.substring(query.indexOf("=") + 1);
       value = URLDecoder.decode(value, "UTF-8");
 
+      System.out.println("decoded" + value);
+      int delim = value.indexOf("-");
+      String title = value.substring(0,delim);
+      String user = value.substring(delim + 1);
+
+      System.out.println("title: " + title + " User: " + user);
+
       try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
+        
+        Bson filter = Filters.and(Filters.eq("title",title),Filters.eq("user", user));
 
-        collection.findOneAndDelete(new Document("title", value));
+        collection.findOneAndDelete(filter);
         response = "valid delete";
       }
     } 
