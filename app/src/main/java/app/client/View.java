@@ -15,6 +15,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import java.io.*;
 
+import javax.xml.crypto.dsig.spec.XPathType.Filter;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -40,11 +42,11 @@ class Header extends HBox {
 //===================== FOOTERS ===================================================
 
 // Home Page Footer
-class Footer extends HBox {
+class HomeFooter extends HBox {
 
-    private Button newRecipeButton;
+    private Button newRecipeButton, filterMealTypeButton;
 
-    Footer() {
+    HomeFooter() {
         this.setPrefSize(500, 60);
         this.setStyle("-fx-background-color: #F0F8FF;");
         this.setSpacing(15);
@@ -54,13 +56,20 @@ class Footer extends HBox {
 
         newRecipeButton = new Button("New Recipe"); // text displayed on add button
         newRecipeButton.setStyle(defaultButtonStyle); // styling the button
+
+        filterMealTypeButton = new Button("Filter Meal");
+        filterMealTypeButton.setStyle(defaultButtonStyle);
         
-        this.getChildren().add(newRecipeButton); // adding button to footer
+        this.getChildren().addAll(newRecipeButton, filterMealTypeButton); // adding button to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
     }
 
     public Button getNewRecipeButton() {
         return newRecipeButton;
+    }
+
+    public Button getFilterMealTypeButton() {
+        return filterMealTypeButton;
     }
 
 }
@@ -169,6 +178,52 @@ class RecipeFooter extends HBox {
 }
 
 //===================== MISCELLANEOUS ===================================================
+
+// Fields for Login Page
+class LoginContent extends VBox {
+
+    private TextField username;
+    private PasswordField password;
+    private Button createAccountButton, loginButton;
+
+    LoginContent() {
+
+        this.setPrefWidth(10);
+
+        username = new TextField();
+        password = new PasswordField();
+
+        username.setPromptText("Username");
+        password.setPromptText("Password");
+
+        createAccountButton = new Button("Create Account");
+        loginButton = new Button("Login");
+
+        HBox buttonContainer = new HBox();
+        buttonContainer.setAlignment(Pos.CENTER);
+        buttonContainer.getChildren().addAll(loginButton, createAccountButton);
+
+        this.getChildren().addAll(username, password, buttonContainer);
+
+    }
+    
+    public TextField getUsername() {
+        return username;
+    }
+
+    public PasswordField getPassword() {
+        return password;
+    }
+
+    public Button getLoginButton() {
+        return loginButton;
+    }
+
+    public Button getCreateAccountButton() {
+        return createAccountButton;
+    }
+
+}
 
 // Recipe Title Displayed on Home Page
 class Recipe extends VBox {
@@ -282,7 +337,7 @@ class RecipeSteps extends VBox {
 }
 
 // Message on MealFrame and IngredientsFrame
-class Prompt extends VBox{
+class Prompt extends VBox {
 
     private Label text;
     private Button startButton, stopButton;
@@ -316,7 +371,7 @@ class Prompt extends VBox{
 
         buttonContainer.setAlignment(Pos.CENTER);
         buttonContainer.getChildren().addAll(startButton, stopButton);
-        this.getChildren().addAll(this.text, buttonContainer);
+        this.getChildren().addAll(this.text, buttonContainer, recordingLabel);
         this.setAlignment(Pos.CENTER);
     }
 
@@ -338,60 +393,88 @@ class Prompt extends VBox{
 
 }
 
-// Fields for Login Page
-class LoginContent extends VBox {
+class FilterPrompt extends VBox {
 
-    private TextField username;
-    private PasswordField password;
-    private Button createAccountButton, loginButton;
+    private Label text;
+    private Button breakfastButton, lunchButton, dinnerButton;
+    private HBox buttonContainer = new HBox(5);
 
-    LoginContent() {
+    FilterPrompt() {
 
-        this.setPrefWidth(10);
+        text = new Label("Select Meal Type Filter");
 
-        username = new TextField();
-        password = new PasswordField();
+        breakfastButton = new Button("Breakfast");
+        breakfastButton.setStyle("-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px");
 
-        username.setPromptText("Username");
-        password.setPromptText("Password");
+        lunchButton = new Button("Lunch");
+        lunchButton.setStyle("-fx-background-color: #79AC78; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px");
 
-        createAccountButton = new Button("Create Account");
-        loginButton = new Button("Login");
+        dinnerButton = new Button("Dinner");
+        dinnerButton.setStyle("-fx-background-color: #BE3144; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px");
 
-        HBox buttonContainer = new HBox();
-        buttonContainer.setAlignment(Pos.CENTER);
-        buttonContainer.getChildren().addAll(loginButton, createAccountButton);
+        buttonContainer.getChildren().addAll(breakfastButton, lunchButton, dinnerButton);
+        this.getChildren().addAll(text, buttonContainer);
 
-        this.getChildren().addAll(username, password, buttonContainer);
+    }
 
+    public Button getBreakfastButton() {
+        return breakfastButton;
     }
     
-    public TextField getUsername() {
-        return username;
+    public Button getLunchButton() {
+        return lunchButton;
     }
 
-    public PasswordField getPassword() {
-        return password;
-    }
-
-    public Button getLoginButton() {
-        return loginButton;
-    }
-
-    public Button getCreateAccountButton() {
-        return createAccountButton;
+    public Button getDinnerButton() {
+        return dinnerButton;
     }
 
 }
 
-
 //=============================== FRAMES =========================================
+
+// Logic Page Window Upon App Start
+class LoginFrame extends BorderPane {
+
+    private Header header;
+    private LoginContent loginContent;
+    private Button loginButton, createAccountButton;
+
+    LoginFrame() {
+        
+        this.setPrefSize(370, 120);
+        this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
+            
+        header = new Header("PantryPal");
+        loginContent = new LoginContent();
+
+        this.setTop(header);
+        this.setCenter(loginContent);
+
+        loginButton = loginContent.getLoginButton();
+        createAccountButton = loginContent.getCreateAccountButton();
+
+    }
+
+    public LoginContent getLoginContent() {
+        return loginContent;
+    }
+
+    public void setLoginButtonAction(EventHandler<ActionEvent> eventHandler) {
+        loginButton.setOnAction(eventHandler);
+    }
+
+    public void setCreateAccountButtonAction(EventHandler<ActionEvent> eventHandler) {
+        createAccountButton.setOnAction(eventHandler);
+    }
+
+}
 
 // Home Page Window
 class HomeFrame extends BorderPane {
 
     private Header header;
-    private Footer footer;
+    private HomeFooter footer;
     private RecipeList recipeList;
     private Button newRecipeButton, filterMealTypeButton;
 
@@ -399,8 +482,8 @@ class HomeFrame extends BorderPane {
 
         // Initialize the Header Object
         header = new Header("PantryPal");
-        // Initialize the Footer Object
-        footer = new Footer();
+        // Initialize the HomeFooter Object
+        footer = new HomeFooter();
         // Create a RecipeList Object to hold the recipes
         recipeList = new RecipeList();
         
@@ -417,6 +500,7 @@ class HomeFrame extends BorderPane {
 
         // Initialise Button Variables through the getters in Footer
         newRecipeButton = footer.getNewRecipeButton();
+        filterMealTypeButton = footer.getFilterMealTypeButton();
     }
 
     public RecipeList getRecipeList() {
@@ -427,12 +511,57 @@ class HomeFrame extends BorderPane {
         return newRecipeButton;
     }
 
+    public Button getFilterMealTypeButton() {
+        return filterMealTypeButton;
+    }
+
     public void setNewRecipeButtonAction(EventHandler<ActionEvent> eventHandler) {
         newRecipeButton.setOnAction(eventHandler);
     }
 
+    public void setFilterMealTypeButtonAction(EventHandler<ActionEvent> eventHandler) {
+        filterMealTypeButton.setOnAction(eventHandler);
+    }
+
 }
 
+// Filter Recipe Window to Display Recipes Based on a Specific Meal Type
+class FilterFrame extends BorderPane {
+    
+    private Header header;
+    private FilterPrompt filterPrompt;
+    private RecordingFooter footer;
+    private Button breakfastButton, lunchButton, dinnerButton;
+
+    FilterFrame() {
+
+        header = new Header("Filter Meal Type");
+        filterPrompt = new FilterPrompt();
+        footer = new RecordingFooter();
+
+        this.setTop(header);
+        this.setCenter(filterPrompt);
+        this.setBottom(footer);
+
+        breakfastButton = filterPrompt.getBreakfastButton();
+        lunchButton = filterPrompt.getLunchButton();
+        dinnerButton = filterPrompt.getDinnerButton();
+
+    }
+
+    public void setBreakfastButtonAction(EventHandler<ActionEvent> eventHandler) {
+        breakfastButton.setOnAction(eventHandler);
+    }
+
+    public void setLunchButtonAction(EventHandler<ActionEvent> eventHandler) {
+        lunchButton.setOnAction(eventHandler);
+    }
+
+    public void setDinnerButtonAction(EventHandler<ActionEvent> eventHandler) {
+        dinnerButton.setOnAction(eventHandler);
+    }
+
+}
 // Saved Full Recipe Window
 class RecipeFrame extends BorderPane {
 
@@ -724,53 +853,17 @@ class GptFrame extends BorderPane {
 }
 
 
-// Logic Page Window Upon App Start
-class LoginFrame extends BorderPane {
-
-    private Header header;
-    private LoginContent loginContent;
-    private Button loginButton, createAccountButton;
-
-    LoginFrame() {
-        
-        this.setPrefSize(370, 120);
-        this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
-            
-        header = new Header("PantryPal");
-        loginContent = new LoginContent();
-
-        this.setTop(header);
-        this.setCenter(loginContent);
-
-        loginButton = loginContent.getLoginButton();
-        createAccountButton = loginContent.getCreateAccountButton();
-
-    }
-
-    public LoginContent getLoginContent() {
-        return loginContent;
-    }
-
-    public void setLoginButtonAction(EventHandler<ActionEvent> event) {
-        loginButton.setOnAction(event);
-    }
-
-    public void setCreateAccountButtonAction(EventHandler<ActionEvent> event) {
-        createAccountButton.setOnAction(event);
-    }
-
-}
-
 //=============================== VIEW ======================================
 
 public class View {
 
+    LoginFrame login;
     HomeFrame home;
     MealFrame meal;
     IngredientsFrame ingredients;
     GptFrame gpt;
     RecipeFrame recipe;
-    LoginFrame login;
+    FilterFrame filter;
     
     public View () {
         // // Setting the Layout of the Window- Should contain a Header, Footer and content for each Frame
@@ -780,6 +873,7 @@ public class View {
         ingredients = new IngredientsFrame();
         gpt = new GptFrame();
         recipe = new RecipeFrame();
+        filter = new FilterFrame();
     }
 
     public LoginFrame getLoginFrame() {
@@ -806,4 +900,7 @@ public class View {
         return recipe;
     }
 
+    public FilterFrame getFilterFrame() {
+        return filter;
+    }
 }

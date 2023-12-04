@@ -2,6 +2,9 @@ package app.client;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.Action;
+
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -47,6 +50,7 @@ public class Controller {
 
         // HomeFrame Event Listeners
         view.getHomeFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
+        view.getHomeFrame().setFilterMealTypeButtonAction(this::handleFilterMealTypeButton);
 
         // MealFrame Event Listeners
         view.getMealFrame().setStartButtonAction(this::handleMealStartButton);
@@ -68,6 +72,10 @@ public class Controller {
         view.getRecipeFrame().setSaveButtonAction(this::handleRecipeSaveButton);
         view.getRecipeFrame().setDeleteButtonAction(this::handleRecipeDeleteButton);
         
+        // FilterFrame Event Listerners
+        view.getFilterFrame().setBreakfastButtonAction(this::handleFilterBreakfastButton);
+        view.getFilterFrame().setLunchButtonAction(this::handleFilterLunchButton);
+        view.getFilterFrame().setDinnerButtonAction(this::handleFilterDinnerButton);
     }
 
     public FrameController getFrameController() {
@@ -109,6 +117,10 @@ public class Controller {
 
     private void handleNewRecipeButton(ActionEvent event) {
         frameController.getFrame("meal");
+    }
+
+    private void handleFilterMealTypeButton(ActionEvent event) {
+        frameController.getFrame("filter");
     }
 
     private void handleViewButton(ActionEvent event) {
@@ -273,6 +285,29 @@ public class Controller {
         frameController.getFrame("home");
     }
 
+    //===================== FilterFrame Handlers ================================
+
+    public void handleFilterBreakfastButton(ActionEvent event) {
+        String response = model.performRequest("GET", username, null, null, "breakfast", "mealtype");
+        clearRecipes();
+        loadRecipes(response);
+        frameController.getFrame("home");
+    }
+
+    public void handleFilterLunchButton(ActionEvent event) {
+        String response = model.performRequest("GET", username, null, null, "lunch", "mealtype");
+        clearRecipes();
+        loadRecipes(response);
+        frameController.getFrame("home");
+    }
+
+    public void handleFilterDinnerButton(ActionEvent event) {
+        String response = model.performRequest("GET", username, null, null, "dinner", "mealtype");
+        clearRecipes();
+        loadRecipes(response);
+        frameController.getFrame("home");
+    }
+
     //=================== HELPER FUNCTIONS ====================
     
     private void displayMealType(Recipe recipe, String res) {
@@ -306,8 +341,8 @@ public class Controller {
     public void loadRecipes(String recipes) {
         if (recipes != null) {
             String[] recipesArr = { recipes };
-            if (recipes.contains("-")) {
-                recipesArr = recipes.split("-");
+            if (recipes.contains("_")) {
+                recipesArr = recipes.split("_");
             }
             for (int i = 0; i < recipesArr.length; i++) {
                 String meal = recipesArr[i].split("\\+")[1];
@@ -319,6 +354,15 @@ public class Controller {
                 updateRecipeIndices();
             }
         }
+    }
+
+    public void clearRecipes() {
+        for (int i = 0; i < recipeList.getChildren().size(); i++) {
+            if (recipeList.getChildren().get(i) instanceof Recipe) {
+                ((Recipe) recipeList.getChildren().get(i)).setRecipeIndex(0);
+            }
+        }
+        recipeList.getChildren().clear();
     }
 
     public void updateRecipeIndices() {

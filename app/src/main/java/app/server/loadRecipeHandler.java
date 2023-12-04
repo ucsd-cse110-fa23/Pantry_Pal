@@ -92,7 +92,7 @@ public class loadRecipeHandler implements HttpHandler{
                 if (a.containsKey("password")) {
                   continue;
                 }
-                response += "+" + a.getString("title") + "+" + a.getString("mealtype");
+                response += "_" + a.getString("title") + "+" + a.getString("mealtype");
             }
             // taking out the first + 
           response = response.substring(1);
