@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.Scanner;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -55,8 +56,9 @@ public class LoginHandler implements HttpHandler {
     private String handlePost(HttpExchange httpExchange) throws IOException {
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);
-        String username = scanner.nextLine(); // Gets username
-        String password = scanner.nextLine(); // Gets password
+        String data = URLDecoder.decode(scanner.nextLine() , "UTF-8");
+        String username = data.split("\\&")[0]; // Gets username
+        String password = data.split("\\&")[1]; // Gets password
         String response = "Login Request Received";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
