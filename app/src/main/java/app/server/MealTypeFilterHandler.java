@@ -95,6 +95,7 @@ public class MealTypeFilterHandler implements HttpHandler{
           response = "";
         }
       }
+      
       System.out.println("received get request on server with value " + value);
       System.out.println("response is " + response);
     }
