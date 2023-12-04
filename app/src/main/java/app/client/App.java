@@ -37,7 +37,7 @@ public class App extends Application {
         primaryStage.setScene(loginScene);
 
         // Make window non-resizable
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
 
         // Show the app
         primaryStage.show();

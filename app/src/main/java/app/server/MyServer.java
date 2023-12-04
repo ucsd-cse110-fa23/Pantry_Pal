@@ -9,7 +9,8 @@ public class MyServer {
 
     // initialize server port and hostname
     private static final int SERVER_PORT = 8100;
-    private static final String SERVER_HOSTNAME = "localhost";
+    private static final String SERVER_HOSTNAME = "LOCALHOST";
+    public static String MONGODBURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
 
     public static void main(String[] args) throws IOException {
 

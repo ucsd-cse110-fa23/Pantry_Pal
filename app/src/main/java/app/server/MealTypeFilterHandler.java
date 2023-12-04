@@ -27,7 +27,7 @@ import static com.mongodb.client.model.Updates.*;
 public class MealTypeFilterHandler implements HttpHandler{
     private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
     private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-    private String URI = peterURI;
+    private String URI = MyServer.MONGODBURI;
 
       // general method and calls certain methods to handle http request
   public void handle(HttpExchange httpExchange) throws IOException {
