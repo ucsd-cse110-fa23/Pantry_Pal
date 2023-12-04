@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -18,6 +19,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.TargetDataLine;
 
+import app.client.HomeFrame;
+import app.client.RecipeList;
 
 import java.net.URLEncoder;
 import java.net.URL;
@@ -203,6 +206,107 @@ public class Model {
             targetDataLine.stop();
             targetDataLine.close();
         }
+    }
+
+    public String sortAlphabetically(String recipes, RecipeList recipeList) {
+        if (recipes != null) {
+            String[] recipesArr = {recipes};
+            String[] reverseRecipesArr = recipesArr;
+            if (recipes.contains("-")) {
+                recipesArr = recipes.split("-");
+                reverseRecipesArr = recipesArr;
+                Arrays.sort(reverseRecipesArr);
+            }
+            for (int i = 0; i < reverseRecipesArr.length; i++) {
+                Recipe newRecipe = new Recipe();
+                newRecipe.getRecipe().setText(reverseRecipesArr[i]);
+                //newRecipe.setViewButtonAction(this::handleViewButton);
+                recipeList.getChildren().add(newRecipe);
+                // updateRecipeIndices();
+            }
+            String fin = "";
+            for(int i = 0; i < recipesArr.length; i++){
+                fin = fin + "_" + recipesArr[i];
+            }
+            fin = fin.substring(1);
+            return fin;
+        }
+        return null;
+    }
+
+    public String sortRAlphabetically(String recipes, RecipeList recipeList) {
+        if (recipes != null) {
+            String[] recipesArr = {recipes};
+            if (recipes.contains("-")) {
+                recipesArr = recipes.split("-");
+                Arrays.sort(recipesArr);
+            }
+            for (int i = 0; i < recipesArr.length; i++) {
+                Recipe newRecipe = new Recipe();
+                newRecipe.getRecipe().setText(recipesArr[i]);
+                //newRecipe.setViewButtonAction(this::handleViewButton);
+                recipeList.getChildren().add(0,newRecipe);
+                // updateRecipeIndices();
+            }
+
+            String fin = "";
+            for(int i = 0; i < recipesArr.length; i++){
+                fin = fin + "_" + recipesArr[i];
+            }
+            fin = fin.substring(1);
+            return fin;
+        }
+        return null;
+    }
+
+    public String sortRChronological(String recipes, RecipeList recipeList) {
+        if (recipes != null) {
+            String[] recipesArr = {recipes};
+            if (recipes.contains("-")) {
+                recipesArr = recipes.split("-");
+            }
+            for (int i = 0; i < recipesArr.length; i++) {
+                Recipe newRecipe = new Recipe();
+                newRecipe.getRecipe().setText(recipesArr[i]);
+                //newRecipe.setViewButtonAction(this::handleViewButton);
+                recipeList.getChildren().add(newRecipe);
+                // updateRecipeIndices();
+            }
+
+            String fin = "";
+            for(int i = 0; i < recipesArr.length; i++){
+                fin = fin + "_" + recipesArr[i];
+            }
+            fin = fin.substring(1);
+            return fin;
+        }
+
+        return null;
+    }
+
+    public String sortChronological(String recipes, RecipeList recipeList) {
+        if (recipes != null) {
+            String[] recipesArr = {recipes};
+            if (recipes.contains("-")) {
+                recipesArr = recipes.split("-");
+            }
+            for (int i = 0; i < recipesArr.length; i++) {
+                Recipe newRecipe = new Recipe();
+                newRecipe.getRecipe().setText(recipesArr[i]);
+                // newRecipe.setViewButtonAction(this::handleViewButton);
+                recipeList.getChildren().add(0,newRecipe);
+                // updateRecipeIndices();
+            }
+
+            String fin = "";
+            for(int i = 0; i < recipesArr.length; i++){
+                fin = fin + "_" + recipesArr[i];
+            }
+            fin = fin.substring(1);
+            return fin;
+        }
+
+        return null;
     }
     
     public static void main(String[] args) throws IOException {

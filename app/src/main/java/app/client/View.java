@@ -15,6 +15,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import java.io.*;
 
+import app.client.HomeFrame;
+import app.client.RecipeList;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -295,7 +298,7 @@ class Recipe extends VBox {
 
 }
 
-// Container on Home Page that holds Recipe objects
+// // Container on Home Page that holds Recipe objects
 class RecipeList extends VBox {
 
     RecipeList() {
@@ -573,14 +576,17 @@ class HomeFrame extends BorderPane {
     private Button newRecipeButton;
     private Button sortButton;
 
-    HomeFrame() {
+    HomeFrame(RecipeList rl) {
         // Initialize the Header Object
         header = new Header("PantryPal");
         // Initialize the Footer Object
         footer = new Footer();
 
         // Create a RecipeList Object to hold the recipes
-        recipeList = new RecipeList();
+        if(rl == null){
+            recipeList = new RecipeList();
+        }
+        else{recipeList = rl;}
         
         // Add a Scroller to the recipeList
         ScrollPane scroll = new ScrollPane();
@@ -920,12 +926,12 @@ public class View {
     GptFrame gpt;
     RecipeFrame recipe;
     
-    public View () {
+    public View (RecipeList rl) {
 
         // // Setting the Layout of the Window- Should contain a Header, Footer and content for each Frame
         sort = new SortFrame();
         login = new LoginFrame();
-        home = new HomeFrame();
+        home = new HomeFrame(rl);
         meal = new MealFrame();
         ingredients = new IngredientsFrame();
         gpt = new GptFrame();

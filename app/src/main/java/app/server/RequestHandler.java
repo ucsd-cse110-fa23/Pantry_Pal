@@ -184,8 +184,8 @@ public class RequestHandler implements HttpHandler {
     String username = body.split("\\&")[0];
     body = body.split("\\&")[2];
 
-    int fDelim = body.indexOf("+");
-    int sDelim = body.indexOf("+",fDelim+1);
+    int fDelim = body.indexOf("\\+");
+    int sDelim = body.indexOf("\\+",fDelim+1);
     // int tDelim = body.indexOf("+",sDelim+1);
 
     String title = body.substring(0,fDelim);

@@ -5,12 +5,29 @@ package app;
 
 import org.junit.jupiter.api.Test;
 
+import app.client.*;
 import app.client.App;
 import app.client.View;
 import app.client.Controller;
 import app.client.Model;
 import app.server.ChatGPTHandler;
 import app.server.MyServer;
+import javafx.stage.Stage;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.PasswordField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -85,5 +102,26 @@ class AppTest {
         String response = loginTest.performRequest("POST", "fakeName", "password12", null, null, "login");
         assertEquals("NAME FAILED", response);
         assertNotEquals("SUCCESS", response);
+    }
+
+    @Test
+    void sortAlphabeticallyTest() throws IOException { 
+        //MyServer.main(null);
+        Model sortModelTest = new Model();
+        View view = new View(null);
+        // RecipeList a = view.RecipeList();
+        String username = "testSort";
+        Controller cont = new Controller(view, sortModelTest, null);
+
+        String recipe1 = "Cheesy Bacon Toast+bacon, cheese, toast+Preheat the oven to 375 degrees F. Place the bacon on a baking sheet. Bake for 20 minutes or until crispy. Spread cheese on toast and bake for an additional 5 minutes or until cheese is melted. Place bacon pieces on top of toast and enjoy!";
+        String recipe2 = "Grilled Cheese Sandwich+2 slices of Sandwich Bread, 1 tablespoon of Butter, 2 slices of Cheese+Melt the butter in a skillet over medium-high heat. Place one slice of bread in the skillet and top with cheese. Cover with the other slice of bread. Fry until golden on one side, then flip and cook until golden on the other side and the cheese has melted. Enjoy!";
+        String recipe3 = "Stuffed French Toast+2 slices of toast, 2 tablespoons of cream cheese, 2 tablespoons of raspberry jam, 2 tablespoons almond-flavored liqueur, 1 tablespoon butter+Lightly spread jam and cream cheese on one slice of toast. Place the other slice of toast on top and cut in half. Heat butter in a pan over medium heat. Dip the sandwich into the liqueur and then fry in the pan until golden on each side. Serve warm. Enjoy!";
+
+        String recipes = sortModelTest.performRequest("GET", username, null, null, username, "loadRecipeHandler");
+        String temp = sortModelTest.sortAlphabetically(recipes, view.getHomeFrame().getRecipeList());  
+        String a = view.getHomeFrame().getRecipeList().getChildren().get(0).toString();
+        
+        String sorted = recipe1 + "_" + recipe2 + "_" + recipe3;
+        assertEquals(temp, sorted);
     }
 }
