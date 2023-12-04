@@ -27,16 +27,6 @@ public class LoginHandler implements HttpHandler {
     private MongoDatabase recipeDatabase;
     private String uri = "mongodb://azakaria:ILWaFDvRjUEUjpcJ@ac-ytzddhr-shard-00-00.rzzq5s2.mongodb.net:27017,ac-ytzddhr-shard-00-01.rzzq5s2.mongodb.net:27017,ac-ytzddhr-shard-00-02.rzzq5s2.mongodb.net:27017/?ssl=true&replicaSet=atlas-11uj01-shard-0&authSource=admin&retryWrites=true&w=majority";
 
-    // LoginHandler() {
-    //     // Move the creation of resources inside the constructor
-    //     try {
-    //         mongoClient = MongoClients.create(uri);
-    //         recipeDatabase = mongoClient.getDatabase("recipesdbasd");
-    //     } catch(Exception err) {
-    //         System.out.println("MongoDB failed");
-    //     }
-    // }
-
     // general method and calls certain methods to handle http request
     public void handle(HttpExchange httpExchange) throws IOException {
 

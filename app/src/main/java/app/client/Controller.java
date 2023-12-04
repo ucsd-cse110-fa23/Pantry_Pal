@@ -31,19 +31,18 @@ public class Controller {
     private View view;
     private Model model;
     private FrameController frameController;
-    private String mealType;
-    private String ingredients;
-    private String fullRecipe;
-    private String recipeTitle;
     private String[] recipeParts;
+    private String username, password, mealType, ingredients, fullRecipe, recipeTitle;
+    private RecipeList recipeList;
 
     public Controller(View view, Model model, Stage primaryStage) {
         this.view = view;
         this.model = model;
         frameController = new FrameController(primaryStage);
+        recipeList = view.getHomeFrame().getRecipeList();
 
         // AppFrame Event Listeners
-        view.getAppFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
+        view.getHomeFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
 
         // MealFrame Event Listeners
         view.getMealFrame().setStartButtonAction(this::handleMealStartButton);
@@ -74,16 +73,17 @@ public class Controller {
     //================ AppFrame Event Handler ====================================================
 
     private void handleNewRecipeButton(ActionEvent event) {
+        // String response = model.performRequest("GET", null, "breakfast", "mealtype");
+        // System.out.println(response);
         frameController.getFrame("meal");
     }
 
     private void handleViewButton(ActionEvent event) {
         Button target = (Button) event.getTarget();
         Recipe recipe = (Recipe) target.getParent();
-        String recipeTitle = recipe.getRecipe().getText();
-        System.out.println("RECIPE TITLE: " + recipeTitle);
-        String recipeText = model.performRequest("GET", null, recipeTitle, "");
-        view.getRecipeFrame().getRecipeSteps().getTextArea().setText(recipeText);
+        recipeTitle = recipe.getRecipe().getText();
+        String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
+        displayRecipe(recipeText);
 
         frameController.getFrame("recipe");
     }
@@ -107,8 +107,8 @@ public class Controller {
 
         model.stopRecording();
 
-        mealType = model.performRequest("POST", null, null, "whisper");
-        mealType = model.mealType(mealType);
+        mealType = model.performRequest("POST", null, null, null, null, "whisper");
+        mealType = model.transcribeMealType(mealType);
         System.out.println("MEALTYPE CONTROLLER: " + mealType);
 
         if (mealType.equals("")) {
@@ -123,7 +123,6 @@ public class Controller {
             startButton.setStyle(view.getMealFrame().getDefaultStyle());
             stopButton.setStyle(view.getMealFrame().getDefaultStyle());
         }
-
     }
 
     private void handleMealCancelButton(ActionEvent event) {
@@ -157,12 +156,12 @@ public class Controller {
 
         model.stopRecording();
 
-        ingredients = model.performRequest("POST", null, null, "whisper");
+        ingredients = model.performRequest("POST", null, null, null, null, "whisper");
 
         // Create prompt with mealType and ingredients and pass to ChatGPT API, Dall-E API for the picture
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
         System.out.println("PROMPT +++ " + prompt);
-        String response = model.performRequest("POST", prompt, null, "chatgpt");
+        String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
         fullRecipe = response;
 
         recipeParts = response.split("\\+");
@@ -170,7 +169,7 @@ public class Controller {
         response = response.replace("+", "\n");
 
         String dallePrompt = "Generate a real picture of " + recipeTitle;
-        String dalleResponse = model.performRequest("POST", dallePrompt, null, "dalle");
+        String dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
 
         Image image = new Image(dalleResponse); 
 
@@ -200,12 +199,16 @@ public class Controller {
         String recipeName = view.getGptFrame().getRecipeText().getText().split("\n")[0];
         Recipe newRecipe = new Recipe();
         newRecipe.getRecipe().setText(recipeName);
+        displayMealType(newRecipe, mealType);
         newRecipe.setViewButtonAction(this::handleViewButton);
+
+        // Replace w username
+        fullRecipe += "+User1+" + mealType;
+
+        recipeList.getChildren().add(0, newRecipe);
+        updateRecipeIndices();
         
-        view.getAppFrame().getRecipeList().getChildren().add(0,newRecipe);
-        model.updateRecipeIndices(view.getAppFrame().getRecipeList());
-        
-        model.performRequest("POST", fullRecipe, null, "");
+        model.performRequest("POST", username, null, fullRecipe, null, "");
 
         // Redirect back to Home Page
         frameController.getFrame("home");
@@ -214,12 +217,8 @@ public class Controller {
     // takes the same input for mealtype and ingredients,
     // tells ChatGPT to regenerate response with the set of ingredients
     private void handleGptRefreshButton(ActionEvent event) {
-        // MOCK INPUTS
-        mealType = "breakfast";
-        ingredients = "bacon, eggs, sausage";
-        //---------------------------
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = model.performRequest("POST", prompt, null, "chatgpt");
+        String response = model.performRequest("POST", username, null, prompt, null, "chatgpt");
         fullRecipe = response;
 
         recipeParts = response.split("\\+");
@@ -227,7 +226,7 @@ public class Controller {
         response = response.replace("+", "\n");
 
         String dallePrompt = "Generate a real picture of " + recipeTitle;
-        String dalleResponse = model.performRequest("POST", dallePrompt, null, "dalle");
+        String dalleResponse = model.performRequest("POST", username, null, dallePrompt, null, "dalle");
         
         Image image = new Image(dalleResponse); 
 
@@ -252,14 +251,69 @@ public class Controller {
     private void handleRecipeSaveButton(ActionEvent event) {
         String updatedRecipe = view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
         //Make PUT request and save updatedRecipe as second param
-        String response = model.performRequest("PUT", updatedRecipe, null, "");
+        String response = model.performRequest("PUT", username, null, updatedRecipe, null, "");
         System.out.println("[PUT RESPONSE] " + response);
     }
 
     private void handleRecipeDeleteButton(ActionEvent event) {
         int delim = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().indexOf("\n");
         String recipeTitle = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().substring(0, delim);
-        String response = model.performRequest("DELETE", null, recipeTitle, "");
+        String response = model.performRequest("DELETE", username, null, null, recipeTitle, "");
         System.out.println("[DELETE RESPONSE] " + response);
+    }
+
+    //=================== HELPER FUNCTIONS ====================
+    
+    private void displayMealType(Recipe recipe, String res) {
+        if (res.equals("breakfast")) {
+            recipe.getMealType().setText("B");
+            recipe.getMealType().setStyle("-fx-background-color: #39A7FF; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;");
+        } else if (res.equals("lunch")) {
+            recipe.getMealType().setText("L");
+            recipe.getMealType().setStyle("-fx-background-color: #79AC78; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;");
+        } else if (res.equals("dinner")) {
+            recipe.getMealType().setText("D");
+            recipe.getMealType().setStyle("-fx-background-color: #BE3144; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;");
+        } else { 
+            // Display error message
+        }
+    }
+
+    private void displayRecipe(String recipe) {
+        try {
+            String recipeName = recipe.split("\\+")[0];
+            String recipeText = recipe.substring(recipe.indexOf("\\+") + 1);
+            recipeText = recipeText.replace("\\+", "\n");
+            view.getRecipeFrame().getRecipeSteps().getRecipeName().setText(recipeName);
+            view.getRecipeFrame().getRecipeSteps().getTextArea().setText(recipeText);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadRecipes(String recipes) {
+        if (recipes != null) {
+            String[] recipesArr = { recipes};
+            if (recipes.contains("-")) {
+                recipesArr = recipes.split("-");
+            }
+            for (int i = 0; i < recipesArr.length; i++) {
+                Recipe newRecipe = new Recipe();
+                newRecipe.getRecipe().setText(recipesArr[i]);
+                newRecipe.setViewButtonAction(this::handleViewButton);
+                recipeList.getChildren().add(0,newRecipe);
+                updateRecipeIndices();
+            }
+        }
+    }
+
+    public void updateRecipeIndices() {
+        int index = 1;
+        for (int i = 0; i < recipeList.getChildren().size(); i++) {
+            if (recipeList.getChildren().get(i) instanceof Recipe) {
+                ((Recipe) recipeList.getChildren().get(i)).setRecipeIndex(index);
+                index++;
+            }
+        }
     }
 }

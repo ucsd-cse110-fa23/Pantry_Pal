@@ -18,7 +18,7 @@ public class App extends Application {
         Controller controller = new Controller(view, model, primaryStage);
 
         // Create new Scenes for each Page
-        homeScene = new Scene(view.getAppFrame(), 400, 500);
+        homeScene = new Scene(view.getHomeFrame(), 400, 500);
         mealScene = new Scene(view.getMealFrame(), 400, 500);
         ingredScene = new Scene(view.getIngredientsFrame(), 400, 500);
         gptScene = new Scene(view.getGptFrame(), 400, 500);

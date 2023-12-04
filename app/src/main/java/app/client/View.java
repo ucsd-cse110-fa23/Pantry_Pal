@@ -30,7 +30,7 @@ class Header extends HBox {
 
     Header(String text) {
         this.setPrefSize(500, 70); // Size of the header
-        this.setStyle("-fx-background-color: #39A7FF;");
+        this.setStyle("-fx-background-color: #9EB8D9;");
 
         titleText = new Text(text); // Text of the Header
         titleText.setStyle("-fx-font: 24 arial; -fx-text-fill: #FFFFFF;");
@@ -177,6 +177,8 @@ class RecipeFooter extends HBox {
 class Recipe extends VBox {
 
     private Label index;
+    private Label mealType;
+    private HBox container = new HBox();
     private TextField recipe;
     private Button viewButton;
     
@@ -192,17 +194,26 @@ class Recipe extends VBox {
         this.getChildren().add(index); // add index label to recipe
 
         recipe = new TextField(); // create recipe name text field
-        recipe.setPrefSize(200, 20); // set size of text field
+        recipe.setPrefSize(300, 20); // set size of text field
         recipe.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;"); // set background color of texfield
         index.setTextAlignment(TextAlignment.LEFT); // set alignment of text field
         recipe.setPadding(new Insets(10, 0, 10, 0)); // adds some padding to the text field
-        this.getChildren().add(recipe); // add textlabel to recipe
-
+        
+        mealType = new Label("B");
+        mealType.setStyle("-fx-background-color: #39A7FF; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;");
+        mealType.setPadding(new Insets(0, 5, 0, 5));
+        
         viewButton = new Button("View");
-        viewButton.setPrefSize(250, 20);
+        viewButton.setPrefSize(50, 20);
         viewButton.setPrefHeight(Double.MAX_VALUE);
         viewButton.setStyle("-fx-background-color: #FAE5EA; -fx-border-width: 0;"); // sets style of button
-        this.getChildren().add(viewButton);
+
+        HBox.setMargin(mealType, new Insets(5));
+        container.setAlignment(Pos.CENTER_LEFT);
+        container.getChildren().addAll(mealType, recipe, viewButton);
+        this.getChildren().add(container); // add textlabel to recipe
+
+        // this.getChildren().add(viewButton);
     }
 
     public void setRecipeIndex(int num) {
@@ -212,6 +223,10 @@ class Recipe extends VBox {
 
     public TextField getRecipe() {
         return recipe;
+    }
+
+    public Label getMealType() {
+        return mealType;
     }
 
     public Button getViewButton() {
@@ -268,21 +283,26 @@ class RecipeList extends VBox {
 }
 
 // Content of full recipe description
-class RecipeSteps extends HBox {
+class RecipeSteps extends VBox {
 
-    public TextArea recipeSteps;
+    private Label recipeName;
+    private TextArea recipeSteps;
 
     RecipeSteps() {
         // this.setPrefSize(500, 500);
         // this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;"); // sets background color of task
-
+        recipeName = new Label();
         recipeSteps = new TextArea();
         recipeSteps.setEditable(true);
         recipeSteps.setPrefSize(400, 500); // set size of text field
         recipeSteps.setWrapText(true);
         recipeSteps.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;"); // set background color of texfield
         
-        this.getChildren().add(recipeSteps);
+        this.getChildren().addAll(recipeName, recipeSteps);
+    }
+
+    public Label getRecipeName() {
+        return recipeName;
     }
 
     public TextArea getTextArea() {
@@ -351,14 +371,14 @@ class Prompt extends VBox{
 //=============================== FRAMES =========================================
 
 // Home Page Window
-class AppFrame extends BorderPane {
+class HomeFrame extends BorderPane {
 
     private Header header;
     private Footer footer;
     private RecipeList recipeList;
-    private Button newRecipeButton;
+    private Button newRecipeButton, filterMealTypeButton;
 
-    AppFrame() {
+    HomeFrame() {
         // Initialize the Header Object
         header = new Header("PantryPal");
         // Initialize the Footer Object
@@ -879,7 +899,7 @@ class LoginContent extends VBox{
 
 public class View {
 
-    AppFrame home;
+    HomeFrame home;
     MealFrame meal;
     IngredientsFrame ingredients;
     GptFrame gpt;
@@ -888,7 +908,7 @@ public class View {
     
     public View () {
         // // Setting the Layout of the Window- Should contain a Header, Footer and content for each Frame
-        home = new AppFrame();
+        home = new HomeFrame();
         meal = new MealFrame();
         ingredients = new IngredientsFrame();
         gpt = new GptFrame();
@@ -896,7 +916,7 @@ public class View {
         login = new LoginFrame();
     }
 
-    public AppFrame getAppFrame() {
+    public HomeFrame getHomeFrame() {
         return home;
     }
 
@@ -916,7 +936,7 @@ public class View {
         return recipe;
     }
 
-    public LoginFrame getLoginFrame(){
+    public LoginFrame getLoginFrame() {
         return login;
     }
 

@@ -32,7 +32,7 @@ public class MyServer {
         server.createContext("/loadRecipe", new loadRecipeHandler());
         server.createContext("/dalle", new DallEHandler());
         server.createContext("/mockDalle", new MockDallE());
-        
+        server.createContext("/mealtype", new MealTypeFilterHandler());
 
         server.setExecutor(threadPoolExecutor);
         server.start();
