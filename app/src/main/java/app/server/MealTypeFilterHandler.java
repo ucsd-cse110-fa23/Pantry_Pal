@@ -65,7 +65,7 @@ public class MealTypeFilterHandler implements HttpHandler{
 
     if (query != null) {
       // gets the query from the url 
-      String value = query;
+      String value = query.substring(query.indexOf("?") + 1);
       value = URLDecoder.decode(value, "UTF-8");
       Map<String,String> map = QueryParser.parseQuery(value);
 
@@ -76,20 +76,23 @@ public class MealTypeFilterHandler implements HttpHandler{
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
 
-        Bson filter = Filters.and(Filters.eq("mealtype",mealtype),Filters.eq("user", user));
+        Bson filter = Filters.and(Filters.eq("mealtype", mealtype),Filters.eq("user", user));
         
         FindIterable<Document> recipe = collection.find(filter);
         
+        if (collection.countDocuments(filter) == 0) {
+          return "";
+        }
         if (recipe != null) {
             response = "";
             for(Document a : recipe) {
-                response += "+" + a.getString("title") + "+" + a.getString("mealtype");
+                response += "_" + a.getString("title") + "+" + a.getString("mealtype");
             }
             // takign out the first + 
           response = response.substring(1);
           System.out.println(response);
         } else {
-          System.out.println("null find");
+          response = "";
         }
       }
       System.out.println("received get request on server with value " + value);

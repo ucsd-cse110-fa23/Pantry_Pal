@@ -59,12 +59,11 @@ public class SignupHandler implements HttpHandler {
 
         try (MongoClient mongoClient = MongoClients.create(URI)) {
             MongoDatabase recipeDatabase = mongoClient.getDatabase("PantryPal");
-            MongoCollection<Document> recipeCollection = recipeDatabase.getCollection("recipes");
+            MongoCollection<Document> credentialsCollection = recipeDatabase.getCollection("credentials");
 
-            Document loginData = recipeCollection.find(new Document("passward", password)).first();
-            System.out.println(username + "\n" + password);
+            Document loginData = credentialsCollection.find(new Document("user", username)).first();
 
-            if (loginData != null && loginData.getString("username").equals(username)) { // Check database for username
+            if (loginData != null) { // Check database for username
                 response =  "USERNAME TAKEN";
                 scanner.close();
                 return response;
@@ -73,8 +72,9 @@ public class SignupHandler implements HttpHandler {
             loginData = new Document("_id", new ObjectId());
             loginData.append("user", username);
             loginData.append("password", password);
-            recipeCollection.insertOne(loginData);
-            response = "SUCCESS";
+            credentialsCollection.insertOne(loginData);
+
+            response = "NEW USER CREATED";
 
             scanner.close();
         }
