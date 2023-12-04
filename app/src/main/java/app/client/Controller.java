@@ -43,7 +43,11 @@ public class Controller {
         frameController = new FrameController(primaryStage);
         recipeList = view.getHomeFrame().getRecipeList();
 
-        // AppFrame Event Listeners
+        // LoginFrame Event Listeners
+        view.getLoginFrame().setLoginButtonAction(this::handleLoginButton);
+        view.getLoginFrame().setCreateAccountButtonAction(this::handleCreateAccountButton);
+
+        // HomeFrame Event Listeners
         view.getHomeFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
 
         // MealFrame Event Listeners
@@ -72,20 +76,46 @@ public class Controller {
         return frameController;
     }
 
-    //================ AppFrame Event Handler ====================================================
+    //================ LoginFrame Event Handlers ====================================================
+
+    private void handleLoginButton(ActionEvent event) {
+        username = view.getLoginFrame().getLoginContent().getUsername().getText();
+        password = view.getLoginFrame().getLoginContent().getPassword().getText();
+
+        String response = model.performRequest("POST", username, password, null, null, "login");
+        if (response.equals("SUCCESS")) {
+            String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
+            loadRecipes(recipes);
+            frameController.getFrame("home");
+            System.out.println("[ Frame changed ]");
+        } else {
+            System.out.println("[ LOGIN RESPONSE ] " + response);
+        }
+
+        // String recipes = model.performRequest("GET", username, null, null, username, "mock-route");
+    }
+
+    private void handleCreateAccountButton(ActionEvent event) {
+        username = view.getLoginFrame().getLoginContent().getUsername().getText();
+        password = view.getLoginFrame().getLoginContent().getPassword().getText();
+
+        String response = model.performRequest("POST", username, password, null, null, "signup");
+        if (response.equals("SUCCESS")) {
+            frameController.getFrame("home");
+        } else {
+            System.out.println("[LOGIN RESPONSE] " + response);
+        }
+    }
+
+    //================ HomeFrame Event Handlers ====================================================
 
     private void handleNewRecipeButton(ActionEvent event) {
-        // String response = model.performRequest("GET", null, "breakfast", "mealtype");
-        // System.out.println(response);
         frameController.getFrame("meal");
     }
 
     private void handleViewButton(ActionEvent event) {
         Button target = (Button) event.getTarget();
-        HBox container = (HBox) target.getParent();
-        TextField textField = (TextField) container.getChildren().get(1);
-        recipeTitle =  (String) textField.getText();
-        // recipeTitle = recipe.getRecipe().getText();
+        recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();
         String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
         displayRecipe(recipeText);
 
@@ -207,7 +237,7 @@ public class Controller {
         newRecipe.setViewButtonAction(this::handleViewButton);
 
         // Replace w username
-        fullRecipe += "+User1+" + mealType;
+        fullRecipe += "+" + mealType;
 
         recipeList.getChildren().add(0, newRecipe);
         updateRecipeIndices();
@@ -257,6 +287,7 @@ public class Controller {
         //Make PUT request and save updatedRecipe as second param
         String response = model.performRequest("PUT", username, null, updatedRecipe, null, "");
         System.out.println("[PUT RESPONSE] " + response);
+        frameController.getFrame("home");
     }
 
     private void handleRecipeDeleteButton(ActionEvent event) {
@@ -264,6 +295,7 @@ public class Controller {
         String recipeTitle = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().substring(0, delim);
         String response = model.performRequest("DELETE", username, null, null, recipeTitle, "");
         System.out.println("[DELETE RESPONSE] " + response);
+        frameController.getFrame("home");
     }
 
     //=================== HELPER FUNCTIONS ====================
@@ -295,17 +327,20 @@ public class Controller {
         }
     }
 
+    // Load Recipes into Home Page once User has signed in
     public void loadRecipes(String recipes) {
         if (recipes != null) {
-            String[] recipesArr = { recipes};
+            String[] recipesArr = { recipes };
             if (recipes.contains("-")) {
                 recipesArr = recipes.split("-");
             }
             for (int i = 0; i < recipesArr.length; i++) {
+                String meal = recipesArr[i].split("\\+")[1];
                 Recipe newRecipe = new Recipe();
-                newRecipe.getRecipe().setText(recipesArr[i]);
+                newRecipe.getRecipe().setText(recipesArr[i].split("\\+")[0]);
                 newRecipe.setViewButtonAction(this::handleViewButton);
                 recipeList.getChildren().add(0,newRecipe);
+                displayMealType(newRecipe, meal);
                 updateRecipeIndices();
             }
         }
