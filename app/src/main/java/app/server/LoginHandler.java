@@ -39,18 +39,17 @@ public class LoginHandler implements HttpHandler {
             } else {
               throw new Exception("Not Valid Request Method");
             }
+
+            // Sending back response to the client
+            httpExchange.sendResponseHeaders(200, response.length());
+            OutputStream outStream = httpExchange.getResponseBody();
+            outStream.write(response.getBytes());
+            outStream.close();
         } catch (Exception e) {
             System.out.println("An erroneous request");
             response = e.toString();
             e.printStackTrace();
         }
-
-        // Sending back response to the client
-        httpExchange.sendResponseHeaders(200, response.length());
-        OutputStream outStream = httpExchange.getResponseBody();
-        outStream.write(response.getBytes());
-        outStream.close();
-
     }
     
     private String handlePost(HttpExchange httpExchange) throws IOException {
@@ -61,21 +60,24 @@ public class LoginHandler implements HttpHandler {
         String password = data.split("\\&")[1]; // Gets password
         String response = "Login Request Received";
 
-        try (MongoClient mongoClient = MongoClients.create(uri)) {
-            MongoDatabase recipeDatabase = mongoClient.getDatabase("recipesdbasd");
-            MongoCollection<Document> recipeCollection = recipeDatabase.getCollection(username);
+        try (MongoClient mongoClient = MongoClients.create(URI)) {
+            MongoDatabase recipeDatabase = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> credentialsCollection = recipeDatabase.getCollection("credentials");
 
-            Document loginData = recipeCollection.find(new Document("username", username)).first();
-            System.out.println(username + "\n" + password);
+            Document loginData = credentialsCollection.find(new Document("user", username)).first();
 
-            if (loginData != null && loginData.getString("username").equals(username)) { // Check database for username
-                if(password.equals(loginData.getString("password"))) { // If the password for the username matches in the DB
-                    response = "SUCCESS"; // Returns DB info...
+            // Found username, looking for password
+            if (loginData != null) {
+                // Username and password match
+                if (loginData.getString("password").equals(password)) {
+                    response = "SUCCESS";
                 } else {
-                    response = "PASSWORD FAILED"; // Incorrect password.
+                    // password doesn't match username
+                    response = "INCORRECT CREDENTIALS";
                 }
             } else {
-                response = "NAME FAILED"; // Non-existent name.
+                // No username in db
+                response = "USER NOT FOUND";
             }
 
             scanner.close();

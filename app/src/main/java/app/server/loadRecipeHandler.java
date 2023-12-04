@@ -14,6 +14,8 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Filters.and;
@@ -63,30 +65,43 @@ public class loadRecipeHandler implements HttpHandler{
 
     if (query != null) {
       // gets the query from the url 
-      String value = query.substring(query.indexOf("=") + 1);
-      System.out.println("GET VALUE: " + value);
+      String value = query.substring(query.indexOf("?") + 1);
       value = URLDecoder.decode(value, "UTF-8");
-      System.out.println("DECODED VALUE: " + value);
-      
+      Map<String, String> paramMap = QueryParser.parseQuery(value);
+      String user = paramMap.get("q");
+
       try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
 
-        FindIterable<Document> recipe = collection.find(new Document("user", value));
-        
+        long count = collection.countDocuments(eq("user", user));
+        System.out.println("COUNT" + count);
+
+        // Only the login credentials for user were found in the collection so no recipes
+        if (count == 1) {
+          System.out.println("NO RECIPES SAVED");
+          return "";
+        }
+
+        FindIterable<Document> recipe = collection.find(new Document("user", user));
+
         if (recipe != null) {
             response = "";
-            for(Document a : recipe){
+            for(Document a : recipe) {
+                // Ignore credentials
+                if (a.containsKey("password")) {
+                  continue;
+                }
                 response += "+" + a.getString("title") + "+" + a.getString("mealtype");
             }
-            // takign out the first + 
+            // taking out the first + 
           response = response.substring(1);
           System.out.println(response);
         } else {
-          System.out.println("null find");
+          System.out.println("NO RECIPES SAVED");
         }
       }
-      System.out.println("received get request on server with value " + value);
+      System.out.println("received get request on server with value " + user);
       System.out.println("response is " + response);
     }
 

@@ -47,18 +47,16 @@ public class SignupHandler implements HttpHandler {
             } else {
               throw new Exception("Not Valid Request Method");
             }
+            // Sending back response to the client
+            httpExchange.sendResponseHeaders(200, response.length());
+            OutputStream outStream = httpExchange.getResponseBody();
+            outStream.write(response.getBytes());
+            outStream.close();
         } catch (Exception e) {
             System.out.println("An erroneous request");
             response = e.toString();
             e.printStackTrace();
         }
-
-        // Sending back response to the client
-        httpExchange.sendResponseHeaders(200, response.length());
-        OutputStream outStream = httpExchange.getResponseBody();
-        outStream.write(response.getBytes());
-        outStream.close();
-
     }
     
     private String handlePost(HttpExchange httpExchange) throws IOException {
@@ -69,22 +67,24 @@ public class SignupHandler implements HttpHandler {
         String password = data.split("\\&")[1]; // Gets password
         String response = "Signup Request Received";
 
-        try (MongoClient mongoClient = MongoClients.create(uri)) {
-            MongoDatabase recipeDatabase = mongoClient.getDatabase("recipesdbasd");
-            MongoCollection<Document> recipeCollection = recipeDatabase.getCollection(username);
+        try (MongoClient mongoClient = MongoClients.create(URI)) {
+            MongoDatabase recipeDatabase = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> credentialsCollection = recipeDatabase.getCollection("credentials");
 
-            Document loginData = recipeCollection.find(new Document("username", username)).first();
-            System.out.println(username + "\n" + password);
-            if (loginData != null && loginData.getString("username").equals(username)) { // Check database for username
-                response =  "NAME TAKEN";
+            Document loginData = credentialsCollection.find(new Document("user", username)).first();
+
+            if (loginData != null) { // Check database for username
+                response =  "USERNAME TAKEN";
                 scanner.close();
                 return response;
             }
+
             loginData = new Document("_id", new ObjectId());
-            loginData.append("username", username);
+            loginData.append("user", username);
             loginData.append("password", password);
-            recipeCollection.insertOne(loginData);
-            response = "SUCCESS";
+            credentialsCollection.insertOne(loginData);
+
+            response = "NEW USER CREATED";
 
             scanner.close();
         }
