@@ -1,14 +1,18 @@
 package app.server;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
 
 import org.json.JSONArray;
@@ -60,13 +64,15 @@ public class DallEHandler implements HttpHandler{
         String prompt = scanner.nextLine();
         
         int n = 1;
+        int k = 0;
 
         // Create a request body which you will pass into request object
         JSONObject requestBody = new JSONObject();
+    
         requestBody.put("model", MODEL);
         requestBody.put("prompt", prompt);
         requestBody.put("n", n);
-        requestBody.put("size", "100x100");
+        requestBody.put("size", "256x256");
 
         // Create the HTTP client
         HttpClient client = HttpClient.newHttpClient();
@@ -91,20 +97,20 @@ public class DallEHandler implements HttpHandler{
         String responseBody = response.body();
 
         JSONObject responseJson = new JSONObject(responseBody);
+        System.out.println(responseBody);
 
         String generatedImageURL = responseJson.getJSONArray("data").getJSONObject(0).getString("url");
 
         System.out.println("DALL-E Response:");
         System.out.println(generatedImageURL);
 
+        String imagePath = "image.jpg";
         // Download the Generated Image to Current Directory
-        try(
-            InputStream in = new URI(generatedImageURL).toURL().openStream()
-        )
-        {
-            Files.copy(in, Paths.get("image.jpg"));
+        try (InputStream in = new URI(generatedImageURL).toURL().openStream()) {
+            Path imagePathObj = Paths.get(imagePath);
+            Files.copy(in, imagePathObj, StandardCopyOption.REPLACE_EXISTING);
         }
-
+        
         scanner.close();
 
         return generatedImageURL;

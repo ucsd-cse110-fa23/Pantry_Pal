@@ -34,7 +34,7 @@ public class App extends Application {
         controller.getFrameController().addFrame("login", loginScene);
 
         // Create scene of mentioned size/ with the border pane
-        primaryStage.setScene(homeScene);
+        primaryStage.setScene(loginScene);
 
         // Make window non-resizable
         primaryStage.setResizable(false);

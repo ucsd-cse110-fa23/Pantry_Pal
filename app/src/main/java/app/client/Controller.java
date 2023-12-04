@@ -5,7 +5,9 @@ import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 // Handles switching Scenes upon clicking buttons
@@ -80,8 +82,10 @@ public class Controller {
 
     private void handleViewButton(ActionEvent event) {
         Button target = (Button) event.getTarget();
-        Recipe recipe = (Recipe) target.getParent();
-        recipeTitle = recipe.getRecipe().getText();
+        HBox container = (HBox) target.getParent();
+        TextField textField = (TextField) container.getChildren().get(1);
+        recipeTitle =  (String) textField.getText();
+        // recipeTitle = recipe.getRecipe().getText();
         String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
         displayRecipe(recipeText);
 
@@ -218,7 +222,7 @@ public class Controller {
     // tells ChatGPT to regenerate response with the set of ingredients
     private void handleGptRefreshButton(ActionEvent event) {
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = model.performRequest("POST", username, null, prompt, null, "chatgpt");
+        String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
         fullRecipe = response;
 
         recipeParts = response.split("\\+");
@@ -226,7 +230,7 @@ public class Controller {
         response = response.replace("+", "\n");
 
         String dallePrompt = "Generate a real picture of " + recipeTitle;
-        String dalleResponse = model.performRequest("POST", username, null, dallePrompt, null, "dalle");
+        String dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
         
         Image image = new Image(dalleResponse); 
 
