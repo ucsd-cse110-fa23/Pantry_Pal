@@ -95,6 +95,7 @@ public class Controller {
         String response = model.performRequest("POST", username, password, null, null, "login");
         if (response.equals("SUCCESS")) {
             String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
+            clearRecipes();
             loadRecipes(recipes);
             frameController.getFrame("home");
             System.out.println("[ Frame changed ]");
@@ -110,10 +111,11 @@ public class Controller {
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
 
         String response = model.performRequest("POST", username, password, null, null, "signup");
-        if (response.equals("SUCCESS")) {
-            frameController.getFrame("home");
+        if (response.equals("NEW USER CREATED")) {
+            // Redirect back to Login Page if new user successfully created
+            frameController.getFrame("login");
         } else {
-            System.out.println("[LOGIN RESPONSE] " + response);
+            System.out.println("[ SIGNUP RESPONSE ] " + response);
         }
     }
 
@@ -246,6 +248,9 @@ public class Controller {
         // Replace w username
         fullRecipe += "+" + mealType;
 
+        String fullRecipeList = model.performRequest("GET", username, null, null, null, "load-recipe");
+        clearRecipes();
+        loadRecipes(fullRecipeList);
         recipeList.getChildren().add(0, newRecipe);
         updateRecipeIndices();
         

@@ -1,26 +1,22 @@
 package app.server;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Scanner;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 public class LoginHandler implements HttpHandler {
 
@@ -62,19 +58,22 @@ public class LoginHandler implements HttpHandler {
 
         try (MongoClient mongoClient = MongoClients.create(URI)) {
             MongoDatabase recipeDatabase = mongoClient.getDatabase("PantryPal");
-            MongoCollection<Document> recipeCollection = recipeDatabase.getCollection("recipes");
+            MongoCollection<Document> credentialsCollection = recipeDatabase.getCollection("credentials");
 
-            Document loginData = recipeCollection.find(new Document("password", password)).first();
-            System.out.println(username + "\n" + password);
+            Document loginData = credentialsCollection.find(new Document("user", username)).first();
 
-            if (loginData != null && loginData.getString("password").equals(password)) { // Check database for username
-                if (username.equals(loginData.getString("user"))) { // If the password for the username matches in the DB
-                    response = "SUCCESS"; // Returns DB info...
+            // Found username, looking for password
+            if (loginData != null) {
+                // Username and password match
+                if (loginData.getString("password").equals(password)) {
+                    response = "SUCCESS";
                 } else {
-                    response = "USER NOT FOUND"; // Incorrect user/password.
+                    // password doesn't match username
+                    response = "INCORRECT CREDENTIALS";
                 }
             } else {
-                response = "INCORRECT CREDENTIALS"; // Non-existent name.
+                // No username in db
+                response = "USER NOT FOUND";
             }
 
             scanner.close();

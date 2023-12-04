@@ -7,7 +7,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
@@ -17,11 +16,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.*;
-
 
 
 public class loadRecipeHandler implements HttpHandler{
@@ -74,11 +69,12 @@ public class loadRecipeHandler implements HttpHandler{
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
 
-        long count = collection.countDocuments(eq("user", user));
-        System.out.println("COUNT" + count);
+        Bson filter = Filters.and(Filters.eq("user", user), Filters.nin("password"));
+        long recipeCount = collection.countDocuments(filter);
+        System.out.println("LOG COUNT: " + recipeCount);
 
         // Only the login credentials for user were found in the collection so no recipes
-        if (count == 1) {
+        if (recipeCount == 0) {
           System.out.println("NO RECIPES SAVED");
           return "";
         }
@@ -88,10 +84,6 @@ public class loadRecipeHandler implements HttpHandler{
         if (recipe != null) {
             response = "";
             for(Document a : recipe) {
-                // Ignore credentials
-                if (a.containsKey("password")) {
-                  continue;
-                }
                 response += "_" + a.getString("title") + "+" + a.getString("mealtype");
             }
             // taking out the first + 
@@ -99,6 +91,7 @@ public class loadRecipeHandler implements HttpHandler{
           System.out.println(response);
         } else {
           System.out.println("NO RECIPES SAVED");
+          return "";
         }
       }
       System.out.println("received get request on server with value " + user);
