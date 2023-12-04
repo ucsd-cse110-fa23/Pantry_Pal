@@ -719,6 +719,7 @@ class GptFrame extends BorderPane {
     private Recipe newRecipe;
     private TextArea recipeText = new TextArea();
     private ImageView imageView = new ImageView();
+    private Image image;
     //String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 75px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     
     GptFrame() {
@@ -773,6 +774,10 @@ class GptFrame extends BorderPane {
 
     public ImageView getImageView(){
         return imageView;
+    }
+
+    public Image getImage(){
+        return image;
     }
 
     // possible need for this method

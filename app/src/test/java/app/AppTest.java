@@ -11,6 +11,8 @@ import app.client.Controller;
 import app.client.Model;
 import app.server.ChatGPTHandler;
 import app.server.MyServer;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,6 +20,7 @@ import java.io.IOException;
 
 class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
+
     @Test 
     void gptSameIngredientsTest() throws IOException {
         String mealType = "dinner";
@@ -51,7 +54,7 @@ class AppTest {
     // Tests signing up on a name thats taken already 
     @Test
     void signupTakenTest() throws IOException { 
-        MyServer.main(null);
+        //MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "Bob\npassword12", null, "signup");
         assertEquals("NAME TAKEN", response);
@@ -86,4 +89,21 @@ class AppTest {
         assertEquals("NAME FAILED", response);
         assertNotEquals("SUCCESS", response);
     }
+
+    // get URL of photo from google and use that to test dalle
+    // mock file, to return fake url
+
+    @Test
+    void dalleLinkGenerationTest() throws IOException{
+        MyServer.main(null);
+        Model dalleTest =  new Model();
+        String recipeTitle = "Bacon Eggs and Ham";
+
+        String url = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Ff%2Ffa%2FHam_and_eggs_over_easy.jpg%2F1200px-Ham_and_eggs_over_easy.jpg&tbnid=jL-bcwE1AkYVvM&vet=12ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW..i&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FHam_and_eggs&docid=2WM6ZYnDhyPs5M&w=1200&h=789&q=bacon%20eggs%20and%20ham&ved=2ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW";
+
+        String response = dalleTest.performRequest("POST", recipeTitle, null, "mockDalle");
+        
+        assertEquals(url, response);
+    }
+
 }

@@ -31,6 +31,8 @@ public class MyServer {
         server.createContext("/signup", new SignupHandler());
         server.createContext("/loadRecipe", new loadRecipeHandler());
         server.createContext("/dalle", new DallEHandler());
+        server.createContext("/mockDalle", new MockDallE());
+        
 
         server.setExecutor(threadPoolExecutor);
         server.start();

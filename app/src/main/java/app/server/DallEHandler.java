@@ -58,6 +58,7 @@ public class DallEHandler implements HttpHandler{
         Scanner scanner = new Scanner(inStream);
         
         String prompt = scanner.nextLine();
+        
         int n = 1;
 
         // Create a request body which you will pass into request object
@@ -107,8 +108,7 @@ public class DallEHandler implements HttpHandler{
         scanner.close();
 
         return generatedImageURL;
-
+        
     }
-
 
 }
