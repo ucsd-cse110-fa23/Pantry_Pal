@@ -36,8 +36,6 @@ class AppTest {
     @Test
     void gptBddRefreshTest() throws IOException {
         // BDD TEST
-        MyServer.main(null);
-
         String user = "userBDD"; 
 
         // Scenario: I don't like the recipe generated
@@ -57,7 +55,7 @@ class AppTest {
     // Tests signing up on a name thats taken already 
     @Test
     void signupTakenTest() throws IOException { 
-        MyServer.main(null);
+        // MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "signup");
         assertEquals("NAME TAKEN", response);
@@ -66,7 +64,7 @@ class AppTest {
     // Tests a valid login
     @Test
     void loginValidTest() throws IOException { 
-        MyServer.main(null);
+        // MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "login");
         assertEquals("SUCCESS", response);
@@ -75,7 +73,7 @@ class AppTest {
     // Tests a invalid login password
     @Test
     void loginInvalidTest() throws IOException { 
-        MyServer.main(null);
+        // MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "Bob", "wrongPassword", null, null, "login");
         assertEquals("PASSWORD FAILED", response);
@@ -84,7 +82,7 @@ class AppTest {
     // Tests a username that doesn't exist for login
     @Test
     void loginDoesntExistTest() throws IOException { 
-        MyServer.main(null);
+        // MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "fakeName", "password12", null, null, "login");
         assertEquals("NAME FAILED", response);
@@ -92,7 +90,7 @@ class AppTest {
 
     @Test
     void getMealTypeTest() throws IOException {
-        MyServer.main(null);
+        // MyServer.main(null);
         Model mealtype = new Model();
         String response = mealtype.performRequest("GET", null, null, null, "breakfast", "mealtype");
         assertEquals("breakfast",response);

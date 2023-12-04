@@ -127,17 +127,17 @@ public class RequestHandler implements HttpHandler {
   
     // get the title, ingredients, instructions
     String body = reqBody.toString();
+    String user = body.split("&")[0];
+    body = body.split("&")[1];
     System.out.println("REQ BODY: " + body);
     int fDelim = body.indexOf("+");
     int sDelim = body.indexOf("+",fDelim+1);
     int tDelim = body.indexOf("+",sDelim+1);
-    int delim4 = body.indexOf("+", tDelim+1);
 
     String title = body.substring(0,fDelim);
     String ingredients = body.substring(fDelim+1, sDelim);
     String instructions = body.substring(sDelim+1,tDelim);
-    String user = body.substring(tDelim + 1,delim4);
-    String mealtype = body.substring(delim4+1);
+    String mealtype = body.substring(tDelim+1);
     
     System.out.println("TITLE: " + title);
     System.out.println("INGRED: " + ingredients);
