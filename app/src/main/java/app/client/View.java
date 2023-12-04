@@ -366,6 +366,7 @@ class Prompt extends VBox {
         // Label to be set visible upon starting to record
         recordingLabel = new Label("Recording...");
         recordingLabel.setStyle(defaultLabelStyle);
+        recordingLabel.setAlignment(Pos.CENTER);
         
         HBox.setMargin(startButton, new Insets(5));
 
@@ -631,9 +632,6 @@ class MealFrame extends BorderPane {
     private RecordingFooter footer;
     private Prompt prompt;
 
-    String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
-    String clickedButtonStyle = "-fx-background-color: #0174BE; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
-
     MealFrame() {
         header = new Header("Record Meal Type");
         footer = new RecordingFooter();
@@ -668,15 +666,6 @@ class MealFrame extends BorderPane {
         return recordingLabel;
     }
 
-    // Getter to change Start/Stop button style
-    public String getDefaultStyle() {
-        return defaultButtonStyle;
-    }
-
-    public String getClickedStyle() {
-        return clickedButtonStyle;
-    }
-
     public Prompt getPrompt() {
         return prompt;
     }
@@ -706,11 +695,7 @@ class IngredientsFrame extends BorderPane {
     private RecordingFooter footer;
     private Prompt prompt;
     public String mealType;
-
-    // Set a default style for buttons and fields - background color, font size, italics
-    String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
-    String clickedButtonStyle = "-fx-background-color: #0174BE; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
-
+    
     IngredientsFrame() {
         header = new Header("Record Ingredients");
         footer = new RecordingFooter();
@@ -756,15 +741,6 @@ class IngredientsFrame extends BorderPane {
     // Writes audio into "recording.wav"
     public void setStartButtonAction(EventHandler<ActionEvent> eventHandler) {
         startButton.setOnAction(eventHandler);
-    }
-
-    // Getter to change Start/Stop button style
-    public String getDefaultStyle() {
-        return defaultButtonStyle;
-    }
-
-    public String getClickedStyle() {
-        return clickedButtonStyle;
     }
 
     // Needs to detect either "Breakfast," "Lunch," or "Dinner" to move to next Frame
@@ -864,6 +840,9 @@ public class View {
     GptFrame gpt;
     RecipeFrame recipe;
     FilterFrame filter;
+
+    String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
+    String clickedButtonStyle = "-fx-background-color: #0174BE; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     
     public View () {
         // // Setting the Layout of the Window- Should contain a Header, Footer and content for each Frame
@@ -902,5 +881,13 @@ public class View {
 
     public FilterFrame getFilterFrame() {
         return filter;
+    }
+
+    public String getDefaultButtonStyle() {
+        return defaultButtonStyle;
+    }
+
+    public String getClickedButtonStyle() {
+        return clickedButtonStyle;
     }
 }

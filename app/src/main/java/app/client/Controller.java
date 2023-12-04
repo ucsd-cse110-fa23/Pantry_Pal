@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 
 // Handles switching Scenes upon clicking buttons
 class FrameController {
+
     private Map<String, Scene> frameMap;
     private Stage primaryStage;
 
@@ -29,9 +30,11 @@ class FrameController {
     public void getFrame(String name) {
         primaryStage.setScene(frameMap.get(name));
     }
+
 }
 
 public class Controller {
+
     private View view;
     private Model model;
     private FrameController frameController;
@@ -76,6 +79,7 @@ public class Controller {
         view.getFilterFrame().setBreakfastButtonAction(this::handleFilterBreakfastButton);
         view.getFilterFrame().setLunchButtonAction(this::handleFilterLunchButton);
         view.getFilterFrame().setDinnerButtonAction(this::handleFilterDinnerButton);
+
     }
 
     public FrameController getFrameController() {
@@ -136,8 +140,8 @@ public class Controller {
     private void handleMealStartButton(ActionEvent event) {
         Button startButton = view.getMealFrame().getStartButton();
         Button stopButton = view.getMealFrame().getStopButton();
-        startButton.setStyle(view.getMealFrame().getClickedStyle());
-        stopButton.setStyle(view.getMealFrame().getDefaultStyle());
+        startButton.setStyle(view.getClickedButtonStyle());
+        stopButton.setStyle(view.getDefaultButtonStyle());
         view.getMealFrame().getRecordingLabel().setVisible(true);
 
         model.startRecording();
@@ -146,8 +150,9 @@ public class Controller {
     private void handleMealStopButton(ActionEvent event) {
         Button startButton = view.getMealFrame().getStartButton();
         Button stopButton = view.getMealFrame().getStopButton();
-        startButton.setStyle(view.getMealFrame().getDefaultStyle());
-        stopButton.setStyle(view.getMealFrame().getClickedStyle());
+        startButton.setStyle(view.getDefaultButtonStyle());
+        stopButton.setStyle(view.getClickedButtonStyle());
+        view.getMealFrame().getRecordingLabel().setVisible(false);
 
         model.stopRecording();
 
@@ -164,16 +169,16 @@ public class Controller {
 
             // Reset prompt and button styles
             view.getMealFrame().getPrompt().getText().setText("What meal type would you like: \n Breakfast, Lunch, or Dinner?");
-            startButton.setStyle(view.getMealFrame().getDefaultStyle());
-            stopButton.setStyle(view.getMealFrame().getDefaultStyle());
+            startButton.setStyle(view.getDefaultButtonStyle());
+            stopButton.setStyle(view.getDefaultButtonStyle());
         }
     }
 
     private void handleMealCancelButton(ActionEvent event) {
         Button startButton = view.getMealFrame().getStartButton();
         Button stopButton = view.getMealFrame().getStopButton();
-        startButton.setStyle(view.getMealFrame().getDefaultStyle());
-        stopButton.setStyle(view.getMealFrame().getDefaultStyle());
+        startButton.setStyle(view.getDefaultButtonStyle());
+        stopButton.setStyle(view.getDefaultButtonStyle());
 
         model.stopRecording();
 
@@ -186,8 +191,9 @@ public class Controller {
     private void handleIngredientsStartButton(ActionEvent event) {
         Button startButton = view.getIngredientsFrame().getStartButton();
         Button stopButton = view.getIngredientsFrame().getStopButton();
-        startButton.setStyle(view.getIngredientsFrame().getClickedStyle());
-        stopButton.setStyle(view.getIngredientsFrame().getDefaultStyle());
+        startButton.setStyle(view.getClickedButtonStyle());
+        stopButton.setStyle(view.getDefaultButtonStyle());
+        view.getIngredientsFrame().getRecordingLabel().setVisible(true);
 
         model.startRecording();
     }
@@ -195,8 +201,9 @@ public class Controller {
     private void handleIngredientsStopButton(ActionEvent event) {
         Button startButton = view.getIngredientsFrame().getStartButton();
         Button stopButton = view.getIngredientsFrame().getStopButton();
-        startButton.setStyle(view.getIngredientsFrame().getDefaultStyle());
-        stopButton.setStyle(view.getIngredientsFrame().getClickedStyle());
+        startButton.setStyle(view.getDefaultButtonStyle());
+        stopButton.setStyle(view.getClickedButtonStyle());
+        view.getMealFrame().getRecordingLabel().setVisible(false);
 
         model.stopRecording();
 
@@ -212,16 +219,16 @@ public class Controller {
 
         // Change scenes after getting response
         frameController.getFrame("gpt");
-
-        startButton.setStyle(view.getIngredientsFrame().getDefaultStyle());
-        stopButton.setStyle(view.getIngredientsFrame().getDefaultStyle());
+        // Reset buttons to origin style
+        startButton.setStyle(view.getDefaultButtonStyle());
+        stopButton.setStyle(view.getDefaultButtonStyle());
     }
 
     private void handleIngredientsCancelButton(ActionEvent event) {
         Button startButton = view.getMealFrame().getStartButton();
         Button stopButton = view.getMealFrame().getStopButton();
-        startButton.setStyle(view.getMealFrame().getDefaultStyle());
-        stopButton.setStyle(view.getMealFrame().getDefaultStyle());
+        startButton.setStyle(view.getDefaultButtonStyle());
+        stopButton.setStyle(view.getDefaultButtonStyle());
 
         // Redirect back to Home Page
         frameController.getFrame("home");
