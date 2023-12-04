@@ -13,6 +13,8 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Filters.and;
@@ -29,7 +31,8 @@ import static com.mongodb.client.model.Updates.*;
 public class RequestHandler implements HttpHandler {
   private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
   private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-  private String URI = peterURI;
+  private String adrianURI = "mongodb+srv://adw004:13531Caravel%26@cluster0.nmzzqtt.mongodb.net/?retryWrites=true&w=majority";
+  private String URI = adrianURI;
 
 
   // general method and calls certain methods to handle http request
@@ -62,8 +65,9 @@ public class RequestHandler implements HttpHandler {
   }
     
   /**
+   * need to change to get for the correct user
    * 
-   * @return the actual detailed recipe 
+   * @return title+ingredients+instructions+mealtype
    * 
    */
   private String handleGet(HttpExchange httpExchange) throws IOException {
@@ -73,20 +77,25 @@ public class RequestHandler implements HttpHandler {
 
     if (query != null) {
       // gets the query from the url 
-      String value = query.substring(query.indexOf("=") + 1);
-      System.out.println("GET VALUE: " + value);
+
+      String value = query.substring(query.indexOf("?") + 1);
       value = URLDecoder.decode(value, "UTF-8");
-      System.out.println("DECODED VALUE: " + value);
+      Map<String, String> paramMap = QueryParser.parseQuery(value);
+      String user = paramMap.get("u");
+      value = (String) paramMap.get("q");
+      System.out.println("USER: " + user);
+      System.out.println("TITLE: " + value);
       
       try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
-
-        Document recipe = collection.find(new Document("title", value)).first();
+        Bson filter = Filters.and(Filters.eq("title",value),Filters.eq("user", user));
+        Document recipe = collection.find(filter).first();
         if (recipe != null) {
           response = recipe.getString("title");
           response += "+" + recipe.getString("ingredients");
           response += "+" + recipe.getString("instructions");
+          response += "+" + recipe.getString("mealtype");
           System.out.println(response);
         } else {
           System.out.println("null find");
@@ -103,7 +112,7 @@ public class RequestHandler implements HttpHandler {
   /**
    *  getting the entire string of the recipe and need to parse for title, set title field and then set text
    * 
-   * EXPECT: USER+TITLE+INGREDIENTS+INSTRUCTIONS
+   * EXPECT: TITLE+INGREDIENTS+INSTRUCTIONS+USER+MEALTYPE
    *  
    * @param httpExchange
    * @return
@@ -115,7 +124,7 @@ public class RequestHandler implements HttpHandler {
     StringBuilder reqBody = new StringBuilder();
 
     while(scanner.hasNext()) {
-      String nl = scanner.nextLine();
+      String nl = URLDecoder.decode(scanner.nextLine(), "UTF-8");
       reqBody.append(nl);
     }
   
@@ -125,16 +134,19 @@ public class RequestHandler implements HttpHandler {
     int fDelim = body.indexOf("+");
     int sDelim = body.indexOf("+",fDelim+1);
     int tDelim = body.indexOf("+",sDelim+1);
+    int delim4 = body.indexOf("+", tDelim+1);
 
     String title = body.substring(0,fDelim);
     String ingredients = body.substring(fDelim+1, sDelim);
     String instructions = body.substring(sDelim+1,tDelim);
-    String user = body.substring(tDelim + 1);
+    String user = body.substring(tDelim + 1,delim4);
+    String mealtype = body.substring(delim4+1);
     
     System.out.println("TITLE: " + title);
     System.out.println("INGRED: " + ingredients);
     System.out.println("INSTRUCT: " + instructions);
     System.out.println("USER:" + user);
+    System.out.println("MEALTYPE: " + mealtype);
     String response = "valid post";
 
     try (MongoClient mongoClient = MongoClients.create(URI)) {
@@ -144,8 +156,9 @@ public class RequestHandler implements HttpHandler {
       Document recipe = new Document("_id", new ObjectId());
       recipe.append("title", title);
       recipe.append("ingredients", ingredients);
-      recipe.append("instructions",instructions);
-      recipe.append("user",user);
+      recipe.append("instructions", instructions);
+      recipe.append("user", user);
+      recipe.append("mealtype", mealtype);
 
       collection.insertOne(recipe);
       response = "valid posts";
@@ -208,21 +221,42 @@ public class RequestHandler implements HttpHandler {
     return response;
   }
 
+  /**
+   * Exepects: query paramater in URL, need title and user delimitted by a +, but mgiht need to change + to a -
+   *  need to get the correct tuser
+   */
+
+  
   private String handleDelete(HttpExchange httpExchange) throws IOException{
     String response = "Invalid delete request";
     URI uri = httpExchange.getRequestURI();
     String query = uri.getRawQuery();
+    
     System.out.println(query);
+    System.out.println();
 
     if (query != null) {
-      String value = query.substring(query.indexOf("=") + 1);
+      String value = query;
       value = URLDecoder.decode(value, "UTF-8");
+
+      System.out.println("decoded" + value);
+      Map<String,String> map  = QueryParser.parseQuery(value);
+      for (Map.Entry<String, String> entry : map.entrySet()) {
+            System.out.println("Key: " + entry.getKey() + " | Value: " + entry.getValue());
+      }
+
+      String title = map.get("title");
+      String user = map.get("user");
+
+      System.out.println("title: " + title + " User: " + user);
 
       try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
+        
+        Bson filter = Filters.and(Filters.eq("title",title),Filters.eq("user", user));
 
-        collection.findOneAndDelete(new Document("title", value));
+        collection.findOneAndDelete(filter);
         response = "valid delete";
       }
     } 

@@ -72,7 +72,7 @@ public class ChatGPTHandler implements HttpHandler {
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);
         
-        String prompt = scanner.nextLine();
+        String prompt = URLDecoder.decode(scanner.nextLine(), "UTF-8"); 
         
         int tokens = 500;  
         // Create a request body which you will pass into request object
@@ -113,7 +113,7 @@ public class ChatGPTHandler implements HttpHandler {
         System.out.println("generated text:" + generatedText);
         System.out.println("return" + res);
         scanner.close();
-
+        res = res.replace("&", " and ");
         return res;
     }
 }
