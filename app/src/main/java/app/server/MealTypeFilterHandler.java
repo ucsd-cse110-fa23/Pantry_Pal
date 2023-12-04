@@ -27,7 +27,7 @@ import static com.mongodb.client.model.Updates.*;
 public class MealTypeFilterHandler implements HttpHandler{
     private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
     private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-    private String URI = MongoURI;
+    private String URI = peterURI;
 
       // general method and calls certain methods to handle http request
   public void handle(HttpExchange httpExchange) throws IOException {
@@ -69,8 +69,8 @@ public class MealTypeFilterHandler implements HttpHandler{
       value = URLDecoder.decode(value, "UTF-8");
       Map<String,String> map = QueryParser.parseQuery(value);
 
-      String user = map.get("user");
-      String mealtype = map.get("mealtype");
+      String user = map.get("u");
+      String mealtype = map.get("q");
       
       try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");

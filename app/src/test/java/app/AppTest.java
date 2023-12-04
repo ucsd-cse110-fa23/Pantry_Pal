@@ -20,11 +20,14 @@ class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
     @Test 
     void gptSameIngredientsTest() throws IOException {
+        // MyServer.main(null);
+        String user = "refreshUser";
+        String pass = "pass";
         String mealType = "dinner";
         String ingredients = "steak, potatoes, butter";
         Model model = new Model();
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = model.performRequest("POST", prompt, null, "chatgpt");
+        String response = model.performRequest("POST", user, pass, prompt, null, "chatgpt");
 
         // API call should have successfully been made and returned thorugh model with the mealType and ingredients
         assertFalse(response.equals(""));
@@ -33,6 +36,9 @@ class AppTest {
     @Test
     void gptBddRefreshTest() throws IOException {
         // BDD TEST
+        MyServer.main(null);
+
+        String user = "userBDD"; 
 
         // Scenario: I don't like the recipe generated
         String generatedText = "Scrambled eggs with bacon and toast, Step 1:... Step 2:...";
@@ -44,7 +50,7 @@ class AppTest {
         // Then: when I press the refresh button it will generate another recipe like a bacon egg sandwich
         Model refreshTest = new Model();
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = refreshTest.performRequest("POST", prompt, null, "chatgpt");
+        String response = refreshTest.performRequest("POST", user, null, prompt, null, "chatgpt");
         assertNotEquals(response, generatedText);
     }
 
@@ -53,44 +59,42 @@ class AppTest {
     void signupTakenTest() throws IOException { 
         MyServer.main(null);
         Model loginTest = new Model();
-        String response = loginTest.performRequest("POST", "Bob\npassword12", null, "signup");
+        String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "signup");
         assertEquals("NAME TAKEN", response);
-        assertNotEquals("SUCCESS", response);
     }
 
     // Tests a valid login
     @Test
     void loginValidTest() throws IOException { 
-        //MyServer.main(null);
+        MyServer.main(null);
         Model loginTest = new Model();
-        String response = loginTest.performRequest("POST", "Bob\npassword12", null, "login");
+        String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "login");
         assertEquals("SUCCESS", response);
     }
 
     // Tests a invalid login password
     @Test
     void loginInvalidTest() throws IOException { 
-        //MyServer.main(null);
+        MyServer.main(null);
         Model loginTest = new Model();
-        String response = loginTest.performRequest("POST", "Bob\nwrongPassword", null, "login");
+        String response = loginTest.performRequest("POST", "Bob", "wrongPassword", null, null, "login");
         assertEquals("PASSWORD FAILED", response);
-        assertNotEquals("SUCCESS", response);
     }
 
     // Tests a username that doesn't exist for login
     @Test
     void loginDoesntExistTest() throws IOException { 
-        //MyServer.main(null);
+        MyServer.main(null);
         Model loginTest = new Model();
-        String response = loginTest.performRequest("POST", "fakeName\npassword12", null, "login");
+        String response = loginTest.performRequest("POST", "fakeName", "password12", null, null, "login");
         assertEquals("NAME FAILED", response);
-        assertNotEquals("SUCCESS", response);
     }
 
     @Test
-    void getMealTypeTest(){
+    void getMealTypeTest() throws IOException {
+        MyServer.main(null);
         Model mealtype = new Model();
-        String response = mealtype.performRequest("GET", null, "breakfast", "mealtype");
-        assertEquals("test",response);
+        String response = mealtype.performRequest("GET", null, null, null, "breakfast", "mealtype");
+        assertEquals("breakfast",response);
     }
 }

@@ -40,15 +40,18 @@ public class Model {
      * @param function csv, chatgpt, whisper
      * @return
      */
-    public String performRequest(String method, String data, String query, String route) {
+    public String performRequest(String method, String username, String password, String data, String query, String route) {
 
         // Implement HTTP request logic here and return the response
         try {
             String urlString = "http://localhost:8100/" + route;
 
-            if (query != null) {
-                query = URLEncoder.encode(query, "UTF-8");
-                urlString += "?=" + query;
+            if (username != null && query != null) {
+                query = URLEncoder.encode("u=" + username + "&q=" + query, "UTF-8");
+                urlString += "?" + query;
+            } else if (query != null) {
+                query = URLEncoder.encode("q=" + query, "UTF-8");
+                urlString += "?" + query;
             }
 
             // Establish HTTP connection
@@ -64,18 +67,33 @@ public class Model {
 
             // Write any data arguments to OS if they are passed in
             if (method.equals("POST") || method.equals("PUT")) {
-                if (data != null) {    
+                if (username != null) {  
+                    String reqBody = username;
+                    if (password != null) {
+                        reqBody += "&" + password;
+                    }
+                    if (data != null) {
+                        reqBody += "&" + data;
+                    }
+
                     OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-                    out.write(data);
+                    out.write(URLEncoder.encode(reqBody, "UTF-8"));
+                    out.flush();
+                    out.close();
+                } else if (data != null) {
+                    String reqBody = data;
+                    OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+                    out.write(URLEncoder.encode(reqBody, "UTF-8"));
                     out.flush();
                     out.close();
                 }
+                
             }
 
             // Read OS once handlers have written response
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String response = in.readLine();
-            System.out.println("[[MODEL RESPONSE]]: " + response);
+            System.out.println("[ MODEL RESPONSE ]: " + response);
 
             in.close();
             return response;
@@ -87,7 +105,7 @@ public class Model {
     }
 
     // Given transcribed Whisper string, filter for meal type
-    public String mealType(String res) {
+    public String transcribeMealType(String res) {
         String mealType = res.toLowerCase();
 
         if (mealType.contains("breakfast")) { return "breakfast"; }
@@ -98,13 +116,12 @@ public class Model {
 
     // Client-side whisper file transfer
     public static void sendPOSTWhisper(HttpURLConnection connection) throws IOException {
-        final String POST_URL = "http://localhost:8100/whisper";
         final File uploadFile = new File("recording.wav");
 
         String boundary = Long.toHexString(System.currentTimeMillis()); 
         String CRLF = "\r\n";
         String charset = "UTF-8";
-        // URLConnection connection = new URL(POST_URL).openConnection();
+
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
         connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
@@ -190,25 +207,10 @@ public class Model {
     }
 
     public void stopRecording() {  
-        if (targetDataLine.isActive() || targetDataLine.isOpen()) {
+        // if targetDataLine == null, recording never started so no need to stop
+        if (targetDataLine != null) {
             targetDataLine.stop();
             targetDataLine.close();
-        }
-    }
-
-    public void saveRecipe(String recipeText) {
-        // String recipeName = recipeText.split("\n")[0];
-        // recipeList.getChildren().add(newRecipe);
-        // recipeList.updateRecipeIndices();
-    }
-
-    public void updateRecipeIndices(RecipeList rl) {
-        int index = 1;
-        for (int i = 0; i < rl.getChildren().size(); i++) {
-            if (rl.getChildren().get(i) instanceof Recipe) {
-                ((Recipe) rl.getChildren().get(i)).setRecipeIndex(index);
-                index++;
-            }
         }
     }
     

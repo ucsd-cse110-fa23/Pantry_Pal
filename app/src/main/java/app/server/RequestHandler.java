@@ -31,7 +31,7 @@ import static com.mongodb.client.model.Updates.*;
 public class RequestHandler implements HttpHandler {
   private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
   private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-  private String URI = MongoURI;
+  private String URI = peterURI;
 
 
   // general method and calls certain methods to handle http request
@@ -76,21 +76,17 @@ public class RequestHandler implements HttpHandler {
 
     if (query != null) {
       // gets the query from the url 
-      String value = query;
+
+      String value = query.substring(query.indexOf("?") + 1);
       value = URLDecoder.decode(value, "UTF-8");
-
-      Map<String,String> map  = QueryParser.parseQuery(value);
-      for (Map.Entry<String, String> entry : map.entrySet()) {
-            System.out.println("Key: " + entry.getKey() + " | Value: " + entry.getValue());
-      }
-
-      String title = map.get("title");
-      String user = map.get("user");
+      Map<String, String> paramMap = QueryParser.parseQuery(value);
+      String user = paramMap.get("u");
+      value = (String) paramMap.get("q");
       
       try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
-        Bson filter = Filters.and(Filters.eq("title",title),Filters.eq("user", user));
+        Bson filter = Filters.and(Filters.eq("title",value),Filters.eq("user", user));
         Document recipe = collection.find(filter).first();
         if (recipe != null) {
           response = recipe.getString("title");
@@ -125,7 +121,7 @@ public class RequestHandler implements HttpHandler {
     StringBuilder reqBody = new StringBuilder();
 
     while(scanner.hasNext()) {
-      String nl = scanner.nextLine();
+      String nl = URLDecoder.decode(scanner.nextLine(), "UTF-8");
       reqBody.append(nl);
     }
   
@@ -157,9 +153,9 @@ public class RequestHandler implements HttpHandler {
       Document recipe = new Document("_id", new ObjectId());
       recipe.append("title", title);
       recipe.append("ingredients", ingredients);
-      recipe.append("instructions",instructions);
-      recipe.append("user",user);
-      recipe.append("mealtype",mealtype);
+      recipe.append("instructions", instructions);
+      recipe.append("user", user);
+      recipe.append("mealtype", mealtype);
 
       collection.insertOne(recipe);
       response = "valid posts";
