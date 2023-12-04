@@ -78,7 +78,7 @@ public class loadRecipeHandler implements HttpHandler{
         System.out.println("COUNT" + count);
 
         // Only the login credentials for user were found in the collection so no recipes
-        if (count == 1) {
+        if (count == 0) {
           System.out.println("NO RECIPES SAVED");
           return "";
         }

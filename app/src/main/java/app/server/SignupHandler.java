@@ -24,17 +24,9 @@ public class SignupHandler implements HttpHandler {
 
     private MongoClient mongoClient;
     private MongoDatabase recipeDatabase;
-    private String uri = MyServer.MONGODBURI;
+    private String URI = MyServer.MONGODBURI;
 
-    SignupHandler() {
-        // Move the creation of resources inside the constructor
-        try {
-            mongoClient = MongoClients.create(uri);
-            recipeDatabase = mongoClient.getDatabase("recipesdbasd");
-        } catch(Exception err) {
-            System.out.println("MongoDB failed");
-        }
-    }
+
 
     // general method and calls certain methods to handle http request
     public void handle(HttpExchange httpExchange) throws IOException {

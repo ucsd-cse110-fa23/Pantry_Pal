@@ -26,7 +26,7 @@ public class LoginHandler implements HttpHandler {
 
     private MongoClient mongoClient;
     private MongoDatabase recipeDatabase;
-    private String uri = MyServer.MONGODBURI;
+    private String URI = MyServer.MONGODBURI;
 
     // general method and calls certain methods to handle http request
     public void handle(HttpExchange httpExchange) throws IOException {
