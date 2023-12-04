@@ -11,6 +11,8 @@ import app.client.Controller;
 import app.client.Model;
 import app.server.ChatGPTHandler;
 import app.server.MyServer;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,6 +20,7 @@ import java.io.IOException;
 
 class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
+
     @Test 
     void testGptSameIngredients() throws IOException {
         MyServer.main(null);
@@ -130,4 +133,5 @@ class AppTest {
         assertEquals(null, response);
         MyServer.stop();
     }
+
 }

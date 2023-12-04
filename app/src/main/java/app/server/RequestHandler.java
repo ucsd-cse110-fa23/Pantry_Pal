@@ -31,7 +31,8 @@ import static com.mongodb.client.model.Updates.*;
 public class RequestHandler implements HttpHandler {
   private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
   private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-  private String URI = peterURI;
+  private String adrianURI = "mongodb+srv://adw004:13531Caravel%26@cluster0.nmzzqtt.mongodb.net/?retryWrites=true&w=majority";
+  private String URI = adrianURI;
 
 
   // general method and calls certain methods to handle http request
@@ -82,6 +83,8 @@ public class RequestHandler implements HttpHandler {
       Map<String, String> paramMap = QueryParser.parseQuery(value);
       String user = paramMap.get("u");
       value = (String) paramMap.get("q");
+      System.out.println("USER: " + user);
+      System.out.println("TITLE: " + value);
       
       try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");

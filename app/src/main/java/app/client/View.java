@@ -7,6 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -14,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import java.io.*;
+
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -659,6 +662,8 @@ class GptFrame extends BorderPane {
     private String generatedText = "TWO Bacon, Eggs, and Sausage Breakfast+4 slices bacon, 2 eggs, 2 sausage links+1. In a medium skillet over medium heat, cook the bacon until crispy. 2. Remove bacon from skillet, leaving renderings in the pan. Add sausage and cook until browned on both sides. 3. Push sausage to one side and crack two eggs into the other side. Fry over medium heat until desired doneness. 4. Serve bacon, eggs, and sausage together.";
     private Recipe newRecipe;
     private TextArea recipeText = new TextArea();
+    private ImageView imageView = new ImageView();
+    private Image image;
     //String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 75px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     
     GptFrame() {
@@ -673,8 +678,11 @@ class GptFrame extends BorderPane {
         recipeText.setMaxWidth(350);
         recipeText.setPadding(new Insets(5));
 
+        VBox vboxContainer = new VBox();
+        vboxContainer.getChildren().addAll(imageView, recipeText);
+
         ScrollPane scroll = new ScrollPane();
-        scroll.setContent(recipeText);
+        scroll.setContent(vboxContainer);
         scroll.setFitToHeight(true);
         scroll.setFitToWidth(true);
         
@@ -708,6 +716,14 @@ class GptFrame extends BorderPane {
         return newRecipe;
     }
 
+    public ImageView getImageView(){
+        return imageView;
+    }
+
+    public Image getImage(){
+        return image;
+    }
+
     // possible need for this method
     public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler){
         saveButton.setOnAction(eventHandler);
@@ -723,10 +739,8 @@ class GptFrame extends BorderPane {
 
 }
 
-
 // Logic Page Window Upon App Start
 class LoginFrame extends BorderPane {
-
     private Header header;
     private LoginContent loginContent;
     private Button loginButton, createAccountButton;
@@ -751,12 +765,12 @@ class LoginFrame extends BorderPane {
         return loginContent;
     }
 
-    public void setLoginButtonAction(EventHandler<ActionEvent> event) {
-        loginButton.setOnAction(event);
+    public void setLoginButtonAction(EventHandler<ActionEvent> eventHandler) {
+        loginButton.setOnAction(eventHandler);
     }
 
-    public void setCreateAccountButtonAction(EventHandler<ActionEvent> event) {
-        createAccountButton.setOnAction(event);
+    public void setCreateAccountButtonAction(EventHandler<ActionEvent> eventHandler) {
+        createAccountButton.setOnAction(eventHandler);
     }
 
 }
