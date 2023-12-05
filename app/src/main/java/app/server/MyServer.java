@@ -34,6 +34,7 @@ public class MyServer {
         server.createContext("/dalle", new DallEHandler());
         server.createContext("/mockDalle", new MockDallE());
         server.createContext("/mealtype", new MealTypeFilterHandler());
+        server.createContext("/mockgpt", new MockGPT());
 
         server.setExecutor(threadPoolExecutor);
         server.start();

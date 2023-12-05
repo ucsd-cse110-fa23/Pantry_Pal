@@ -33,7 +33,7 @@ class AppTest {
         String ingredients = "steak, potatoes, butter";
         Model model = new Model();
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
+        String response = model.performRequest("POST", null, null, prompt, null, "mockgpt");
 
         // API call should have successfully been made and returned thorugh model with the mealType and ingredients
         assertFalse(response.equals(""));
@@ -56,7 +56,7 @@ class AppTest {
         // Then: when I press the refresh button it will generate another recipe like a bacon egg sandwich
         Model refreshTest = new Model();
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = refreshTest.performRequest("POST", user, null, prompt, null, "chatgpt");
+        String response = refreshTest.performRequest("POST", user, null, prompt, null, "mockgpt");
         assertNotEquals(response, generatedText);
         MyServer.stop();
     }
