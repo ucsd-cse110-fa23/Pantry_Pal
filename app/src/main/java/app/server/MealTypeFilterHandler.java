@@ -38,10 +38,11 @@ public class MealTypeFilterHandler implements HttpHandler{
         throw new Exception("Not Valid Request Method");
       }
       //Sending back response to the client
-      httpExchange.sendResponseHeaders(200, response.length());
-      OutputStream outStream = httpExchange.getResponseBody();
-      outStream.write(response.getBytes());
-      outStream.close();
+      byte[] bs = response.getBytes("UTF-8");
+      httpExchange.sendResponseHeaders(200, bs.length);
+      OutputStream os = httpExchange.getResponseBody();
+      os.write(bs);
+      os.close();
     } catch (Exception e) {
       System.out.println("An erroneous request");
       response = e.toString();

@@ -20,7 +20,7 @@ import com.mongodb.client.model.Filters;
 public class ShareHandler implements HttpHandler{
     private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
     private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-    private String URI = MyServer.MONGODBURI;
+    private String URI = MyServer.MONGO_URI;
 
       // general method and calls certain methods to handle http request
   public void handle(HttpExchange httpExchange) throws IOException {
@@ -33,10 +33,12 @@ public class ShareHandler implements HttpHandler{
         throw new Exception("Not Valid Request Method");
       }
       //Sending back response to the client
-      httpExchange.sendResponseHeaders(200, response.length());
-      OutputStream outStream = httpExchange.getResponseBody();
-      outStream.write(response.getBytes());
-      outStream.close();
+      
+      byte[] bs = response.getBytes("UTF-8");
+      httpExchange.sendResponseHeaders(200, bs.length);
+      OutputStream os = httpExchange.getResponseBody();
+      os.write(bs);
+      os.close();
     } catch (Exception e) {
       System.out.println("An erroneous request");
       response = e.toString();

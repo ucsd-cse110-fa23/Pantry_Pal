@@ -86,6 +86,10 @@ public class Controller {
         view.getFilterFrame().setLunchButtonAction(this::handleFilterLunchButton);
         view.getFilterFrame().setDinnerButtonAction(this::handleFilterDinnerButton);
 
+
+        // ShareFrame Event Listeners
+        view.getShareFrame().setCancelButtonAction(this::handleShareCancelButton);
+
     }
 
     public FrameController getFrameController() {
@@ -299,7 +303,7 @@ public class Controller {
             view.showAlert("Error", "Server connection was interrupted");
         }
 
-        String fullRecipeList = model.performRequest("GET", username, null, null, null, "load-recipe");
+        String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
 
         clearRecipes();
         loadRecipes(fullRecipeList);
@@ -369,6 +373,8 @@ public class Controller {
         frameController.getFrame("home");
     }
 
+    // =============================== THIS DOESNT WORK =============================
+    
     private void handleRecipeDeleteButton(ActionEvent event) {
         int delim = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().indexOf("\n");
         String recipeTitle = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().substring(0, delim);
@@ -385,11 +391,11 @@ public class Controller {
     }
 
     private void handleShareButton(ActionEvent event) {
-        int delim = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().indexOf("\n");
-        String recipeTitle = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().substring(0, delim);
-        String response = model.performRequest("GET", username, null, null, recipeTitle, "/share");
-        System.out.println("[DELETE RESPONSE] " + response);
-        frameController.getFrame("home");
+        String recipeTitle = view.getRecipeFrame().getRecipeSteps().getRecipeName().getText();
+        String response = "http://localhost:8100/share/?u=" + username + "&q="+ recipeTitle;
+        System.out.println("[SHARE RESPONSE] " + response);
+        view.getShareFrame().getShareArea().setText(response);
+        frameController.getFrame("share");
     }
 
 
@@ -435,6 +441,14 @@ public class Controller {
         loadRecipes(response);
         frameController.getFrame("home");
     }
+
+    //=================== ShareFrame EventListner ==============
+
+    private void handleShareCancelButton(ActionEvent event) {
+        frameController.getFrame("recipe");
+    }
+
+
 
     //=================== HELPER FUNCTIONS ====================
     

@@ -165,7 +165,7 @@ class RecipeFooter extends HBox {
         shareButton = new Button("Share");
         shareButton.setStyle(defaultButtonStyle);
         
-        this.getChildren().addAll(cancelButton, saveButton, deleteButton); // adding buttons to footer
+        this.getChildren().addAll(cancelButton, saveButton, deleteButton, shareButton); // adding buttons to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
     }
 
@@ -891,14 +891,14 @@ class GptFrame extends BorderPane {
 }
 
 class ShareFrame extends BorderPane{
-    private Button cancelButton, shareButton;
+    private Button cancelButton;
     private Header header;
-    private RecipeFooter footer;
+    private RecordingFooter footer;
     private TextArea shareLink = new TextArea();
 
     ShareFrame() {
         header = new Header("Share Link");
-        footer = new RecipeFooter();
+        footer = new RecordingFooter();
         
         // Set properties for the page
         this.setPrefSize(370, 120);
@@ -910,24 +910,19 @@ class ShareFrame extends BorderPane{
         this.setBottom(footer);
 
         cancelButton = footer.getCancelButton();
-        shareButton = footer.getShareButton();
+    } 
+
+    public TextArea getShareArea(){
+        return shareLink;
     }
 
     public Button getCancelButton() {
         return cancelButton;
     }
 
-    public Button getShareButton() {
-        return shareButton;
-    }
-
     // Cancel Button goes to Home Page
     public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
         cancelButton.setOnAction(eventHandler);
-    }
-
-    public void setShareButtonAction(EventHandler<ActionEvent> eventHandler) {
-        shareButton.setOnAction(eventHandler);
     }
 }
 

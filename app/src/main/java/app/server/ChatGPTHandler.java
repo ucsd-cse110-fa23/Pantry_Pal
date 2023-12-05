@@ -100,7 +100,7 @@ public class ChatGPTHandler implements HttpHandler {
         System.out.println("++GENTEXT++ " + generatedText);
 
         int startIndex = generatedText.indexOf("{");
-        int endIndex= generatedText.indexOf("}")+1;
+        int endIndex= generatedText.indexOf("}");
         generatedText = generatedText.substring(startIndex, endIndex);
         System.out.println("++GENTEXT PARSED++ " + generatedText);
         

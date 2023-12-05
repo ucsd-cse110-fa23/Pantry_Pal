@@ -13,7 +13,7 @@ public class MyServer {
     private static final String SERVER_HOSTNAME = "LOCALHOST";
     private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
     private String PeterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-    public static String MONGODBURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
+    public static String MONGO_URI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
     private static HttpServer server;
 
     public static void main(String[] args) throws IOException {
