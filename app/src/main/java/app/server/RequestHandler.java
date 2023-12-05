@@ -29,7 +29,9 @@ import static com.mongodb.client.model.Updates.*;
  */
 
 public class RequestHandler implements HttpHandler {
-  
+  private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
+  private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
+  private String adrianURI = "mongodb+srv://adw004:13531Caravel%26@cluster0.nmzzqtt.mongodb.net/?retryWrites=true&w=majority";
   private String URI = MyServer.MONGO_URI;
 
 
@@ -100,7 +102,7 @@ public class RequestHandler implements HttpHandler {
           response = recipe.getString("title");
           response += "+" + recipe.getString("ingredients");
           response += "+" + recipe.getString("instructions");
-          response += "+" + recipe.getString("mealtype");
+          //response += "+" + recipe.getString("mealtype");
           System.out.println(response);
         } else {
           System.out.println("null find");
@@ -117,7 +119,7 @@ public class RequestHandler implements HttpHandler {
   /**
    *  getting the entire string of the recipe and need to parse for title, set title field and then set text
    * 
-   * EXPECT: TITLE+INGREDIENTS+INSTRUCTIONS+USER+MEALTYPE
+   * EXPECT: USER+TITLE+INGREDIENTS+INSTRUCTIONS+MEALTYPE
    *  
    * @param httpExchange
    * @return
@@ -135,17 +137,17 @@ public class RequestHandler implements HttpHandler {
   
     // get the title, ingredients, instructions
     String body = reqBody.toString();
-    String user = body.split("&")[0];
-    body = body.split("&")[1];
     System.out.println("REQ BODY: " + body);
     int fDelim = body.indexOf("+");
     int sDelim = body.indexOf("+",fDelim+1);
     int tDelim = body.indexOf("+",sDelim+1);
+    int delim4 = body.indexOf("+", tDelim+1);
 
-    String title = body.substring(0,fDelim);
-    String ingredients = body.substring(fDelim+1, sDelim);
-    String instructions = body.substring(sDelim+1,tDelim);
-    String mealtype = body.substring(tDelim+1);
+    String user = body.substring(0,fDelim);
+    String title = body.substring(fDelim+1, sDelim);
+    String ingredients = body.substring(sDelim+1,tDelim);
+    String instructions = body.substring(tDelim+1,delim4);
+    String mealtype = body.substring(delim4+1);
     
     System.out.println("TITLE: " + title);
     System.out.println("INGRED: " + ingredients);
@@ -176,8 +178,8 @@ public class RequestHandler implements HttpHandler {
      
   /**
    * EXPECT: USER+TITLE+INGREDIENTS+INSTRUCTIONS
-   * NOT DONE: needs to let the name of the recipe be changed so need to find another way to locate the recipe, also need to always call api again after the back since names could have changed
    * 
+   * !!!!!!!!!!!! DONT WORK
    * @return
    */
   private String handlePut(HttpExchange httpExchange) throws IOException{
@@ -197,10 +199,17 @@ public class RequestHandler implements HttpHandler {
     int sDelim = body.indexOf("+",fDelim+1);
     int tDelim = body.indexOf("+",sDelim+1);
 
-    String title = body.substring(0,fDelim);
-    String ingredients = body.substring(fDelim+1, sDelim);
-    String instructions = body.substring(sDelim+1,tDelim);
-    String user = body.substring(tDelim + 1);
+    String user = body.substring(0,fDelim);
+    String title = body.substring(fDelim+1, sDelim);
+    String ingredients = body.substring(sDelim+1,tDelim);
+    String instructions = body.substring(tDelim + 1);
+
+
+    System.out.println("TITLE: " + title);
+    System.out.println("INGRED: " + ingredients);
+    System.out.println("INSTRUCT: " + instructions);
+    System.out.println("USER:" + user);
+
 
     String response = "Not valid put";
     try (MongoClient mongoClient = MongoClients.create(URI)) {
@@ -213,7 +222,7 @@ public class RequestHandler implements HttpHandler {
 
       Bson up1 = set("ingredients", ingredients);
       Bson up2 = set("instructions", instructions);
-      Bson combined = combine(up1, up1);
+      Bson combined = combine(up1, up2);
       collection.findOneAndUpdate(filter, combined);
 
       response = "valid put";

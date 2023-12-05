@@ -152,6 +152,7 @@ public class Controller {
         Button target = (Button) event.getTarget();
         recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();
         String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
+        // recipeText = recipeText.replace();
         
         // checks if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
@@ -359,8 +360,9 @@ public class Controller {
 
     private void handleRecipeSaveButton(ActionEvent event) {
        
-
         String updatedRecipe = view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
+        updatedRecipe = updatedRecipe.replace("\n\n","+");
+        System.out.println("CLEANED newlines"+ updatedRecipe);
         //Make PUT request and save updatedRecipe as second param
         String response = model.performRequest("PUT", username, null, updatedRecipe, null, "");
         
@@ -373,8 +375,7 @@ public class Controller {
         frameController.getFrame("home");
     }
 
-    // =============================== THIS DOESNT WORK =============================
-    
+
     private void handleRecipeDeleteButton(ActionEvent event) {
         int delim = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().indexOf("\n");
         String recipeTitle = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().substring(0, delim);
@@ -388,6 +389,9 @@ public class Controller {
 
         System.out.println("[DELETE RESPONSE] " + response);
         frameController.getFrame("home");
+        String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
+        clearRecipes();
+        loadRecipes(recipes);
     }
 
     private void handleShareButton(ActionEvent event) {
@@ -471,7 +475,8 @@ public class Controller {
         try {
             String recipeName = recipe.split("\\+")[0];
             String recipeText = recipe.substring(recipe.indexOf("\\+") + 1);
-            recipeText = recipeText.replace("\\+", "\n");
+            recipeText = recipeText.replace("+", "\n\n");
+            System.out.println("RECIPE TEXT ON GET:" + recipeText);
             view.getRecipeFrame().getRecipeSteps().getRecipeName().setText(recipeName);
             view.getRecipeFrame().getRecipeSteps().getTextArea().setText(recipeText);
         } catch (Exception e) {
