@@ -1,10 +1,9 @@
 package app.server;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
+
 import java.net.URLDecoder;
 import java.util.Scanner;
 
@@ -13,10 +12,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 
 import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -24,9 +20,7 @@ import com.mongodb.client.MongoDatabase;
 
 public class LoginHandler implements HttpHandler {
 
-    private MongoClient mongoClient;
-    private MongoDatabase recipeDatabase;
-    private String URI = MyServer.MONGODBURI;
+    private String URI = MyServer.MONGO_URI;
 
     // general method and calls certain methods to handle http request
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -45,6 +39,7 @@ public class LoginHandler implements HttpHandler {
             OutputStream outStream = httpExchange.getResponseBody();
             outStream.write(response.getBytes());
             outStream.close();
+
         } catch (Exception e) {
             System.out.println("An erroneous request");
             response = e.toString();

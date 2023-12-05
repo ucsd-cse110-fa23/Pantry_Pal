@@ -331,15 +331,16 @@ public class Controller {
     public void loadRecipes(String recipes) {
         if (recipes != null) {
             String[] recipesArr = { recipes };
-            if (recipes.contains("-")) {
-                recipesArr = recipes.split("-");
+            if (recipes.contains("+")) {
+                recipesArr = recipes.split("\\+");
             }
-            for (int i = 0; i < recipesArr.length; i++) {
-                String meal = recipesArr[i].split("\\+")[1];
+            int i = 0;
+            while (i < recipesArr.length) {
                 Recipe newRecipe = new Recipe();
-                newRecipe.getRecipe().setText(recipesArr[i].split("\\+")[0]);
+                newRecipe.getRecipe().setText(recipesArr[i++]);
                 newRecipe.setViewButtonAction(this::handleViewButton);
                 recipeList.getChildren().add(0,newRecipe);
+                String meal = recipesArr[i++];
                 displayMealType(newRecipe, meal);
                 updateRecipeIndices();
             }
