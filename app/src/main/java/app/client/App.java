@@ -1,5 +1,6 @@
 package app.client;
 
+import app.view.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -15,7 +16,7 @@ public class App extends Application {
         primaryStage.setTitle("PantryPal");
         
         // Compose view and model in controller
-        View view = new View(null);
+        View view = new View();
         Model model = new Model();
         Controller controller = new Controller(view, model, primaryStage);
 

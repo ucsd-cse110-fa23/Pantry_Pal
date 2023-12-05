@@ -217,13 +217,7 @@ public class Model {
                 reverseRecipesArr = recipesArr;
                 Arrays.sort(reverseRecipesArr);
             }
-            // for (int i = 0; i < reverseRecipesArr.length; i++) {
-            //     Recipe newRecipe = new Recipe();
-            //     newRecipe.getRecipe().setText(reverseRecipesArr[i]);
-            //     //newRecipe.setViewButtonAction(this::handleViewButton);
-            //     // recipeList.getChildren().add(newRecipe);
-            //     // updateRecipeIndices();
-            // }
+
             String fin = "";
             for(int i = 0; i < recipesArr.length; i++){
                 fin = fin + "_" + recipesArr[i];
@@ -241,13 +235,6 @@ public class Model {
                 recipesArr = recipes.split("-");
                 Arrays.sort(recipesArr);
             }
-            // for (int i = 0; i < recipesArr.length; i++) {
-            //     Recipe newRecipe = new Recipe();
-            //     newRecipe.getRecipe().setText(recipesArr[i]);
-            //     //newRecipe.setViewButtonAction(this::handleViewButton);
-            //     // recipeList.getChildren().add(0,newRecipe);
-            //     // updateRecipeIndices();
-            // }
 
             String fin = "";
             for(int i = recipesArr.length-1; i >= 0; i--){
@@ -265,13 +252,6 @@ public class Model {
             if (recipes.contains("-")) {
                 recipesArr = recipes.split("-");
             }
-            // for (int i = 0; i < recipesArr.length; i++) {
-            //     Recipe newRecipe = new Recipe();
-            //     newRecipe.getRecipe().setText(recipesArr[i]);
-            //     //newRecipe.setViewButtonAction(this::handleViewButton);
-            //     // recipeList.getChildren().add(newRecipe);
-            //     // updateRecipeIndices();
-            // }
 
             String fin = "";
             for(int i = recipesArr.length - 1; i >= 0; i--){
@@ -290,13 +270,6 @@ public class Model {
             if (recipes.contains("-")) {
                 recipesArr = recipes.split("-");
             }
-            // for (int i = 0; i < recipesArr.length; i++) {
-            //     Recipe newRecipe = new Recipe();
-            //     newRecipe.getRecipe().setText(recipesArr[i]);
-            //     // newRecipe.setViewButtonAction(this::handleViewButton);
-            //     // recipeList.getChildren().add(0,newRecipe);
-            //     // updateRecipeIndices();
-            // }
 
             String fin = "";
             for(int i = 0; i < recipesArr.length; i++){

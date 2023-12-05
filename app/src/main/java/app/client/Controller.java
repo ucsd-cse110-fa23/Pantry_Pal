@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Arrays;
 
+import app.view.*;
+
 // Handles switching Scenes upon clicking buttons
 class FrameController {
     private Map<String, Scene> frameMap;
@@ -41,9 +43,7 @@ public class Controller {
     public Controller(View view, Model model, Stage primaryStage) {
         this.view = view;
         this.model = model;
-        if(primaryStage != null){
-            frameController = new FrameController(primaryStage);
-        }
+        frameController = new FrameController(primaryStage);
         recipeList = view.getHomeFrame().getRecipeList();
 
         // SortFrame Event Listeners
@@ -94,6 +94,10 @@ public class Controller {
     //================ SortFrame Event Handlers ====================================================
 
     private void handleSortAlphaButton(ActionEvent event) {
+        if(recipeList.getChildren().size() == 0){
+            frameController.getFrame("home");
+            return;
+        }
         recipeList.getChildren().clear();
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
@@ -118,6 +122,10 @@ public class Controller {
     }
 
     private void handleSortRAlphaButton(ActionEvent event) {
+        if(recipeList.getChildren().size() == 0){
+            frameController.getFrame("home");
+            return;
+        }
         recipeList.getChildren().clear();
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
@@ -142,6 +150,10 @@ public class Controller {
     }
 
     private void handleSortChronoButton(ActionEvent event) {
+        if(recipeList.getChildren().size() == 0){
+            frameController.getFrame("home");
+            return;
+        }
         recipeList.getChildren().clear();
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
@@ -165,6 +177,10 @@ public class Controller {
     }
 
     private void handleSortRChronoButton(ActionEvent event) {
+        if(recipeList.getChildren().size() == 0){
+            frameController.getFrame("home");
+            return;
+        }
         recipeList.getChildren().clear();
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
