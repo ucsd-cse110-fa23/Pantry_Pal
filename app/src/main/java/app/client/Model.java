@@ -206,6 +206,9 @@ public class Model {
     }
 
     public String sortAlphabetically(String recipes) {
+        System.out.println();
+        System.out.println("RECIPES: " + recipes);
+        System.out.println();
         if (recipes != null) {
             String[] recipesArr = {recipes};
             String[] reverseRecipesArr = recipesArr;
@@ -247,7 +250,7 @@ public class Model {
             // }
 
             String fin = "";
-            for(int i = 0; i < recipesArr.length; i++){
+            for(int i = recipesArr.length-1; i >= 0; i--){
                 fin = fin + "_" + recipesArr[i];
             }
             fin = fin.substring(1);
@@ -271,7 +274,7 @@ public class Model {
             // }
 
             String fin = "";
-            for(int i = 0; i < recipesArr.length; i++){
+            for(int i = recipesArr.length - 1; i >= 0; i--){
                 fin = fin + "_" + recipesArr[i];
             }
             fin = fin.substring(1);
