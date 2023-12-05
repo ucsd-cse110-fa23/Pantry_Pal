@@ -295,16 +295,14 @@ public class Controller {
         displayMealType(newRecipe, mealType);
         newRecipe.setViewButtonAction(this::handleViewButton);
 
-        // Replace w username
         fullRecipe += "+" + mealType;
+        String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
 
         //check if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
-
-        String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
 
         clearRecipes();
         loadRecipes(fullRecipeList);
@@ -407,27 +405,16 @@ public class Controller {
 
     public void handleFilterBreakfastButton(ActionEvent event) {
         String response = model.performRequest("GET", username, null, null, "breakfast", "mealtype");
-        
-        //check if server is still running
-        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
-        if(checker == false){
-            view.showAlert("Error", "Server connection was interrupted");
-        }
-
+        checkServer();
         clearRecipes();
         loadRecipes(response);
         frameController.getFrame("home");
     }
 
     public void handleFilterLunchButton(ActionEvent event) {
-        //check if server is still running
-        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
-        if(checker == false){
-            view.showAlert("Error", "Server connection was interrupted");
-        }
-
+        checkServer();
         String response = model.performRequest("GET", username, null, null, "lunch", "mealtype");
-        
+
         clearRecipes();
         loadRecipes(response);
         frameController.getFrame("home");
@@ -496,7 +483,7 @@ public class Controller {
                 Recipe newRecipe = new Recipe();
                 newRecipe.getRecipe().setText(recipesArr[i++]);
                 newRecipe.setViewButtonAction(this::handleViewButton);
-                recipeList.getChildren().add(0,newRecipe);
+                recipeList.getChildren().add(0, newRecipe);
                 String meal = recipesArr[i++];
                 displayMealType(newRecipe, meal);
                 updateRecipeIndices();
@@ -520,6 +507,14 @@ public class Controller {
                 ((Recipe) recipeList.getChildren().get(i)).setRecipeIndex(index);
                 index++;
             }
+        }
+    }
+
+    public void checkServer() {
+        //check if server is still running
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
+        if(checker == false){
+            view.showAlert("Error", "Server connection was interrupted");
         }
     }
 

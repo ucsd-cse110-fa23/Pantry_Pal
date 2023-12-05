@@ -6,20 +6,17 @@ import java.util.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
 
 import static com.mongodb.client.model.Filters.*;
 
 public class loadRecipeHandler implements HttpHandler{
-
-    // loads recipes
+    
     private String URI = MyServer.MONGO_URI;
 
     // general method and calls certain methods to handle http request
@@ -53,7 +50,7 @@ public class loadRecipeHandler implements HttpHandler{
    *  return: title_1 + mealtype_1 + ... + title_n + mealtype_n 
    */
   private String handleGet(HttpExchange httpExchange) throws IOException {
-    String response = "Invalid GET request";
+    String response = "Invalid Load Recipe GET Request";
     URI uri = httpExchange.getRequestURI();
     String query = uri.getRawQuery();
 
@@ -63,13 +60,13 @@ public class loadRecipeHandler implements HttpHandler{
       value = URLDecoder.decode(value, "UTF-8");
       Map<String, String> paramMap = QueryParser.parseQuery(value);
       String user = paramMap.get("q");
+      System.out.println("USER " + user);
 
       try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
 
         long recipeCount = collection.countDocuments(eq("user", user));
-        System.out.println("LOG COUNT: " + recipeCount);
 
         // Only the login credentials for user were found in the collection so no recipes
         if (recipeCount == 0) {
