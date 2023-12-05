@@ -1,4 +1,4 @@
-package app.client;
+package app.controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Arrays;
 
 import app.view.*;
+import app.client.*;
 
 public class FrameController {
     private Map<String, Scene> frameMap;

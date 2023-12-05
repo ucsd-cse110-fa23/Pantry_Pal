@@ -1,4 +1,4 @@
-package app.client;
+package app.controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Arrays;
 
+import app.client.Model;
 import app.view.*;
+import app.client.*;
 
 public class Controller {
     private View view;
@@ -67,10 +69,6 @@ public class Controller {
     public FrameController getFrameController() {
         return frameController;
     }
-
-    // public RecipeList getRecipeList() {
-    //     return recipeList;
-    // }
 
     //================ SortFrame Event Handlers ====================================================
 
@@ -430,107 +428,6 @@ public class Controller {
             }
         }
     }
-
-    // public String sortAlphabetically(String recipes) {
-    //     if (recipes != null) {
-    //         String[] recipesArr = {recipes};
-    //         String[] reverseRecipesArr = recipesArr;
-    //         if (recipes.contains("-")) {
-    //             recipesArr = recipes.split("-");
-    //             reverseRecipesArr = recipesArr;
-    //             Arrays.sort(reverseRecipesArr);
-    //         }
-    //         for (int i = 0; i < reverseRecipesArr.length; i++) {
-    //             Recipe newRecipe = new Recipe();
-    //             newRecipe.getRecipe().setText(reverseRecipesArr[i]);
-    //             newRecipe.setViewButtonAction(this::handleViewButton);
-    //             recipeList.getChildren().add(newRecipe);
-    //             updateRecipeIndices();
-    //         }
-    //         String fin = "";
-    //         for(int i = 0; i < recipesArr.length; i++){
-    //             fin = fin + "_" + recipesArr[i];
-    //         }
-    //         fin = fin.substring(1);
-    //         return fin;
-    //     }
-    //     return null;
-    // }
-
-    // public String sortRAlphabetically(String recipes) {
-    //     if (recipes != null) {
-    //         String[] recipesArr = {recipes};
-    //         if (recipes.contains("-")) {
-    //             recipesArr = recipes.split("-");
-    //             Arrays.sort(recipesArr);
-    //         }
-    //         for (int i = 0; i < recipesArr.length; i++) {
-    //             Recipe newRecipe = new Recipe();
-    //             newRecipe.getRecipe().setText(recipesArr[i]);
-    //             newRecipe.setViewButtonAction(this::handleViewButton);
-    //             recipeList.getChildren().add(0,newRecipe);
-    //             updateRecipeIndices();
-    //         }
-
-    //         String fin = "";
-    //         for(int i = 0; i < recipesArr.length; i++){
-    //             fin = fin + "_" + recipesArr[i];
-    //         }
-    //         fin = fin.substring(1);
-    //         return fin;
-    //     }
-    //     return null;
-    // }
-
-    // public String sortRChronological(String recipes) {
-    //     if (recipes != null) {
-    //         String[] recipesArr = {recipes};
-    //         if (recipes.contains("-")) {
-    //             recipesArr = recipes.split("-");
-    //         }
-    //         for (int i = 0; i < recipesArr.length; i++) {
-    //             Recipe newRecipe = new Recipe();
-    //             newRecipe.getRecipe().setText(recipesArr[i]);
-    //             newRecipe.setViewButtonAction(this::handleViewButton);
-    //             recipeList.getChildren().add(newRecipe);
-    //             updateRecipeIndices();
-    //         }
-
-    //         String fin = "";
-    //         for(int i = 0; i < recipesArr.length; i++){
-    //             fin = fin + "_" + recipesArr[i];
-    //         }
-    //         fin = fin.substring(1);
-    //         return fin;
-    //     }
-
-    //     return null;
-    // }
-
-    // public String sortChronological(String recipes) {
-    //     if (recipes != null) {
-    //         String[] recipesArr = {recipes};
-    //         if (recipes.contains("-")) {
-    //             recipesArr = recipes.split("-");
-    //         }
-    //         for (int i = 0; i < recipesArr.length; i++) {
-    //             Recipe newRecipe = new Recipe();
-    //             newRecipe.getRecipe().setText(recipesArr[i]);
-    //             newRecipe.setViewButtonAction(this::handleViewButton);
-    //             recipeList.getChildren().add(0,newRecipe);
-    //             updateRecipeIndices();
-    //         }
-
-    //         String fin = "";
-    //         for(int i = 0; i < recipesArr.length; i++){
-    //             fin = fin + "_" + recipesArr[i];
-    //         }
-    //         fin = fin.substring(1);
-    //         return fin;
-    //     }
-
-    //     return null;
-    // }
 
     public void updateViewButton(){
         for (int i = 0; i < recipeList.getChildren().size(); i++) {

@@ -1,5 +1,6 @@
 package app.client;
 
+import app.controller.*;
 import app.view.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
