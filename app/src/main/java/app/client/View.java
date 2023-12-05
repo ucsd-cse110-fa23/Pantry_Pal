@@ -12,7 +12,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -43,7 +45,7 @@ class Header extends HBox {
 // Home Page Footer
 class HomeFooter extends HBox {
 
-    private Button newRecipeButton, filterMealTypeButton;
+    private Button newRecipeButton, filterMealTypeButton, signOutButton;
 
     HomeFooter() {
         this.setPrefSize(500, 60);
@@ -58,8 +60,11 @@ class HomeFooter extends HBox {
 
         filterMealTypeButton = new Button("Filter Meal");
         filterMealTypeButton.setStyle(defaultButtonStyle);
+
+        signOutButton = new Button("Sign Out");
+        signOutButton.setStyle(defaultButtonStyle);
         
-        this.getChildren().addAll(newRecipeButton, filterMealTypeButton); // adding button to footer
+        this.getChildren().addAll(newRecipeButton, filterMealTypeButton,signOutButton); // adding button to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
     }
 
@@ -69,6 +74,10 @@ class HomeFooter extends HBox {
 
     public Button getFilterMealTypeButton() {
         return filterMealTypeButton;
+    }
+
+    public Button getSignOutButton() {
+        return signOutButton;
     }
 
 }
@@ -434,7 +443,7 @@ class Prompt extends VBox {
 class FilterPrompt extends VBox {
 
     private Label text;
-    private Button breakfastButton, lunchButton, dinnerButton;
+    private Button breakfastButton, lunchButton, dinnerButton, allButton;
     private HBox buttonContainer = new HBox(5);
 
     FilterPrompt() {
@@ -450,7 +459,10 @@ class FilterPrompt extends VBox {
         dinnerButton = new Button("Dinner");
         dinnerButton.setStyle("-fx-background-color: #BE3144; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px");
 
-        buttonContainer.getChildren().addAll(breakfastButton, lunchButton, dinnerButton);
+        allButton = new Button("All");
+        allButton.setStyle("-fx-background-color: #7D7C7C; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px");
+
+        buttonContainer.getChildren().addAll(breakfastButton, lunchButton, dinnerButton, allButton);
         this.getChildren().addAll(text, buttonContainer);
 
     }
@@ -465,6 +477,10 @@ class FilterPrompt extends VBox {
 
     public Button getDinnerButton() {
         return dinnerButton;
+    }
+
+    public Button getAllButton() {
+        return allButton;
     }
 
 }
@@ -513,7 +529,7 @@ class HomeFrame extends BorderPane {
     private Header header;
     private HomeFooter footer;
     private RecipeList recipeList;
-    private Button newRecipeButton, filterMealTypeButton;
+    private Button newRecipeButton, filterMealTypeButton, signOutButton;
 
     HomeFrame() {
 
@@ -538,6 +554,8 @@ class HomeFrame extends BorderPane {
         // Initialise Button Variables through the getters in Footer
         newRecipeButton = footer.getNewRecipeButton();
         filterMealTypeButton = footer.getFilterMealTypeButton();
+        signOutButton = footer.getSignOutButton();
+
     }
 
     public RecipeList getRecipeList() {
@@ -560,6 +578,10 @@ class HomeFrame extends BorderPane {
         filterMealTypeButton.setOnAction(eventHandler);
     }
 
+    public void setSignOutButtonAction(EventHandler<ActionEvent> eventHandler) {
+        signOutButton.setOnAction(eventHandler);
+    }
+
 }
 
 // Filter Recipe Window to Display Recipes Based on a Specific Meal Type
@@ -568,7 +590,7 @@ class FilterFrame extends BorderPane {
     private Header header;
     private FilterPrompt filterPrompt;
     private RecordingFooter footer;
-    private Button breakfastButton, lunchButton, dinnerButton;
+    private Button breakfastButton, lunchButton, dinnerButton, allButton, cancelButton;
 
     FilterFrame() {
 
@@ -583,6 +605,8 @@ class FilterFrame extends BorderPane {
         breakfastButton = filterPrompt.getBreakfastButton();
         lunchButton = filterPrompt.getLunchButton();
         dinnerButton = filterPrompt.getDinnerButton();
+        allButton = filterPrompt.getAllButton();
+        cancelButton = footer.getCancelButton();
 
     }
 
@@ -596,6 +620,14 @@ class FilterFrame extends BorderPane {
 
     public void setDinnerButtonAction(EventHandler<ActionEvent> eventHandler) {
         dinnerButton.setOnAction(eventHandler);
+    }
+
+    public void setAllButtonAction(EventHandler<ActionEvent> eventHandler) {
+        allButton.setOnAction(eventHandler);
+    }
+
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
     }
 
 }
