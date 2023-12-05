@@ -18,9 +18,9 @@ import com.mongodb.client.model.Filters;
 import static com.mongodb.client.model.Filters.*;
 
 public class MealTypeFilterHandler implements HttpHandler{
-    
-    private String URI = MyServer.MONGO_URI;
 
+    private String URI = MyServer.MONGO_URI;
+    
       // general method and calls certain methods to handle http request
   public void handle(HttpExchange httpExchange) throws IOException {
     String response = "Request Received";

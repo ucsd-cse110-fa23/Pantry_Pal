@@ -5,13 +5,16 @@ import java.util.Map;
 
 import javax.swing.Action;
 
+import app.server.ServerChecker;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import java.net.*;
 
 // Handles switching Scenes upon clicking buttons
 class FrameController {
@@ -101,8 +104,10 @@ public class Controller {
             loadRecipes(recipes);
             frameController.getFrame("home");
             System.out.println("[ Frame changed ]");
-        } else {
+        } else if (response.equals("INVALID CREDENTIALS") || response.equals("USER NOT FOUND")){
             System.out.println("[ LOGIN RESPONSE ] " + response);
+        } else {
+            view.showAlert("Error", response);
         }
 
         // String recipes = model.performRequest("GET", username, null, null, username, "mock-route");
@@ -111,8 +116,15 @@ public class Controller {
     private void handleCreateAccountButton(ActionEvent event) {
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
-
+        // checks if server is still running
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
+        if(checker == false){
+            view.showAlert("Error", "Server connection was interrupted");
+        }
+        
         String response = model.performRequest("POST", username, password, null, null, "signup");
+
+
         if (response.equals("NEW USER CREATED")) {
             // Redirect back to Login Page if new user successfully created
             frameController.getFrame("login");
@@ -135,6 +147,13 @@ public class Controller {
         Button target = (Button) event.getTarget();
         recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();
         String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
+        
+        // checks if server is still running
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
+        if(checker == false) {
+            view.showAlert("Error", "Server connection was interrupted");
+        } 
+        
         displayRecipe(recipeText);
 
         frameController.getFrame("recipe");
@@ -159,9 +178,15 @@ public class Controller {
         view.getMealFrame().getRecordingLabel().setVisible(false);
 
         model.stopRecording();
+         // checks if server is still running
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
+        if(checker == false){
+            view.showAlert("Error", "Server connection was interrupted");
+        }
 
         mealType = model.performRequest("POST", null, null, null, null, "whisper");
         mealType = model.transcribeMealType(mealType);
+        
         System.out.println("MEALTYPE CONTROLLER: " + mealType);
 
         if (mealType.equals("")) {
@@ -176,6 +201,7 @@ public class Controller {
             startButton.setStyle(view.getDefaultButtonStyle());
             stopButton.setStyle(view.getDefaultButtonStyle());
         }
+
     }
 
     private void handleMealCancelButton(ActionEvent event) {
@@ -210,8 +236,14 @@ public class Controller {
         view.getMealFrame().getRecordingLabel().setVisible(false);
 
         model.stopRecording();
+         // checks if server is still running
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
+        if(checker == false){
+            view.showAlert("Error", "Server connection was interrupted");
+        }
 
         ingredients = model.performRequest("POST", null, null, null, null, "whisper");
+        System.out.println(ingredients);
 
         // Create prompt with mealType and ingredients and pass to ChatGPT API, Dall-E API for the picture
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
@@ -259,6 +291,13 @@ public class Controller {
 
         fullRecipe += "+" + mealType;
         String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
+
+        //check if server is still running
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
+        if(checker == false){
+            view.showAlert("Error", "Server connection was interrupted");
+        }
+
         clearRecipes();
         loadRecipes(fullRecipeList);
         recipeList.getChildren().add(0, newRecipe);
@@ -273,10 +312,15 @@ public class Controller {
     // takes the same input for mealtype and ingredients,
     // tells ChatGPT to regenerate response with the set of ingredients
     private void handleGptRefreshButton(ActionEvent event) {
-        mealType = "breakfast";
-        ingredients = "croissants";
+        
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
         String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
+        //check if server is still running
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
+        if(checker == false){
+            view.showAlert("Error", "Server connection was interrupted");
+        }
+
         fullRecipe = response;
 
         recipeParts = response.split("\\+");
@@ -307,9 +351,17 @@ public class Controller {
     }
 
     private void handleRecipeSaveButton(ActionEvent event) {
+       
+
         String updatedRecipe = view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
         //Make PUT request and save updatedRecipe as second param
         String response = model.performRequest("PUT", username, null, updatedRecipe, null, "");
+        
+        //check if server is still running
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
+        if(checker == false){
+            view.showAlert("Error", "Server connection was interrupted");
+        }
         System.out.println("[PUT RESPONSE] " + response);
         frameController.getFrame("home");
     }
@@ -318,6 +370,13 @@ public class Controller {
         int delim = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().indexOf("\n");
         String recipeTitle = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().substring(0, delim);
         String response = model.performRequest("DELETE", username, null, null, recipeTitle, "");
+       
+        //check if server is still running
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
+        if(checker == false){
+            view.showAlert("Error", "Server connection was interrupted");
+        }
+
         System.out.println("[DELETE RESPONSE] " + response);
         frameController.getFrame("home");
     }
@@ -326,13 +385,16 @@ public class Controller {
 
     public void handleFilterBreakfastButton(ActionEvent event) {
         String response = model.performRequest("GET", username, null, null, "breakfast", "mealtype");
+        checkServer();
         clearRecipes();
         loadRecipes(response);
         frameController.getFrame("home");
     }
 
     public void handleFilterLunchButton(ActionEvent event) {
+        checkServer();
         String response = model.performRequest("GET", username, null, null, "lunch", "mealtype");
+
         clearRecipes();
         loadRecipes(response);
         frameController.getFrame("home");
@@ -340,6 +402,12 @@ public class Controller {
 
     public void handleFilterDinnerButton(ActionEvent event) {
         String response = model.performRequest("GET", username, null, null, "dinner", "mealtype");
+        //check if server is still running
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
+        if(checker == false){
+            view.showAlert("Error", "Server connection was interrupted");
+        }
+
         clearRecipes();
         loadRecipes(response);
         frameController.getFrame("home");
@@ -412,4 +480,13 @@ public class Controller {
             }
         }
     }
+
+    public void checkServer() {
+        //check if server is still running
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
+        if(checker == false){
+            view.showAlert("Error", "Server connection was interrupted");
+        }
+    }
+
 }

@@ -53,6 +53,7 @@ public class ChatGPTHandler implements HttpHandler {
             System.out.println("An erroneous request");
             response = e.toString();
             e.printStackTrace();
+            
         }
         
     }
@@ -100,6 +101,7 @@ public class ChatGPTHandler implements HttpHandler {
         int endIndex= generatedText.indexOf("}")+1;
         generatedText = generatedText.substring(startIndex, endIndex);
         System.out.println("++GENTEXT++ " + generatedText);
+        
         JSONObject toJson = new JSONObject(generatedText);
 
         String res = toJson.getString("title");

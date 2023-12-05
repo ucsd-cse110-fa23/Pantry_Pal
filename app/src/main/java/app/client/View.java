@@ -2,6 +2,7 @@ package app.client;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -650,6 +651,14 @@ class RecipeFrame extends BorderPane {
         deleteButton.setOnAction(eventHandler);
     }
 
+    public void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
 }
 
 // Record Meal Type Window
@@ -713,6 +722,15 @@ class MealFrame extends BorderPane {
     public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
         cancelButton.setOnAction(eventHandler);
     }
+
+    public void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
 }
 
 // Record Ingredients Window
@@ -782,6 +800,14 @@ class IngredientsFrame extends BorderPane {
         cancelButton.setOnAction(eventHandler);
     }
 
+    public void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
 }
 
 // ChatGPT Generated Recipe Window
@@ -797,6 +823,9 @@ class GptFrame extends BorderPane {
     
     GptFrame() {
 
+        header = new Header("New Recipe");
+        footer = new GptFooter();
+        
         recipeText.setWrapText(true);
         recipeText.setMaxWidth(350);
         recipeText.setPadding(new Insets(5));
@@ -805,9 +834,6 @@ class GptFrame extends BorderPane {
         container.getChildren().addAll(imageView, recipeText);
 
         this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;");
-
-        header = new Header("New Recipe");
-        footer = new GptFooter();
 
         ScrollPane scroll = new ScrollPane();
         scroll.setContent(container);
@@ -860,6 +886,13 @@ class GptFrame extends BorderPane {
         refreshButton.setOnAction(eventHandler);
     }
 
+    public void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 }
 
 
@@ -923,5 +956,13 @@ public class View {
 
     public String getClickedButtonStyle() {
         return clickedButtonStyle;
+    }
+    
+    public void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

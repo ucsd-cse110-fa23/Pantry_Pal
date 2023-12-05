@@ -34,6 +34,8 @@ public class LoginHandler implements HttpHandler {
 
             // Sending back response to the client
             httpExchange.sendResponseHeaders(200, response.length());
+            
+
             OutputStream outStream = httpExchange.getResponseBody();
             outStream.write(response.getBytes());
             outStream.close();
