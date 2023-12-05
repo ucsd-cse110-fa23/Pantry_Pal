@@ -30,7 +30,7 @@ public class MyServer {
         server.createContext("/chatgpt", new ChatGPTHandler());
         server.createContext("/login", new LoginHandler());
         server.createContext("/signup", new SignupHandler());
-        server.createContext("/load-recipe", new LoadRecipeHandler());
+        server.createContext("/load-recipe", new loadRecipeHandler());
         server.createContext("/dalle", new DallEHandler());
         server.createContext("/mockDalle", new MockDallE());
         server.createContext("/mealtype", new MealTypeFilterHandler());
