@@ -52,10 +52,17 @@ public class RequestHandler implements HttpHandler {
         throw new Exception("Not Valid Request Method");
       }
       //Sending back response to the client
-      httpExchange.sendResponseHeaders(200, response.length());
-      OutputStream outStream = httpExchange.getResponseBody();
-      outStream.write(response.getBytes());
-      outStream.close();
+      // httpExchange.sendResponseHeaders(200, response.length());
+      // OutputStream outStream = httpExchange.getResponseBody();
+      // outStream.write(response.getBytes());
+      
+      byte[] bs = response.getBytes("UTF-8");
+      httpExchange.sendResponseHeaders(200, bs.length);
+      OutputStream os = httpExchange.getResponseBody();
+      os.write(bs);
+      os.close();
+      
+
     } catch (Exception e) {
       System.out.println("An erroneous request");
       response = e.toString();
@@ -181,7 +188,7 @@ public class RequestHandler implements HttpHandler {
     StringBuilder reqBody = new StringBuilder();
 
     while(scanner.hasNext()) {
-      String nl = scanner.nextLine();
+      String nl = URLDecoder.decode(scanner.nextLine(), "UTF-8");
       reqBody.append(nl);
     }
   

@@ -136,7 +136,7 @@ class GptFooter extends HBox{
 // Full recipe, RecipeFrame Footer
 class RecipeFooter extends HBox {
 
-    private Button cancelButton, saveButton, deleteButton;
+    private Button cancelButton, saveButton, deleteButton, shareButton;
 
     RecipeFooter() {
         this.setPrefSize(500, 60);
@@ -152,6 +152,9 @@ class RecipeFooter extends HBox {
         saveButton.setStyle(defaultButtonStyle);
         deleteButton = new Button("Delete");
         deleteButton.setStyle(defaultButtonStyle);
+
+        shareButton = new Button("Share");
+        shareButton.setStyle(defaultButtonStyle);
         
         this.getChildren().addAll(cancelButton, saveButton, deleteButton); // adding buttons to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
@@ -167,6 +170,10 @@ class RecipeFooter extends HBox {
 
     public Button getDeleteButton() {
         return deleteButton;
+    }
+
+    public Button getShareButton(){
+        return shareButton;
     }
 
 }
@@ -442,7 +449,7 @@ class RecipeFrame extends BorderPane {
     private Header header;
     private RecipeFooter footer;
     private RecipeSteps recipeSteps;
-    private Button cancelButton, saveButton, deleteButton;
+    private Button cancelButton, saveButton, deleteButton, shareButton;
 
     RecipeFrame() {
         header = new Header("Recipe");
@@ -452,6 +459,7 @@ class RecipeFrame extends BorderPane {
         cancelButton = footer.getCancelButton();
         saveButton = footer.getSaveButton();
         deleteButton = footer.getDeleteButton();
+        shareButton = footer.getShareButton();
 
         ScrollPane s = new ScrollPane(recipeSteps);
         s.setFitToHeight(true);
@@ -479,6 +487,10 @@ class RecipeFrame extends BorderPane {
         return deleteButton;
     }
 
+    public Button getShareButton(){
+        return shareButton;
+    }
+
     // Cancel Button goes to Home Page
     public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
         cancelButton.setOnAction(eventHandler);
@@ -492,6 +504,10 @@ class RecipeFrame extends BorderPane {
     // Delete Recipe from database and app then redirect to Home Page
     public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {
         deleteButton.setOnAction(eventHandler);
+    }
+
+    public void setShareButtonAction(EventHandler<ActionEvent> eventHandler){
+        shareButton.setOnAction(eventHandler);
     }
 
 }
@@ -775,6 +791,47 @@ class LoginFrame extends BorderPane {
 
 }
 
+class ShareFrame extends BorderPane{
+    private Button cancelButton, shareButton;
+    private Header header;
+    private RecipeFooter footer;
+    private TextArea shareLink = new TextArea();
+
+    ShareFrame() {
+        header = new Header("Share Link");
+        footer = new RecipeFooter();
+        
+        // Set properties for the page
+        this.setPrefSize(370, 120);
+        shareLink = new TextArea("");
+
+        
+        this.setTop(header);
+        this.setCenter(shareLink);
+        this.setBottom(footer);
+
+        cancelButton = footer.getCancelButton();
+        shareButton = footer.getShareButton();
+    }
+
+    public Button getCancelButton() {
+        return cancelButton;
+    }
+
+    public Button getShareButton() {
+        return shareButton;
+    }
+
+    // Cancel Button goes to Home Page
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
+    }
+
+    public void setShareButtonAction(EventHandler<ActionEvent> eventHandler) {
+        shareButton.setOnAction(eventHandler);
+    }
+}
+
 //=============================== VIEW ======================================
 
 public class View {
@@ -785,6 +842,7 @@ public class View {
     GptFrame gpt;
     RecipeFrame recipe;
     LoginFrame login;
+    ShareFrame share;
     
     public View () {
         // // Setting the Layout of the Window- Should contain a Header, Footer and content for each Frame
@@ -794,6 +852,7 @@ public class View {
         ingredients = new IngredientsFrame();
         gpt = new GptFrame();
         recipe = new RecipeFrame();
+        share = new ShareFrame();
     }
 
     public LoginFrame getLoginFrame() {
@@ -818,6 +877,10 @@ public class View {
 
     public RecipeFrame getRecipeFrame() {
         return recipe;
+    }
+
+    public ShareFrame getShareFrame(){
+        return share;
     }
 
 }

@@ -142,8 +142,6 @@ class AppTest {
         DALLE dalleMock = mockData.new DALLE(generatedRecipe);
         String res = dalleMock.generatePrompt();
         assertTrue(true,res);
-
-        
     }
 
 }

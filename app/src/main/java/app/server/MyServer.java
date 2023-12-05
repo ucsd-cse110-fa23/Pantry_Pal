@@ -1,5 +1,6 @@
 package app.server;
 
+import com.mongodb.client.internal.MongoBatchCursorAdapter;
 import com.sun.net.httpserver.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -10,7 +11,9 @@ public class MyServer {
     // initialize server port and hostname
     private static final int SERVER_PORT = 8100;
     private static final String SERVER_HOSTNAME = "LOCALHOST";
-    public static String MONGODBURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
+    private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
+    private String PeterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
+    public static String MONGODBURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
     private static HttpServer server;
 
     public static void main(String[] args) throws IOException {
@@ -35,6 +38,7 @@ public class MyServer {
         server.createContext("/dalle", new DallEHandler());
         server.createContext("/mockDalle", new MockDallE());
         server.createContext("/mealtype", new MealTypeFilterHandler());
+        server.createContext("/share", new ShareHandler());
 
         server.setExecutor(threadPoolExecutor);
         server.start();

@@ -69,6 +69,7 @@ public class Controller {
         view.getRecipeFrame().setCancelButtonAction(this::handleRecipeCancelButton);
         view.getRecipeFrame().setSaveButtonAction(this::handleRecipeSaveButton);
         view.getRecipeFrame().setDeleteButtonAction(this::handleRecipeDeleteButton);
+        view.getRecipeFrame().setShareButtonAction(this::handleShareButton);
         
     }
 
@@ -297,6 +298,15 @@ public class Controller {
         System.out.println("[DELETE RESPONSE] " + response);
         frameController.getFrame("home");
     }
+
+    private void handleShareButton(ActionEvent event) {
+        int delim = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().indexOf("\n");
+        String recipeTitle = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().substring(0, delim);
+        String response = model.performRequest("GET", username, null, null, recipeTitle, "/share");
+        System.out.println("[DELETE RESPONSE] " + response);
+        frameController.getFrame("home");
+    }
+
 
     //=================== HELPER FUNCTIONS ====================
     
