@@ -129,39 +129,46 @@ class AppTest {
 
     // Test /mealtype route to filter breakfast recipes belonging to "testGetMealType" account
     @Test
-    void testGetMealType() throws IOException {
+    void testGetOneBreakfastRecipe() throws IOException {
         MyServer.main(null);
         String user = "testGetMealType";
         Model mealtype = new Model();
         String response = mealtype.performRequest("GET", user, null, null, "breakfast", "mealtype");
-        
         // Account with username "testGetMealType" has ONE breakfast recipe named "Egg Bacon and Ham Breakfast Recipe"
         assertEquals("Egg Bacon and Ham Breakfast Recipe+breakfast", response);
         MyServer.stop();
     }
 
-    // Test /mealtype route to filter lunch recipes belonging to "testGetMealType" account
+    // Test /mealtype route to filter lunch recipes that have not been saved
     @Test
-    void testGetEmptyMealType() throws IOException {
+    void testGetNoLunchRecipe() throws IOException {
         MyServer.main(null);
         String user = "testGetMealType";
         Model mealtype = new Model();
         String response = mealtype.performRequest("GET", user, null, null, "lunch", "mealtype");
-        
         // Account with username "testGetMealType" has NO lunch recipes
         assertEquals(null, response);
         MyServer.stop();
     }
 
+    // Test /mealtype route to filter the two dinner recipes belonging to "testGetMealType" account
+    @Test
+    void testGetMultipleDinnerRecipes() throws IOException {
+        MyServer.main(null);
+        String user = "testGetMealType";
+        Model mealtype = new Model();
+        String response = mealtype.performRequest("GET", user, null, null, "dinner", "mealtype");
+        // Account with username "testGetMealType" has TWO dinner recipes
+        assertEquals("Cheesy Vegetable Tortellini Bake+dinner+Savory Stuffed Pancakes+dinner", response);
+        MyServer.stop();
+    }
+
     @Test
     void testServerNotRunning() throws IOException{
-
         boolean status = ServerChecker.isServerRunning("localhost", 8100);
         assertEquals(false, status);
-
     }
     
-
     @Test
     void testServerRunning() throws IOException{
         MyServer.main(null);
