@@ -98,7 +98,7 @@ public class ChatGPTHandler implements HttpHandler {
         JSONArray choices = responseJson.getJSONArray("choices");
         generatedText = choices.getJSONObject(0).getString("text");
         int startIndex = generatedText.indexOf("{");
-        int endIndex= generatedText.indexOf("}")+1;
+        int endIndex = generatedText.length();
         generatedText = generatedText.substring(startIndex, endIndex);
         System.out.println("++GENTEXT++ " + generatedText);
         

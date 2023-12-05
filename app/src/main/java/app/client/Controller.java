@@ -59,6 +59,7 @@ public class Controller {
         // HomeFrame Event Listeners
         view.getHomeFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
         view.getHomeFrame().setFilterMealTypeButtonAction(this::handleFilterMealTypeButton);
+        view.getHomeFrame().setSignOutButtonAction(this::handleSignOutButton);
 
         // MealFrame Event Listeners
         view.getMealFrame().setStartButtonAction(this::handleMealStartButton);
@@ -84,6 +85,8 @@ public class Controller {
         view.getFilterFrame().setBreakfastButtonAction(this::handleFilterBreakfastButton);
         view.getFilterFrame().setLunchButtonAction(this::handleFilterLunchButton);
         view.getFilterFrame().setDinnerButtonAction(this::handleFilterDinnerButton);
+        view.getFilterFrame().setAllButtonAction(this::handleFilterAllButton);
+        view.getFilterFrame().setCancelButtonAction(this::handleFilterCancelButton);
 
     }
 
@@ -110,7 +113,6 @@ public class Controller {
             view.showAlert("Error", response);
         }
 
-        // String recipes = model.performRequest("GET", username, null, null, username, "mock-route");
     }
 
     private void handleCreateAccountButton(ActionEvent event) {
@@ -157,6 +159,13 @@ public class Controller {
         displayRecipe(recipeText);
 
         frameController.getFrame("recipe");
+    }
+
+    private void handleSignOutButton(ActionEvent event) {
+        username = "";
+        password = "";
+
+        frameController.getFrame("login");
     }
     //================ MealFrame and IngredientsFrame Event Handlers ===============================
 
@@ -383,7 +392,7 @@ public class Controller {
 
     //===================== FilterFrame Handlers ================================
 
-    public void handleFilterBreakfastButton(ActionEvent event) {
+    private void handleFilterBreakfastButton(ActionEvent event) {
         String response = model.performRequest("GET", username, null, null, "breakfast", "mealtype");
         checkServer();
         clearRecipes();
@@ -391,7 +400,7 @@ public class Controller {
         frameController.getFrame("home");
     }
 
-    public void handleFilterLunchButton(ActionEvent event) {
+    private void handleFilterLunchButton(ActionEvent event) {
         checkServer();
         String response = model.performRequest("GET", username, null, null, "lunch", "mealtype");
 
@@ -400,7 +409,7 @@ public class Controller {
         frameController.getFrame("home");
     }
 
-    public void handleFilterDinnerButton(ActionEvent event) {
+    private void handleFilterDinnerButton(ActionEvent event) {
         String response = model.performRequest("GET", username, null, null, "dinner", "mealtype");
         //check if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
@@ -413,6 +422,17 @@ public class Controller {
         frameController.getFrame("home");
     }
 
+    private void handleFilterAllButton(ActionEvent event) {
+        String response = model.performRequest("GET", null, null, null, username, "load-recipe");
+        clearRecipes();
+        loadRecipes(response);
+        frameController.getFrame("home");
+    }
+
+    private void handleFilterCancelButton(ActionEvent event) {
+        frameController.getFrame("home");
+    }
+    
     //=================== HELPER FUNCTIONS ====================
     
     private void displayMealType(Recipe recipe, String res) {
