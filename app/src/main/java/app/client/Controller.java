@@ -154,6 +154,7 @@ public class Controller {
         recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();
         String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
         //recipeText = recipeText.replace();
+        String imgString = model.performRequest("GET", username, null, null, recipeTitle, "picture");
         
 
         // checks if server is still running
@@ -162,7 +163,7 @@ public class Controller {
             view.showAlert("Error", "Server connection was interrupted");
         } 
         // Displays the image and the recipe
-        //displayImage();
+        displayImage(imgString);
         displayRecipe(recipeText);
 
         frameController.getFrame("recipe");
@@ -497,15 +498,14 @@ public class Controller {
         }
     }
 
-    // private void displayImage(){
-    //     try {
-    //         DallEHandler img = new DallEHandler();
-    //         Image image = new Image(img.getImagePath().toFile().toURI().toString());
-    //         view.getRecipeFrame().getRecipeSteps().getImageView().setImage(image);
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    // }
+    private void displayImage(String img){
+        try {
+            Image image = new Image(img);
+            view.getRecipeFrame().getRecipeSteps().getImageView().setImage(image);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     // Load Recipes into Home Page once User has signed in
     public void loadRecipes(String recipes) {

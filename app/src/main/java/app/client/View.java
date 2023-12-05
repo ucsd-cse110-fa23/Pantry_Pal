@@ -365,6 +365,8 @@ class RecipeSteps extends VBox {
         // this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;"); // sets background color of task
         
         recipeName = new Label();
+        recipeName.setAlignment(Pos.CENTER);
+        //recipeName.setStyle("-fx-font-size: 20");
         
         recipeSteps.setEditable(true);
         recipeSteps.setPrefSize(400, 500); // set size of text field
@@ -372,9 +374,8 @@ class RecipeSteps extends VBox {
         recipeSteps.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;"); // set background color of texfield
         
         HBox container = new HBox();
-        container.getChildren().addAll(imageView);
-        
-        this.getChildren().addAll(recipeName, recipeSteps);
+        container.getChildren().addAll(imageView,recipeSteps);
+        this.getChildren().addAll(recipeName, container);
     }
 
     public Label getRecipeName() {
