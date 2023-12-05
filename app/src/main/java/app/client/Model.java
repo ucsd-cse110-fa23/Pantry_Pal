@@ -76,7 +76,7 @@ public class Model {
                         reqBody += "&" + password;
                     }
                     if (data != null) {
-                        reqBody += "&" + data;
+                        reqBody += "+" + data;
                     }
 
                     OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());

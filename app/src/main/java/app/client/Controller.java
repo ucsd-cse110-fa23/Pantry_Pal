@@ -79,11 +79,16 @@ public class Controller {
         view.getRecipeFrame().setCancelButtonAction(this::handleRecipeCancelButton);
         view.getRecipeFrame().setSaveButtonAction(this::handleRecipeSaveButton);
         view.getRecipeFrame().setDeleteButtonAction(this::handleRecipeDeleteButton);
+        view.getRecipeFrame().setShareButtonAction(this::handleShareButton);
         
         // FilterFrame Event Listerners
         view.getFilterFrame().setBreakfastButtonAction(this::handleFilterBreakfastButton);
         view.getFilterFrame().setLunchButtonAction(this::handleFilterLunchButton);
         view.getFilterFrame().setDinnerButtonAction(this::handleFilterDinnerButton);
+
+
+        // ShareFrame Event Listeners
+        view.getShareFrame().setCancelButtonAction(this::handleShareCancelButton);
 
     }
 
@@ -147,6 +152,7 @@ public class Controller {
         Button target = (Button) event.getTarget();
         recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();
         String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
+        // recipeText = recipeText.replace();
         
         // checks if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
@@ -352,8 +358,9 @@ public class Controller {
 
     private void handleRecipeSaveButton(ActionEvent event) {
        
-
         String updatedRecipe = view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
+        updatedRecipe = updatedRecipe.replace("\n\n","+");
+        System.out.println("CLEANED newlines"+ updatedRecipe);
         //Make PUT request and save updatedRecipe as second param
         String response = model.performRequest("PUT", username, null, updatedRecipe, null, "");
         
@@ -365,6 +372,7 @@ public class Controller {
         System.out.println("[PUT RESPONSE] " + response);
         frameController.getFrame("home");
     }
+
 
     private void handleRecipeDeleteButton(ActionEvent event) {
         int delim = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().indexOf("\n");
@@ -379,7 +387,19 @@ public class Controller {
 
         System.out.println("[DELETE RESPONSE] " + response);
         frameController.getFrame("home");
+        String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
+        clearRecipes();
+        loadRecipes(recipes);
     }
+
+    private void handleShareButton(ActionEvent event) {
+        String recipeTitle = view.getRecipeFrame().getRecipeSteps().getRecipeName().getText();
+        String response = "http://localhost:8100/share/?u=" + username + "&q="+ recipeTitle;
+        System.out.println("[SHARE RESPONSE] " + response);
+        view.getShareFrame().getShareArea().setText(response);
+        frameController.getFrame("share");
+    }
+
 
     //===================== FilterFrame Handlers ================================
 
@@ -413,6 +433,14 @@ public class Controller {
         frameController.getFrame("home");
     }
 
+    //=================== ShareFrame EventListner ==============
+
+    private void handleShareCancelButton(ActionEvent event) {
+        frameController.getFrame("recipe");
+    }
+
+
+
     //=================== HELPER FUNCTIONS ====================
     
     private void displayMealType(Recipe recipe, String res) {
@@ -434,7 +462,8 @@ public class Controller {
         try {
             String recipeName = recipe.split("\\+")[0];
             String recipeText = recipe.substring(recipe.indexOf("\\+") + 1);
-            recipeText = recipeText.replace("\\+", "\n");
+            recipeText = recipeText.replace("+", "\n\n");
+            System.out.println("RECIPE TEXT ON GET:" + recipeText);
             view.getRecipeFrame().getRecipeSteps().getRecipeName().setText(recipeName);
             view.getRecipeFrame().getRecipeSteps().getTextArea().setText(recipeText);
         } catch (Exception e) {
