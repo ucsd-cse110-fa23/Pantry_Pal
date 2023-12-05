@@ -160,6 +160,7 @@ class AppTest {
         String response = mealtype.performRequest("GET", user, null, null, "dinner", "mealtype");
         // Account with username "testGetMealType" has TWO dinner recipes
         assertEquals("Cheesy Vegetable Tortellini Bake+dinner+Savory Stuffed Pancakes+dinner", response);
+        MyServer.stop();
     }
 
     @Test
