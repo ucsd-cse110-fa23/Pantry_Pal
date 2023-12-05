@@ -206,10 +206,9 @@ public class RequestHandler implements HttpHandler {
       Bson filter2 = eq("user",user);
       filter = combine(filter,filter2);
 
-      Bson nameUpdate = set("title",title);
-      Bson updateOperation = set("ingredients", ingredients);
-      Bson up1 = set("instructions", instructions);
-      Bson combined = combine(nameUpdate,updateOperation, up1);
+      Bson up1 = set("ingredients", ingredients);
+      Bson up2 = set("instructions", instructions);
+      Bson combined = combine(up1, up1);
       collection.findOneAndUpdate(filter, combined);
 
       response = "valid put";
@@ -245,8 +244,9 @@ public class RequestHandler implements HttpHandler {
             System.out.println("Key: " + entry.getKey() + " | Value: " + entry.getValue());
       }
 
-      String title = map.get("title");
-      String user = map.get("user");
+      // assuming that query is the title 
+      String title = map.get("q");
+      String user = map.get("u");
 
       System.out.println("title: " + title + " User: " + user);
 

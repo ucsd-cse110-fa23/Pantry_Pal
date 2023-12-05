@@ -5,14 +5,13 @@ package app;
 
 import org.junit.jupiter.api.Test;
 
+import app.Mock.DALLE;
 import app.client.App;
 import app.client.View;
 import app.client.Controller;
 import app.client.Model;
 import app.server.ChatGPTHandler;
 import app.server.MyServer;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +19,6 @@ import java.io.IOException;
 
 class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
-
     @Test 
     void testGptSameIngredients() throws IOException {
         MyServer.main(null);
@@ -132,6 +130,20 @@ class AppTest {
         // Account with username "testGetMealType" has NO lunch recipes
         assertEquals(null, response);
         MyServer.stop();
+    }
+
+    @Test
+    void dalleTest() throws IOException {
+        // have a generated recipe with the ingredients
+        String generatedRecipe = "Pancake ingredients: flour, eggs, sugar. mix ingredients together and pour into pan";
+
+        // gneerate the image
+        Mock mockData = new Mock();
+        DALLE dalleMock = mockData.new DALLE(generatedRecipe);
+        String res = dalleMock.generatePrompt();
+        assertTrue(true,res);
+
+        
     }
 
 }
