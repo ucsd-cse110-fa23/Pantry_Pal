@@ -1,7 +1,5 @@
-package app.controller;
+package app.client.controllers;
 
-import java.util.HashMap;
-import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -11,9 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Arrays;
 
-import app.client.Model;
-import app.view.*;
 import app.client.*;
+import app.client.views.*;
 
 public class Controller {
     private View view;

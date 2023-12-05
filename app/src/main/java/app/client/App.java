@@ -1,7 +1,7 @@
 package app.client;
 
-import app.controller.*;
-import app.view.*;
+import app.client.controllers.*;
+import app.client.views.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

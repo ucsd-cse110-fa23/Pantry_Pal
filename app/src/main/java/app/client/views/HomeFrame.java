@@ -1,4 +1,4 @@
-package app.view;
+package app.client.views;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

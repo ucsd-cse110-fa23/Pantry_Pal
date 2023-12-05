@@ -1,4 +1,4 @@
-package app.view;
+package app.client.views;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,26 +20,24 @@ import java.io.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
-public class IngredientsFrame extends BorderPane {
+public class MealFrame extends BorderPane {
 
     private Button startButton, stopButton, cancelButton;
     private Label recordingLabel;
     private Header header;
     private RecordingFooter footer;
     private Prompt prompt;
-    public String mealType;
 
-    // Set a default style for buttons and fields - background color, font size, italics
     String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     String clickedButtonStyle = "-fx-background-color: #0174BE; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
 
-    public IngredientsFrame() {
-        header = new Header("Record Ingredients");
+    public MealFrame() {
+        header = new Header("Record Meal Type");
         footer = new RecordingFooter();
         
         // Set properties for the page
         this.setPrefSize(370, 120);
-        prompt = new Prompt("");
+        prompt = new Prompt("What meal type would you like: \n Breakfast, Lunch, or Dinner?");
         
         this.setTop(header);
         this.setCenter(prompt);
@@ -67,19 +65,6 @@ public class IngredientsFrame extends BorderPane {
         return recordingLabel;
     }
 
-    public Prompt getPrompt() {
-        return prompt;
-    }
-
-    public String setMealType(String mealType) {
-        return this.mealType = mealType;
-    }
-
-    // Writes audio into "recording.wav"
-    public void setStartButtonAction(EventHandler<ActionEvent> eventHandler) {
-        startButton.setOnAction(eventHandler);
-    }
-
     // Getter to change Start/Stop button style
     public String getDefaultStyle() {
         return defaultButtonStyle;
@@ -87,6 +72,15 @@ public class IngredientsFrame extends BorderPane {
 
     public String getClickedStyle() {
         return clickedButtonStyle;
+    }
+
+    public Prompt getPrompt() {
+        return prompt;
+    }
+
+    // Writes audio into "recording.wav"
+    public void setStartButtonAction(EventHandler<ActionEvent> eventHandler) {
+        startButton.setOnAction(eventHandler);
     }
 
     // Needs to detect either "Breakfast," "Lunch," or "Dinner" to move to next Frame
@@ -98,5 +92,4 @@ public class IngredientsFrame extends BorderPane {
     public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
         cancelButton.setOnAction(eventHandler);
     }
-
 }
