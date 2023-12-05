@@ -13,25 +13,6 @@ import java.util.Arrays;
 
 import app.view.*;
 
-// Handles switching Scenes upon clicking buttons
-class FrameController {
-    private Map<String, Scene> frameMap;
-    private Stage primaryStage;
-
-    FrameController(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        frameMap = new HashMap<>();
-    }
-
-    public void addFrame(String name, Scene scene) {
-        frameMap.put(name, scene);
-    }
-
-    public void getFrame(String name) {
-        primaryStage.setScene(frameMap.get(name));
-    }
-}
-
 public class Controller {
     private View view;
     private Model model;
