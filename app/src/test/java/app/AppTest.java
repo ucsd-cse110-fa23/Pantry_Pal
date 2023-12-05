@@ -155,13 +155,20 @@ class AppTest {
     }
 
     @Test
-    void testErrorMessageHandling() throws IOException{
+    void testServerNotRunning() throws IOException{
 
         boolean status = ServerChecker.isServerRunning("localhost", 8100);
         assertEquals(false, status);
 
     }
 
+    @Test
+    void testServerRunning() throws IOException{
+        MyServer.main(null);
+        boolean status = ServerChecker.isServerRunning("localhost", 8100);
+        assertEquals(true, status);
+        MyServer.stop();
+    }
 
 
 }
