@@ -7,9 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
-import app.client.HomeFrame;
-import app.client.RecipeList;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Arrays;
@@ -90,9 +87,9 @@ public class Controller {
         return frameController;
     }
 
-    public RecipeList getRecipeList() {
-        return recipeList;
-    }
+    // public RecipeList getRecipeList() {
+    //     return recipeList;
+    // }
 
     //================ SortFrame Event Handlers ====================================================
 
@@ -105,8 +102,9 @@ public class Controller {
         if (response.equals("SUCCESS")) {
             String recipes = model.performRequest("GET", username, null, null, username, "loadRecipeHandler");
 
-            String order = model.sortAlphabetically(recipes, recipeList);
+            String order = model.sortAlphabetically(recipes);
             System.out.println("NEW SORTED: " + order);
+            insertRecipes(order);
             updateRecipeIndices();
             updateViewButton();
             frameController.getFrame("home");
@@ -128,8 +126,9 @@ public class Controller {
         if (response.equals("SUCCESS")) {
             String recipes = model.performRequest("GET", username, null, null, username, "loadRecipeHandler");
 
-            String order = model.sortRAlphabetically(recipes, recipeList);
+            String order = model.sortRAlphabetically(recipes);
             System.out.println("NEW SORTED: " + order);
+            insertRecipes(order);
             updateRecipeIndices();
             updateViewButton();
             frameController.getFrame("home");
@@ -150,8 +149,9 @@ public class Controller {
         String response = model.performRequest("POST", username, password, null, null, "login");
         if (response.equals("SUCCESS")) {
             String recipes = model.performRequest("GET", username, null, null, username, "loadRecipeHandler");
-            String order = model.sortChronological(recipes, recipeList);
+            String order = model.sortChronological(recipes);
             System.out.println("NEW SORTED: " + order);
+            insertRecipes(order);
             updateRecipeIndices();
             updateViewButton();
             frameController.getFrame("home");
@@ -173,8 +173,9 @@ public class Controller {
         if (response.equals("SUCCESS")) {
             String recipes = model.performRequest("GET", username, null, null, username, "loadRecipeHandler");
             
-            String order = model.sortRChronological(recipes, recipeList);
+            String order = model.sortRChronological(recipes);
             System.out.println("NEW SORTED: " + order);
+            insertRecipes(order);
             updateRecipeIndices();
             updateViewButton();
             frameController.getFrame("home");
@@ -540,6 +541,15 @@ public class Controller {
                 Recipe temp = ((Recipe) recipeList.getChildren().get(i));
                 temp.setViewButtonAction(this::handleViewButton);
             }
+        }
+    }
+
+    public void insertRecipes(String recipes){
+        String[] recipesR = recipes.split("_");
+        for(int i = 0; i < recipesR.length; i++){
+            Recipe newRecipe = new Recipe();
+            newRecipe.getRecipe().setText(recipesR[i]);
+            recipeList.getChildren().add(newRecipe);
         }
     }
 }

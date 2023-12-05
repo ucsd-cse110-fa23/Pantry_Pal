@@ -1,8 +1,7 @@
 package app.client;
 
-import app.client.HomeFrame;
-import app.client.RecipeList;
-
+import app.view.HomeFrame;
+import app.view.RecipeList;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
