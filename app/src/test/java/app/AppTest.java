@@ -160,7 +160,7 @@ class AppTest {
         Model model = new Model();
         String meal = "dinner";
         String response = model.performRequest("GET", null, null, null, meal, "mealtype");
-        assertEquals("Error: Connection refused", response);
+        assertEquals(response, "Error: Connection refused");
     }
 
 
