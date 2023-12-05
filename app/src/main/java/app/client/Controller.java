@@ -3,6 +3,7 @@ package app.client;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.server.DallEHandler;
 import app.server.ServerChecker;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -42,6 +43,7 @@ public class Controller {
     private String[] recipeParts;
     private String username, password, mealType, ingredients, fullRecipe, recipeTitle;
     private RecipeList recipeList;
+    private String dalleResponse;
 
     public Controller(View view, Model model, Stage primaryStage) {
         this.view = view;
@@ -151,14 +153,16 @@ public class Controller {
         Button target = (Button) event.getTarget();
         recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();
         String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
-        // recipeText = recipeText.replace();
+        //recipeText = recipeText.replace();
         
+
         // checks if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false) {
             view.showAlert("Error", "Server connection was interrupted");
         } 
-        
+        // Displays the image and the recipe
+        //displayImage();
         displayRecipe(recipeText);
 
         frameController.getFrame("recipe");
@@ -272,9 +276,9 @@ public class Controller {
         response = response.replace("+", "\n");
 
         String dallePrompt = "Generate a real picture of " + recipeTitle;
-        String dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
+        dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
 
-        Image image = new Image(dalleResponse); 
+        Image image = new Image(dalleResponse);
 
         view.getGptFrame().getImageView().setImage(image);
         view.getGptFrame().getRecipeText().setText(response);
@@ -305,8 +309,9 @@ public class Controller {
         displayMealType(newRecipe, mealType);
         newRecipe.setViewButtonAction(this::handleViewButton);
 
-        fullRecipe += "+" + mealType;
+        fullRecipe += "+" + mealType + "+" + dalleResponse;
         String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
+
 
         //check if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
@@ -320,6 +325,8 @@ public class Controller {
         updateRecipeIndices();
         
         model.performRequest("POST", username, null, fullRecipe, null, "");
+        
+
 
         // Redirect back to Home Page
         frameController.getFrame("home");
@@ -489,6 +496,16 @@ public class Controller {
             e.printStackTrace();
         }
     }
+
+    // private void displayImage(){
+    //     try {
+    //         DallEHandler img = new DallEHandler();
+    //         Image image = new Image(img.getImagePath().toFile().toURI().toString());
+    //         view.getRecipeFrame().getRecipeSteps().getImageView().setImage(image);
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 
     // Load Recipes into Home Page once User has signed in
     public void loadRecipes(String recipes) {

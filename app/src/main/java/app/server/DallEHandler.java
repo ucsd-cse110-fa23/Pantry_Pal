@@ -25,6 +25,8 @@ public class DallEHandler implements HttpHandler{
     private static final String API_KEY = "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";
     private static final String MODEL = "dall-e-2";
 
+    private Path imagePath;
+
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         String method = httpExchange.getRequestMethod();
@@ -107,15 +109,17 @@ public class DallEHandler implements HttpHandler{
             // Generate a unique file name using timestamp
             String timestamp = String.valueOf(System.currentTimeMillis());
             String imagePath = "image_" + timestamp + ".jpg"; 
-    
+
             Path imagePathObj = Paths.get(imagePath);
             Files.copy(in, imagePathObj, StandardCopyOption.REPLACE_EXISTING);
         }
-    
         scanner.close();
     
         return generatedImageURL;
-        
+    }
+
+    public Path getImagePath(){
+        return imagePath;
     }
 
 }
