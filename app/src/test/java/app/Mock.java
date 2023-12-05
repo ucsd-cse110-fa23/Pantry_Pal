@@ -1,5 +1,7 @@
 package app;
 
+import static com.mongodb.client.model.Updates.unset;
+
 public class Mock {
 
     public class filterMealtype{
@@ -25,6 +27,34 @@ public class Mock {
 
         String generatePrompt(){
             return "generated image with: " + prompt + " as the prompt";
+        }
+    }
+
+    public class ShareLinkMock{
+        public String user;
+        public String Recipe;
+
+        ShareLinkMock(String u, String r){
+            user = u;
+            Recipe = r;
+        }
+
+        String getWebString(){
+            String response = "";
+            StringBuilder htmlBuilder = new StringBuilder();
+            htmlBuilder
+              .append("<html>")
+              .append("<body>")
+              .append("<h1>")
+              .append("The recipe you have selected is." + Recipe)
+              .append("under user" + user)
+              .append("</h1>")
+              .append("</body>")
+              .append("</html>");
+      
+            // encode HTML content
+            response = htmlBuilder.toString();
+            return response;
         }
     }
 }

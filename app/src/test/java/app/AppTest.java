@@ -7,12 +7,14 @@ import org.junit.jupiter.api.Test;
 
 import com.mongodb.internal.connection.Server;
 
+import app.Mock.ShareLinkMock;
 import app.client.App;
 import app.client.View;
 import app.client.Controller;
 import app.client.Model;
 import app.server.ChatGPTHandler;
 import app.server.ServerChecker;
+import app.server.ShareHandler;
 import app.server.MyServer;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -175,6 +177,31 @@ class AppTest {
         MyServer.main(null);
         boolean status = ServerChecker.isServerRunning("localhost", 8100);
         assertEquals(true, status);
+        MyServer.stop();
+    }
+
+    // UNIT TEST
+    @Test
+    void testGetShareLink() throws IOException{
+        // given user has a recipe already
+        Mock m = new Mock();
+        ShareLinkMock mock = m.new ShareLinkMock("Bryan", "steak and eggs");
+        // want to test the share functionality as a unit test
+        String web = mock.getWebString();
+        assertNotEquals("", web);
+        assertTrue(web.contains("Bryan"));
+        assertTrue(web.contains("steak and eggs"));
+    }
+
+    // Integration Test
+    @Test 
+    void shareIntegrationTest() throws IOException{
+        MyServer.main(null);
+        Model shareTest =  new Model();
+        String recipeTitle = "Steak and eggs";
+
+        String response = shareTest.performRequest("POST", null, null, recipeTitle, null, "mockDalle");
+        
         MyServer.stop();
     }
 
