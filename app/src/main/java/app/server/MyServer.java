@@ -29,7 +29,6 @@ public class MyServer {
 
         // endpoints
         server.createContext("/", new RequestHandler());
-        server.createContext("/recording", new AudioHandler());
         server.createContext("/whisper", new WhisperHandler());
         server.createContext("/chatgpt", new ChatGPTHandler());
         server.createContext("/login", new LoginHandler());
@@ -42,13 +41,12 @@ public class MyServer {
 
         server.setExecutor(threadPoolExecutor);
         server.start();
-          
+        
         System.out.println("Server started on port " + SERVER_PORT);
     }
 
     public static void stop() {
         server.stop(0);
     }
-
 
 }

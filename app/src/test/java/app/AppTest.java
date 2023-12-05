@@ -5,20 +5,30 @@ package app;
 
 import org.junit.jupiter.api.Test;
 
+import com.mongodb.internal.connection.Server;
+
+import com.mongodb.internal.connection.Server;
+
 import app.Mock.DALLE;
 import app.client.App;
 import app.client.View;
 import app.client.Controller;
 import app.client.Model;
 import app.server.ChatGPTHandler;
+import app.server.ServerChecker;
 import app.server.MyServer;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+import java.net.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 
+
 class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
+    
     @Test 
     void testGptSameIngredients() throws IOException {
         MyServer.main(null);
@@ -76,7 +86,21 @@ class AppTest {
         MyServer.stop();
     }
 
-    // Tests a valid login
+    // Test /mealtype route to filter breakfast recipes belonging to "testGetMealType" account
+    @Test
+    void dalleLinkGenerationTest() throws IOException{
+        MyServer.main(null);
+        Model dalleTest =  new Model();
+        String recipeTitle = "Bacon Eggs and Ham";
+
+        String url = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Ff%2Ffa%2FHam_and_eggs_over_easy.jpg%2F1200px-Ham_and_eggs_over_easy.jpg&tbnid=jL-bcwE1AkYVvM&vet=12ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW..i&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FHam_and_eggs&docid=2WM6ZYnDhyPs5M&w=1200&h=789&q=bacon%20eggs%20and%20ham&ved=2ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW";
+
+        String response = dalleTest.performRequest("POST", null, null, recipeTitle, null, "mockDalle");
+        
+        assertEquals(url, response);
+        MyServer.stop();
+    }
+
     @Test
     void testValidLoginValid() throws IOException { 
         MyServer.main(null);
@@ -142,6 +166,23 @@ class AppTest {
         DALLE dalleMock = mockData.new DALLE(generatedRecipe);
         String res = dalleMock.generatePrompt();
         assertTrue(true,res);
+    }
+
+    @Test
+    void testServerNotRunning() throws IOException{
+
+        boolean status = ServerChecker.isServerRunning("localhost", 8100);
+        assertEquals(false, status);
+
+    }
+    
+
+    @Test
+    void testServerRunning() throws IOException{
+        MyServer.main(null);
+        boolean status = ServerChecker.isServerRunning("localhost", 8100);
+        assertEquals(true, status);
+        MyServer.stop();
     }
 
 }

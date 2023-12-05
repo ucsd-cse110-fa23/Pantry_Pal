@@ -38,8 +38,6 @@ public class ChatGPTHandler implements HttpHandler {
             } else {
               throw new Exception("Not Valid Request Method");
             }
-            //Sending back response to the client
-            //httpExchange.sendResponseHeaders(200, response.length());
 
             try {
                 byte[] bs = response.getBytes("UTF-8");
@@ -51,14 +49,11 @@ public class ChatGPTHandler implements HttpHandler {
                 System.out.println(ex.toString());
             }
 
-
-            // OutputStream outStream = httpExchange.getResponseBody();
-            // outStream.write(response.getBytes());
-            // outStream.close();
         } catch (Exception e) {
             System.out.println("An erroneous request");
             response = e.toString();
             e.printStackTrace();
+            
         }
         
     }
@@ -103,6 +98,12 @@ public class ChatGPTHandler implements HttpHandler {
         JSONArray choices = responseJson.getJSONArray("choices");
         generatedText = choices.getJSONObject(0).getString("text");
         System.out.println("++GENTEXT++ " + generatedText);
+
+        int startIndex = generatedText.indexOf("{");
+        int endIndex= generatedText.indexOf("}")+1;
+        generatedText = generatedText.substring(startIndex, endIndex);
+        System.out.println("++GENTEXT PARSED++ " + generatedText);
+        
         JSONObject toJson = new JSONObject(generatedText);
 
         String res = toJson.getString("title");

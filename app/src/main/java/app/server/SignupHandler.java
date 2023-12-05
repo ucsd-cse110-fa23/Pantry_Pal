@@ -22,11 +22,7 @@ import com.mongodb.client.MongoDatabase;
 
 public class SignupHandler implements HttpHandler {
 
-    private MongoClient mongoClient;
-    private MongoDatabase recipeDatabase;
-    private String URI = MyServer.MONGODBURI;
-
-
+    private String URI = MyServer.MONGO_URI;
 
     // general method and calls certain methods to handle http request
     public void handle(HttpExchange httpExchange) throws IOException {
