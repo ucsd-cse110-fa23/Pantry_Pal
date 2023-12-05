@@ -3,7 +3,7 @@ package app.server;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
+
 import java.net.URLDecoder;
 import java.util.Scanner;
 
@@ -11,7 +11,10 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import org.bson.Document;
+<<<<<<< HEAD
 import org.bson.conversions.Bson;
+=======
+>>>>>>> origin/main
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -21,9 +24,7 @@ import com.mongodb.client.model.Filters;
 
 public class LoginHandler implements HttpHandler {
 
-    private String anthonyURI = "mongodb://azakaria:ILWaFDvRjUEUjpcJ@ac-ytzddhr-shard-00-00.rzzq5s2.mongodb.net:27017,ac-ytzddhr-shard-00-01.rzzq5s2.mongodb.net:27017,ac-ytzddhr-shard-00-02.rzzq5s2.mongodb.net:27017/?ssl=true&replicaSet=atlas-11uj01-shard-0&authSource=admin&retryWrites=true&w=majority";
-    private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-    private String URI = peterURI;
+    private String URI = MyServer.MONGO_URI;
 
     // general method and calls certain methods to handle http request
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -44,6 +45,7 @@ public class LoginHandler implements HttpHandler {
             OutputStream outStream = httpExchange.getResponseBody();
             outStream.write(response.getBytes());
             outStream.close();
+
         } catch (Exception e) {
             System.out.println("An erroneous request");
             response = e.toString();

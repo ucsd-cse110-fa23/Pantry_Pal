@@ -789,7 +789,6 @@ class GptFrame extends BorderPane {
     private Header header;
     private GptFooter footer;
     private Button saveButton, cancelButton, refreshButton;
-    private String generatedText = "TWO Bacon, Eggs, and Sausage Breakfast+4 slices bacon, 2 eggs, 2 sausage links+1. In a medium skillet over medium heat, cook the bacon until crispy. 2. Remove bacon from skillet, leaving renderings in the pan. Add sausage and cook until browned on both sides. 3. Push sausage to one side and crack two eggs into the other side. Fry over medium heat until desired doneness. 4. Serve bacon, eggs, and sausage together.";
     private Recipe newRecipe;
     private TextArea recipeText = new TextArea();
     private ImageView imageView = new ImageView();
@@ -803,7 +802,6 @@ class GptFrame extends BorderPane {
         header = new Header("New Recipe");
         footer = new GptFooter();
         
-        recipeText.setText(generatedText);
         recipeText.setWrapText(true);
         recipeText.setMaxWidth(350);
         recipeText.setPadding(new Insets(5));
@@ -846,11 +844,11 @@ class GptFrame extends BorderPane {
         return newRecipe;
     }
 
-    public ImageView getImageView(){
+    public ImageView getImageView() {
         return imageView;
     }
 
-    public Image getImage(){
+    public Image getImage() {
         return image;
     }
 
@@ -874,7 +872,6 @@ class GptFrame extends BorderPane {
         alert.setContentText(content);
         alert.showAndWait();
     }
-
 }
 
 

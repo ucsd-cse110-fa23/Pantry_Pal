@@ -83,7 +83,21 @@ class AppTest {
         MyServer.stop();
     }
 
-    // Tests a valid login
+    // Test /mealtype route to filter breakfast recipes belonging to "testGetMealType" account
+    @Test
+    void dalleLinkGenerationTest() throws IOException{
+        MyServer.main(null);
+        Model dalleTest =  new Model();
+        String recipeTitle = "Bacon Eggs and Ham";
+
+        String url = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Ff%2Ffa%2FHam_and_eggs_over_easy.jpg%2F1200px-Ham_and_eggs_over_easy.jpg&tbnid=jL-bcwE1AkYVvM&vet=12ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW..i&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FHam_and_eggs&docid=2WM6ZYnDhyPs5M&w=1200&h=789&q=bacon%20eggs%20and%20ham&ved=2ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW";
+
+        String response = dalleTest.performRequest("POST", null, null, recipeTitle, null, "mockDalle");
+        
+        assertEquals(url, response);
+        MyServer.stop();
+    }
+
     @Test
     void testValidLoginValid() throws IOException { 
         MyServer.main(null);
@@ -114,21 +128,6 @@ class AppTest {
     }
 
     // Test /mealtype route to filter breakfast recipes belonging to "testGetMealType" account
-    @Test
-    void dalleLinkGenerationTest() throws IOException{
-        MyServer.main(null);
-        Model dalleTest =  new Model();
-        String recipeTitle = "Bacon Eggs and Ham";
-
-        String url = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Ff%2Ffa%2FHam_and_eggs_over_easy.jpg%2F1200px-Ham_and_eggs_over_easy.jpg&tbnid=jL-bcwE1AkYVvM&vet=12ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW..i&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FHam_and_eggs&docid=2WM6ZYnDhyPs5M&w=1200&h=789&q=bacon%20eggs%20and%20ham&ved=2ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW";
-
-        String response = dalleTest.performRequest("POST", null, null, recipeTitle, null, "mockDalle");
-        
-        assertEquals(url, response);
-        MyServer.stop();
-
-    }
-
     @Test
     void testGetMealType() throws IOException {
         MyServer.main(null);

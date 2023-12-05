@@ -16,37 +16,34 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Filters.and;
 
+public class LoadRecipeHandler implements HttpHandler{
+    
+    private String URI = MyServer.MONGO_URI;
 
-public class loadRecipeHandler implements HttpHandler{
-    private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
-    private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-    private String adrianURI = "mongodb+srv://adw004:13531Caravel%26@cluster0.nmzzqtt.mongodb.net/?retryWrites=true&w=majority";
-    private String URI = peterURI;
+    // general method and calls certain methods to handle http request
+    public void handle(HttpExchange httpExchange) throws IOException {
+      String response = "Request Received";
+      String method = httpExchange.getRequestMethod();
+      try {
+        if (method.equals("GET")) {
+          response = handleGet(httpExchange);
+        } else {
+          throw new Exception("Not Valid Request Method");
+        }
 
-      // general method and calls certain methods to handle http request
-  public void handle(HttpExchange httpExchange) throws IOException {
-    String response = "Request Received";
-    String method = httpExchange.getRequestMethod();
-    try {
-      if (method.equals("GET")) {
-        response = handleGet(httpExchange);
-      } else {
-        throw new Exception("Not Valid Request Method");
+        //Sending back response to the client
+        httpExchange.sendResponseHeaders(200, response.length());
+        OutputStream outStream = httpExchange.getResponseBody();
+        outStream.write(response.getBytes());
+        outStream.close();
+
+      } catch (Exception e) {
+        System.out.println("An erroneous request");
+        e.printStackTrace();
       }
-      //Sending back response to the client
-      httpExchange.sendResponseHeaders(200, response.length());
-      OutputStream outStream = httpExchange.getResponseBody();
-      outStream.write(response.getBytes());
-      outStream.close();
-    } catch (Exception e) {
-      System.out.println("An erroneous request");
-      response = e.toString();
-      e.printStackTrace();
-    }
 
-  }
+    }
 
     /**
    * 
@@ -70,8 +67,7 @@ public class loadRecipeHandler implements HttpHandler{
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
 
-        Bson filter = Filters.and(Filters.eq("user", user), Filters.nin("password"));
-        long recipeCount = collection.countDocuments(filter);
+        long recipeCount = collection.countDocuments(eq("user", user));
         System.out.println("LOG COUNT: " + recipeCount);
 
         // Only the login credentials for user were found in the collection so no recipes
@@ -85,11 +81,11 @@ public class loadRecipeHandler implements HttpHandler{
         if (recipe != null) {
             response = "";
             for(Document a : recipe) {
-                response += "_" + a.getString("title") + "+" + a.getString("mealtype");
+                response += "+" + a.getString("title") + "+" + a.getString("mealtype");
             }
-            // taking out the first + 
-          response = response.substring(1);
-          System.out.println(response);
+            // Taking out the first + 
+            response = response.substring(1);
+            System.out.println(response);
         } else {
           System.out.println("NO RECIPES SAVED");
           return "";
@@ -98,7 +94,7 @@ public class loadRecipeHandler implements HttpHandler{
       System.out.println("received get request on server with value " + user);
       System.out.println("response is " + response);
     }
-
+    
     return response;
 
   }

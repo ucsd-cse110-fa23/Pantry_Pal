@@ -13,7 +13,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import java.net.*;
 
@@ -146,19 +145,14 @@ public class Controller {
 
     private void handleViewButton(ActionEvent event) {
         Button target = (Button) event.getTarget();
-        HBox container = (HBox) target.getParent();
-        TextField textField = (TextField) container.getChildren().get(1);
-        recipeTitle =  (String) textField.getText();
-        // recipeTitle = recipe.getRecipe().getText();
-        recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();;
+        recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();
+        String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
         
         // checks if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
-        if(checker == false){
+        if(checker == false) {
             view.showAlert("Error", "Server connection was interrupted");
-        }
-
-        String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
+        } 
         
         displayRecipe(recipeText);
 
@@ -207,7 +201,6 @@ public class Controller {
             startButton.setStyle(view.getDefaultButtonStyle());
             stopButton.setStyle(view.getDefaultButtonStyle());
         }
-
 
     }
 
@@ -466,15 +459,16 @@ public class Controller {
     public void loadRecipes(String recipes) {
         if (recipes != null) {
             String[] recipesArr = { recipes };
-            if (recipes.contains("_")) {
-                recipesArr = recipes.split("_");
+            if (recipes.contains("+")) {
+                recipesArr = recipes.split("\\+");
             }
-            for (int i = 0; i < recipesArr.length; i++) {
-                String meal = recipesArr[i].split("\\+")[1];
+            int i = 0;
+            while (i < recipesArr.length) {
                 Recipe newRecipe = new Recipe();
-                newRecipe.getRecipe().setText(recipesArr[i].split("\\+")[0]);
+                newRecipe.getRecipe().setText(recipesArr[i++]);
                 newRecipe.setViewButtonAction(this::handleViewButton);
                 recipeList.getChildren().add(0,newRecipe);
+                String meal = recipesArr[i++];
                 displayMealType(newRecipe, meal);
                 updateRecipeIndices();
             }
