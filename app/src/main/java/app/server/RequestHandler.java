@@ -154,7 +154,7 @@ public class RequestHandler implements HttpHandler {
     System.out.println("INSTRUCT: " + instructions);
     System.out.println("USER:" + user);
     System.out.println("MEALTYPE: " + mealtype);
-    String response = "valid post";
+    String response = "invalid post";
 
     try (MongoClient mongoClient = MongoClients.create(URI)) {
       MongoDatabase database = mongoClient.getDatabase("PantryPal");
@@ -179,7 +179,6 @@ public class RequestHandler implements HttpHandler {
   /**
    * EXPECT: USER+TITLE+INGREDIENTS+INSTRUCTIONS
    * 
-   * !!!!!!!!!!!! DONT WORK
    * @return
    */
   private String handlePut(HttpExchange httpExchange) throws IOException{

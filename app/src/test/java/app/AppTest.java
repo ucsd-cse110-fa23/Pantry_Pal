@@ -3,9 +3,14 @@
  */
 package app;
 
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.junit.jupiter.api.Test;
 
-import com.mongodb.internal.connection.Server;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import app.Mock.ShareLinkMock;
 import app.client.App;
@@ -19,7 +24,13 @@ import app.server.MyServer;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import java.net.*;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.OutputStreamWriter;
 
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.set;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
@@ -28,6 +39,8 @@ import java.io.IOException;
 class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
     
+    private final String MONGOURI =  "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
+
     @Test 
     void testGptSameIngredients() throws IOException {
         MyServer.main(null);
@@ -193,16 +206,126 @@ class AppTest {
         assertTrue(web.contains("steak and eggs"));
     }
 
-    // Integration Test
+    // Integration Test with model and server
     @Test 
     void shareIntegrationTest() throws IOException{
         MyServer.main(null);
         Model shareTest =  new Model();
-        String recipeTitle = "Steak and eggs";
+        // have a recipe in the database already
+        String recipeTitle = "Steak and Egg Skillet";
+        String user = "Bryan";
+        String error = "The recipe you have selected cannont be found by the server";
+        String response = shareTest.performRequest("GET", user, null, null, recipeTitle, "share");
 
-        String response = shareTest.performRequest("POST", null, null, recipeTitle, null, "mockDalle");
+        assertTrue(response.contains(recipeTitle));
+        assertFalse(response.contains(error));
         
         MyServer.stop();
     }
+
+    // just testing server request handler method,  GET METHOD
+    // USER+TITLE+INGREDIENTS+INSTRUCTIONS+MEALTYPE
+    // UNIT TEST
+    @Test
+    void requestHandlerUnitTest() throws IOException, URISyntaxException{
+        MyServer.main(null);
+        // have a recipe in the database already
+        String recipeTitle = "Hash Brown and Bacon Breakfast Bake";
+        String user = "Bryan";
+        String ingred = "1 package (20 ounces) refrigerated shredded hash brown potatoes, 8 strips bacon, cooked and crumbled, 2 cups shredded cheddar cheese, 1/2 cup chopped onion, 1/2 cup sour cream, 1/4 teaspoon salt, 1/4 teaspoon pepper and 2 tablespoons butter";
+        String instructions = "Preheat oven to 375 degrees F. Grease 9-inch deep dish pie plate. Combine hash browns, bacon, cheese and onion in large bowl. Blend sour cream, salt and pepper; stir into hash brown mixture. Spread in pie plate. Dot with butter. Bake 40 to 45 minutes or until golden brown and bubbly. This is an edit to the recipe";
+        String mealtype = "breakfast";
+        String method = "GET";
+        String query = URLEncoder.encode("u=" + user + "&q=" + recipeTitle, "UTF-8");
+        String urlString = "http://localhost:8100/?" + query;
+        URL url = new URI(urlString).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(method);
+        conn.setDoOutput(true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String response = in.readLine();    
+        in.close();
+
+
+
+        assertNotEquals("", response);;
+        assertTrue(response.contains(recipeTitle));
+        assertTrue(response.contains(ingred));
+        assertTrue(response.contains(instructions));
+
+        
+        MyServer.stop();
+    }
+
+
+    /**
+     * UNIT TEST
+     * Test for just the server handler method to post the corret data
+     * 
+     * removes added data at the end to make sure to not change user recipes
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test
+    void POSTrequestHandlerTest() throws IOException, URISyntaxException{
+        MyServer.main(null);
+        // have a recipe in the database already
+        String recipeTitle = "pancakes";
+        String user = "Bryan";
+        String ingred = "flour,eggs,sugar,milk";
+        String instructions = "mix ingredients to make batter and then pour into hot pan";
+        String mealtype = "breakfast";
+        String method = "POST";
+
+        //String query = URLEncoder.encode("u=" + user + "&q=" + recipeTitle, "UTF-8");
+        String urlString = "http://localhost:8100/";
+        URL url = new URI(urlString).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(method);
+        conn.setDoOutput(true);
+
+
+        // writing to the body of the request
+        String reqBody = user + "+" + recipeTitle + "+" + ingred + "+" + instructions + "+" + mealtype;
+        OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+        out.write(URLEncoder.encode(reqBody, "UTF-8"));
+        out.flush();
+        out.close();
+
+
+        // reading the input
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String response = in.readLine();    
+        in.close();
+
+        assertNotEquals("invalid post", response);
+
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+      
+            Bson filter = eq("title", recipeTitle);
+            Bson filter2 = eq("user",user);
+            filter = combine(filter,filter2);
+
+            // checkign that post method correctly added to database
+            Document recipe = collection.find(filter).first();
+            assertEquals(recipeTitle, recipe.getString("title"));
+            assertEquals(ingred, recipe.getString("ingredients"));
+            assertEquals(instructions,recipe.getString("instructions"));
+            assertEquals(user,recipe.getString("user"));
+            assertEquals(mealtype, recipe.getString("mealtype"));
+
+
+            // removing newly added recipe 
+            collection.findOneAndDelete(filter);
+            recipe = collection.find(filter).first();
+            assertNull(recipe);
+        }
+        
+        MyServer.stop();
+    }
+
+
 
 }
