@@ -106,7 +106,7 @@ public class DallEHandler implements HttpHandler{
         try (InputStream in = new URI(generatedImageURL).toURL().openStream()) {
             // Generate a unique file name using timestamp
             String timestamp = String.valueOf(System.currentTimeMillis());
-            String imagePath = "image_" + timestamp + ".jpg"; 
+            String imagePath = "/resources/image_" + timestamp + ".jpg"; 
     
             Path imagePathObj = Paths.get(imagePath);
             Files.copy(in, imagePathObj, StandardCopyOption.REPLACE_EXISTING);

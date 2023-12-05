@@ -60,6 +60,7 @@ public class ChatGPTHandler implements HttpHandler {
 
     // need to feed this method the entire prompt before calling
     // prompt: Make me a breakfast recipe using eggs with the recipe in json format with ingredients as one string and instructions as one string 
+    // returns title+ingredients+instructions
 
     private String handlePost(HttpExchange httpExchange) throws IOException, InterruptedException{
         String generatedText = "no response from chatgptHandler";

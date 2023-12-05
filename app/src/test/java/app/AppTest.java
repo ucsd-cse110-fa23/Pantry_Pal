@@ -33,7 +33,7 @@ class AppTest {
         String ingredients = "steak, potatoes, butter";
         Model model = new Model();
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = model.performRequest("POST", null, null, prompt, null, "mockgpt");
+        String response = model.performRequest("POST", null, null, prompt, null, "mockGPT");
 
         // API call should have successfully been made and returned thorugh model with the mealType and ingredients
         assertFalse(response.equals(""));
@@ -56,7 +56,7 @@ class AppTest {
         // Then: when I press the refresh button it will generate another recipe like a bacon egg sandwich
         Model refreshTest = new Model();
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = refreshTest.performRequest("POST", user, null, prompt, null, "mockgpt");
+        String response = refreshTest.performRequest("POST", user, null, prompt, null, "mockGPT");
         assertNotEquals(response, generatedText);
         MyServer.stop();
     }
@@ -83,21 +83,7 @@ class AppTest {
         MyServer.stop();
     }
 
-    // Test /mealtype route to filter breakfast recipes belonging to "testGetMealType" account
-    @Test
-    void dalleLinkGenerationTest() throws IOException{
-        MyServer.main(null);
-        Model dalleTest =  new Model();
-        String recipeTitle = "Bacon Eggs and Ham";
-
-        String url = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Ff%2Ffa%2FHam_and_eggs_over_easy.jpg%2F1200px-Ham_and_eggs_over_easy.jpg&tbnid=jL-bcwE1AkYVvM&vet=12ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW..i&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FHam_and_eggs&docid=2WM6ZYnDhyPs5M&w=1200&h=789&q=bacon%20eggs%20and%20ham&ved=2ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW";
-
-        String response = dalleTest.performRequest("POST", null, null, recipeTitle, null, "mockDalle");
-        
-        assertEquals(url, response);
-        MyServer.stop();
-    }
-
+    // Tests a valid login
     @Test
     void testValidLoginValid() throws IOException { 
         MyServer.main(null);
@@ -129,7 +115,22 @@ class AppTest {
 
     // Test /mealtype route to filter breakfast recipes belonging to "testGetMealType" account
     @Test
-    void testGetOneBreakfastRecipe() throws IOException {
+    void dalleLinkGenerationTest() throws IOException{
+        MyServer.main(null);
+        Model dalleTest =  new Model();
+        String recipeTitle = "Bacon Eggs and Ham";
+
+        String url = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Ff%2Ffa%2FHam_and_eggs_over_easy.jpg%2F1200px-Ham_and_eggs_over_easy.jpg&tbnid=jL-bcwE1AkYVvM&vet=12ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW..i&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FHam_and_eggs&docid=2WM6ZYnDhyPs5M&w=1200&h=789&q=bacon%20eggs%20and%20ham&ved=2ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW";
+
+        String response = dalleTest.performRequest("POST", null, null, recipeTitle, null, "mockDalle");
+        
+        assertEquals(url, response);
+        MyServer.stop();
+
+    }
+
+    @Test
+    void testGetMealType() throws IOException {
         MyServer.main(null);
         String user = "testGetMealType";
         Model mealtype = new Model();
