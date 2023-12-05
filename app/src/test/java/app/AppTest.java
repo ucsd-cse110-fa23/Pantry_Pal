@@ -11,6 +11,8 @@ import app.client.Controller;
 import app.client.Model;
 import app.server.ChatGPTHandler;
 import app.server.MyServer;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,6 +20,7 @@ import java.io.IOException;
 
 class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
+
     @Test 
     void testGptSameIngredients() throws IOException {
         MyServer.main(null);
@@ -107,7 +110,7 @@ class AppTest {
 
     // Test /mealtype route to filter breakfast recipes belonging to "testGetMealType" account
     @Test
-    void testGetMealType() throws IOException {
+    void testGetOneBreakfastRecipe() throws IOException {
         MyServer.main(null);
         String user = "testGetMealType";
         Model mealtype = new Model();
@@ -118,9 +121,9 @@ class AppTest {
         MyServer.stop();
     }
 
-    // Test /mealtype route to filter lunch recipes belonging to "testGetMealType" account
+    // Test /mealtype route to filter lunch recipes that have not been saved
     @Test
-    void testGetEmptyMealType() throws IOException {
+    void testGetNoLunchRecipe() throws IOException {
         MyServer.main(null);
         String user = "testGetMealType";
         Model mealtype = new Model();
@@ -130,4 +133,18 @@ class AppTest {
         assertEquals(null, response);
         MyServer.stop();
     }
+
+    // Test /mealtype route to filter the two dinner recipes belonging to "testGetMealType" account
+    @Test
+    void testGetMultipleDinnerRecipes() throws IOException {
+        MyServer.main(null);
+        String user = "testGetMealType";
+        Model mealtype = new Model();
+        String response = mealtype.performRequest("GET", user, null, null, "dinner", "mealtype");
+        
+        // Account with username "testGetMealType" has TWO dinner recipes
+        assertEquals("Cheesy Vegetable Tortellini Bake+dinner+Savory Stuffed Pancakes+dinner", response);
+        MyServer.stop();
+    }
+
 }

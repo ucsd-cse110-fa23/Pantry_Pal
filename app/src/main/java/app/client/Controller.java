@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
@@ -38,6 +39,7 @@ public class Controller {
     private View view;
     private Model model;
     private FrameController frameController;
+    private String[] recipeParts;
     private String username, password, mealType, ingredients, fullRecipe, recipeTitle;
     private RecipeList recipeList;
 
@@ -131,7 +133,7 @@ public class Controller {
 
     private void handleViewButton(ActionEvent event) {
         Button target = (Button) event.getTarget();
-        recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();;
+        recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();
         String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
         displayRecipe(recipeText);
 
@@ -211,12 +213,22 @@ public class Controller {
 
         ingredients = model.performRequest("POST", null, null, null, null, "whisper");
 
-        // Create prompt with mealType and ingredients and pass to ChatGPT API
+        // Create prompt with mealType and ingredients and pass to ChatGPT API, Dall-E API for the picture
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
         System.out.println("PROMPT +++ " + prompt);
         String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
         fullRecipe = response;
+
+        recipeParts = response.split("\\+");
+        recipeTitle = recipeParts[0];
         response = response.replace("+", "\n");
+
+        String dallePrompt = "Generate a real picture of " + recipeTitle;
+        String dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
+
+        Image image = new Image(dalleResponse); 
+
+        view.getGptFrame().getImageView().setImage(image);
         view.getGptFrame().getRecipeText().setText(response);
 
         // Change scenes after getting response
@@ -245,10 +257,8 @@ public class Controller {
         displayMealType(newRecipe, mealType);
         newRecipe.setViewButtonAction(this::handleViewButton);
 
-        // Replace w username
         fullRecipe += "+" + mealType;
-
-        String fullRecipeList = model.performRequest("GET", username, null, null, null, "load-recipe");
+        String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
         clearRecipes();
         loadRecipes(fullRecipeList);
         recipeList.getChildren().add(0, newRecipe);
@@ -263,11 +273,26 @@ public class Controller {
     // takes the same input for mealtype and ingredients,
     // tells ChatGPT to regenerate response with the set of ingredients
     private void handleGptRefreshButton(ActionEvent event) {
+        mealType = "breakfast";
+        ingredients = "croissants";
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = model.performRequest("POST", username, null, prompt, null, "chatgpt");
+        String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
         fullRecipe = response;
+
+        recipeParts = response.split("\\+");
+        recipeTitle = recipeParts[0];
         response = response.replace("+", "\n");
+
+        String dallePrompt = "Generate a real picture of " + recipeTitle;
+        String dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
+        
+        Image image = new Image(dalleResponse); 
+
+        response = response.replace("+", "\n");
+
+        view.getGptFrame().getImageView().setImage(image);
         view.getGptFrame().getRecipeText().setText(response);
+
     }
 
     // Cancels the request for ChatGPT, goes back to home screen to restart
@@ -353,15 +378,16 @@ public class Controller {
     public void loadRecipes(String recipes) {
         if (recipes != null) {
             String[] recipesArr = { recipes };
-            if (recipes.contains("_")) {
-                recipesArr = recipes.split("_");
+            if (recipes.contains("+")) {
+                recipesArr = recipes.split("\\+");
             }
-            for (int i = 0; i < recipesArr.length; i++) {
-                String meal = recipesArr[i].split("\\+")[1];
+            int i = 0;
+            while (i < recipesArr.length) {
                 Recipe newRecipe = new Recipe();
-                newRecipe.getRecipe().setText(recipesArr[i].split("\\+")[0]);
+                newRecipe.getRecipe().setText(recipesArr[i++]);
                 newRecipe.setViewButtonAction(this::handleViewButton);
-                recipeList.getChildren().add(0,newRecipe);
+                recipeList.getChildren().add(0, newRecipe);
+                String meal = recipesArr[i++];
                 displayMealType(newRecipe, meal);
                 updateRecipeIndices();
             }

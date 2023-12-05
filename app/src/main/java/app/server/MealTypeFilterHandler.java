@@ -16,17 +16,10 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Projections.*;
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.*;
-
-
 
 public class MealTypeFilterHandler implements HttpHandler{
-    private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
-    private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-    private String URI = peterURI;
+    
+    private String URI = MyServer.MONGO_URI;
 
       // general method and calls certain methods to handle http request
   public void handle(HttpExchange httpExchange) throws IOException {
@@ -85,7 +78,7 @@ public class MealTypeFilterHandler implements HttpHandler{
         if (recipe != null) {
             response = "";
             for(Document a : recipe) {
-                response += "_" + a.getString("title") + "+" + a.getString("mealtype");
+                response += "+" + a.getString("title") + "+" + a.getString("mealtype");
             }
             // takign out the first + 
           response = response.substring(1);
@@ -94,6 +87,7 @@ public class MealTypeFilterHandler implements HttpHandler{
           response = "";
         }
       }
+      
       System.out.println("received get request on server with value " + value);
       System.out.println("response is " + response);
     }
