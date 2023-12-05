@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.Action;
+import java.io.IOException;
 
 import app.server.ServerChecker;
 import javafx.event.ActionEvent;
@@ -46,19 +47,45 @@ public class Controller {
     private String username, password, mealType, ingredients, fullRecipe, recipeTitle;
     private RecipeList recipeList;
 
-    public Controller(View view, Model model, Stage primaryStage) {
+    public Controller(View view, Model model, Stage primaryStage) throws IOException {
         this.view = view;
         this.model = model;
         frameController = new FrameController(primaryStage);
         recipeList = view.getHomeFrame().getRecipeList();
-
         // LoginFrame Event Listeners
-        view.getLoginFrame().setLoginButtonAction(this::handleLoginButton);
-        view.getLoginFrame().setCreateAccountButtonAction(this::handleCreateAccountButton);
+        view.getLoginFrame().setLoginButtonAction(event -> {
+            try {
+                handleLoginButton(event);
+            } catch (IOException e) {
+
+            }
+        });
+        view.getLoginFrame().setCreateAccountButtonAction(event -> {
+            try {
+                handleCreateAccountButton(event);
+            } catch (IOException e) {
+
+            }
+        });
+        view.getLoginFrame().setAutoLoginButtonAction(event -> {
+            try {
+                handleAutoLoginButton(event);
+            } catch (IOException e) {
+
+            }
+        });
+
 
         // HomeFrame Event Listeners
         view.getHomeFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
         view.getHomeFrame().setFilterMealTypeButtonAction(this::handleFilterMealTypeButton);
+        view.getHomeFrame().setAutoLoginButtonAction(event -> {
+            try {
+                handleAutoLoginButton(event);
+            } catch (IOException e) {
+
+            }
+        });
 
         // MealFrame Event Listeners
         view.getMealFrame().setStartButtonAction(this::handleMealStartButton);
@@ -84,6 +111,25 @@ public class Controller {
         view.getFilterFrame().setBreakfastButtonAction(this::handleFilterBreakfastButton);
         view.getFilterFrame().setLunchButtonAction(this::handleFilterLunchButton);
         view.getFilterFrame().setDinnerButtonAction(this::handleFilterDinnerButton);
+        
+        // Auto Login Initializer
+        boolean autoLoginEnabled = model.getAutoLoginStatus();
+        if(autoLoginEnabled) {
+            view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: green;");
+            view.getLoginFrame().getAutoLoginButton().setText("ON");
+            view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: green;");
+            view.getHomeFrame().getAutoLoginButton().setText("ON");
+            String[] loginDetails = model.getAutoLoginDetails().split("\n");
+            if(loginDetails[0].equals("") == false) {
+                handleLogin(loginDetails[0], loginDetails[1]);
+            }
+        } else {
+            view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: red;");
+            view.getLoginFrame().getAutoLoginButton().setText("OFF");
+            view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: red;");
+            view.getHomeFrame().getAutoLoginButton().setText("OFF");
+        }
+
 
     }
 
@@ -91,29 +137,61 @@ public class Controller {
         return frameController;
     }
 
+    private void handleLogin(String username, String password) {
+        if(!model.getIsLoggedIn()) {
+            String response = model.performRequest("POST", username, password, null, null, "login");
+            if (response.equals("SUCCESS")) {
+                model.setIsLoggedIn();
+                model.setLogInDetails(username, password);
+                String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
+                clearRecipes();
+                loadRecipes(recipes);
+                frameController.getFrame("home");
+
+                System.out.println("[ Frame changed ]");
+            } else if (response.equals("INVALID CREDENTIALS") || response.equals("USER NOT FOUND")){
+                System.out.println("[ LOGIN RESPONSE ] " + response);
+            } else {
+                view.showAlert("Error", response);
+            }
+        }
+    }
+
     //================ LoginFrame Event Handlers ====================================================
 
-    private void handleLoginButton(ActionEvent event) {
+
+    private void handleLoginButton(ActionEvent event) throws IOException {
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
-
-        String response = model.performRequest("POST", username, password, null, null, "login");
-        if (response.equals("SUCCESS")) {
-            String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
-            clearRecipes();
-            loadRecipes(recipes);
-            frameController.getFrame("home");
-            System.out.println("[ Frame changed ]");
-        } else if (response.equals("INVALID CREDENTIALS") || response.equals("USER NOT FOUND")){
-            System.out.println("[ LOGIN RESPONSE ] " + response);
-        } else {
-            view.showAlert("Error", response);
+        handleLogin(username, password);
+        if(model.getAutoLoginStatus() && model.getIsLoggedIn()) {
+            model.setAutoLoginDetails(username, password);
         }
-
         // String recipes = model.performRequest("GET", username, null, null, username, "mock-route");
     }
 
-    private void handleCreateAccountButton(ActionEvent event) {
+    private void handleAutoLoginButton(ActionEvent event) throws IOException {
+        boolean autoLoginEnabled = model.getAutoLoginStatus();
+        autoLoginEnabled = !autoLoginEnabled;
+        model.setAutoLoginStatus(autoLoginEnabled);
+        if(autoLoginEnabled) {
+            view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: green;");
+            view.getLoginFrame().getAutoLoginButton().setText("ON");
+            view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: green;");
+            view.getHomeFrame().getAutoLoginButton().setText("ON");
+            String[] loginDetails = model.getAutoLoginDetails().split("\n");
+            if(loginDetails[0].equals("") == false) {
+                handleLogin(loginDetails[0], loginDetails[1]);
+            }
+        } else {
+            view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: red;");
+            view.getLoginFrame().getAutoLoginButton().setText("OFF");
+            view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: red;");
+            view.getHomeFrame().getAutoLoginButton().setText("OFF");
+        }
+    }
+
+    private void handleCreateAccountButton(ActionEvent event) throws IOException {
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
         // checks if server is still running
@@ -128,6 +206,11 @@ public class Controller {
         if (response.equals("NEW USER CREATED")) {
             // Redirect back to Login Page if new user successfully created
             frameController.getFrame("login");
+            if(model.getAutoLoginStatus()) {
+                model.setAutoLoginDetails(username, password);
+                model.setLogInDetails(username, password);
+                handleLogin(username, password);
+            }
         } else {
             System.out.println("[ SIGNUP RESPONSE ] " + response);
         }

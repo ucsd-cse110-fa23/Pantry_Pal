@@ -47,7 +47,7 @@ class Header extends HBox {
 // Home Page Footer
 class HomeFooter extends HBox {
 
-    private Button newRecipeButton, filterMealTypeButton;
+    private Button newRecipeButton, filterMealTypeButton, autoLoginButton;
 
     HomeFooter() {
         this.setPrefSize(500, 60);
@@ -62,8 +62,16 @@ class HomeFooter extends HBox {
 
         filterMealTypeButton = new Button("Filter Meal");
         filterMealTypeButton.setStyle(defaultButtonStyle);
-        
-        this.getChildren().addAll(newRecipeButton, filterMealTypeButton); // adding button to footer
+
+        Label autoLoginLabel = new Label("Automatic Login: ");
+        autoLoginButton = new Button("Loading");
+        autoLoginButton.setStyle(defaultButtonStyle);
+
+        HBox autoLoginContainer = new HBox();
+        autoLoginContainer.setAlignment(Pos.CENTER);
+        autoLoginContainer.getChildren().addAll(autoLoginLabel, autoLoginButton);
+
+        this.getChildren().addAll(newRecipeButton, filterMealTypeButton, autoLoginContainer); // adding button to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
     }
 
@@ -73,6 +81,10 @@ class HomeFooter extends HBox {
 
     public Button getFilterMealTypeButton() {
         return filterMealTypeButton;
+    }
+
+    public Button getAutoLoginButton() {
+        return autoLoginButton;
     }
 
 }
@@ -187,7 +199,8 @@ class LoginContent extends VBox {
 
     private TextField username;
     private PasswordField password;
-    private Button createAccountButton, loginButton;
+    private Button createAccountButton, loginButton, autoLoginButton;
+    private HBox autoLoginContainer;
 
     LoginContent() {
 
@@ -206,7 +219,18 @@ class LoginContent extends VBox {
         buttonContainer.setAlignment(Pos.CENTER);
         buttonContainer.getChildren().addAll(loginButton, createAccountButton);
 
-        this.getChildren().addAll(username, password, buttonContainer);
+        HBox spaceContainer = new HBox();
+        Label spaceLabel = new Label("");
+        spaceContainer.getChildren().addAll(spaceLabel);
+
+        Label autoLoginLabel = new Label("Automatic Login: ");
+        autoLoginButton = new Button("Loading");
+
+        autoLoginContainer = new HBox();
+        autoLoginContainer.setAlignment(Pos.CENTER);
+        autoLoginContainer.getChildren().addAll(autoLoginLabel, autoLoginButton);
+
+        this.getChildren().addAll(username, password, buttonContainer, spaceContainer, autoLoginContainer);
 
     }
     
@@ -224,6 +248,14 @@ class LoginContent extends VBox {
 
     public Button getCreateAccountButton() {
         return createAccountButton;
+    }
+
+    public Button getAutoLoginButton() {
+        return autoLoginButton;
+    }
+
+    public HBox getAutoLoginContainer() {
+        return autoLoginContainer;
     }
 
 }
@@ -442,7 +474,8 @@ class LoginFrame extends BorderPane {
 
     private Header header;
     private LoginContent loginContent;
-    private Button loginButton, createAccountButton;
+    private Button loginButton, createAccountButton, autoLoginButton;
+    private HBox autoLoginContainer;
 
     LoginFrame() {
         
@@ -457,11 +490,21 @@ class LoginFrame extends BorderPane {
 
         loginButton = loginContent.getLoginButton();
         createAccountButton = loginContent.getCreateAccountButton();
+        autoLoginButton = loginContent.getAutoLoginButton();
+        autoLoginContainer = loginContent.getAutoLoginContainer();
 
     }
 
     public LoginContent getLoginContent() {
         return loginContent;
+    }
+
+    public Button getAutoLoginButton() {
+        return autoLoginButton;
+    }
+
+    public HBox getAutoLoginContainer() {
+        return autoLoginContainer;
     }
 
     public void setLoginButtonAction(EventHandler<ActionEvent> eventHandler) {
@@ -472,6 +515,10 @@ class LoginFrame extends BorderPane {
         createAccountButton.setOnAction(eventHandler);
     }
 
+    public void setAutoLoginButtonAction(EventHandler<ActionEvent> eventHandler) {
+        autoLoginButton.setOnAction(eventHandler);
+    }
+
 }
 
 // Home Page Window
@@ -480,7 +527,7 @@ class HomeFrame extends BorderPane {
     private Header header;
     private HomeFooter footer;
     private RecipeList recipeList;
-    private Button newRecipeButton, filterMealTypeButton;
+    private Button newRecipeButton, filterMealTypeButton, autoLoginButton;
 
     HomeFrame() {
 
@@ -505,6 +552,7 @@ class HomeFrame extends BorderPane {
         // Initialise Button Variables through the getters in Footer
         newRecipeButton = footer.getNewRecipeButton();
         filterMealTypeButton = footer.getFilterMealTypeButton();
+        autoLoginButton = footer.getAutoLoginButton();
     }
 
     public RecipeList getRecipeList() {
@@ -519,12 +567,20 @@ class HomeFrame extends BorderPane {
         return filterMealTypeButton;
     }
 
+    public Button getAutoLoginButton() {
+        return autoLoginButton;
+    }
+
     public void setNewRecipeButtonAction(EventHandler<ActionEvent> eventHandler) {
         newRecipeButton.setOnAction(eventHandler);
     }
 
     public void setFilterMealTypeButtonAction(EventHandler<ActionEvent> eventHandler) {
         filterMealTypeButton.setOnAction(eventHandler);
+    }
+
+    public void setAutoLoginButtonAction(EventHandler<ActionEvent> eventHandler) {
+        autoLoginButton.setOnAction(eventHandler);
     }
 
 }

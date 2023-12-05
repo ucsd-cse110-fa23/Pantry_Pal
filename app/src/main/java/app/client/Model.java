@@ -1,6 +1,7 @@
 package app.client;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -10,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.io.*;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -28,13 +30,105 @@ public class Model {
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     String errorMessage;
+    boolean isLoggedInBool = false;
+    String savedName,savedPass = "";
 
     public Model() {
         audioFile = new File("recording.wav");
         audioFormat = getAudioFormat();
     }
 
-    
+    public boolean getAutoLoginStatus() throws IOException {
+        try (
+            BufferedReader output = new BufferedReader(new FileReader("preferences.csv"));
+        ) {
+            boolean returnValue;
+            String option = output.readLine();
+            if(option.equals("true")) {
+                returnValue = true;
+            } else {
+                returnValue = false;
+            }
+            output.close();
+            return returnValue;
+        }
+    }
+
+    public boolean getIsLoggedIn() {
+        return isLoggedInBool;
+    }
+
+    public String getLogInDetails() {
+        if(savedPass.equals("")) {
+            return "";
+        }
+        return "\n"+savedName+"\n"+savedPass;
+    }
+
+    public void setLogInDetails(String name, String pass) {
+        savedName = name;
+        savedPass = pass;
+    }
+
+    public void setIsLoggedIn() {
+        isLoggedInBool = true;
+    }
+
+    public String getAutoLoginDetails() throws IOException {
+        try (
+            BufferedReader output = new BufferedReader(new FileReader("preferences.csv"));
+        ) {
+            String option = output.readLine();
+            if(option.equals("false")) {
+                output.close();
+                return "";
+            }
+            String savedName = output.readLine();
+            String savedPassword = output.readLine();
+            if(savedPassword == null) {
+                output.close();
+                return "";
+            }
+            output.close();
+            return savedName + "\n" + savedPassword;
+        }
+    }
+
+    public void setAutoLoginDetails(String username, String password) throws IOException {
+        try (
+            BufferedReader output = new BufferedReader(new FileReader("preferences.csv"));
+        ) {
+            String option = output.readLine();
+            output.close();
+            BufferedWriter input = new BufferedWriter(new FileWriter("preferences.csv"));
+            input.write(option+"\n"+username+"\n"+password);
+            input.close();
+        }
+    }
+
+    public void setAutoLoginStatus(boolean value) throws IOException {
+        try (
+            BufferedReader output = new BufferedReader(new FileReader("preferences.csv"));
+        ) {
+            String option = output.readLine();
+            String savedName = output.readLine();
+            String savedPassword = output.readLine();
+            output.close();
+            BufferedWriter input = new BufferedWriter(new FileWriter("preferences.csv"));
+            if(value == true) {
+                option = "true";
+                if(savedPassword != null) {
+                    input.write(option+"\n"+savedName+"\n"+savedPassword);
+                } else {
+                    input.write(option+getLogInDetails());
+                }
+            } else {
+                option = "false";
+                input.write(option);
+            }
+            input.close();
+        }
+    }
 
     /**
      * 
