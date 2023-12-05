@@ -5,12 +5,14 @@ package app;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 import app.Mock.ShareLinkMock;
 import app.client.App;
@@ -270,7 +272,7 @@ class AppTest {
     void POSTrequestHandlerTest() throws IOException, URISyntaxException{
         MyServer.main(null);
         // have a recipe in the database already
-        String recipeTitle = "pancakes";
+        String recipeTitle = "pancakes with maple syrup";
         String user = "Bryan";
         String ingred = "flour,eggs,sugar,milk";
         String instructions = "mix ingredients to make batter and then pour into hot pan";
@@ -326,6 +328,116 @@ class AppTest {
         MyServer.stop();
     }
 
+
+    
+    @Test
+    void PUTrequestHandlerTest() throws IOException, URISyntaxException{
+        MyServer.main(null);
+        // have a recipe in the database already channging the ingredients and the instructions
+        String recipeTitle = "pancakes";
+        String user = "Bryan";
+        int random = (int)(Math.random() * 100);
+        String ingred = "flour,eggs,sugar,milk," + random + "bacons(number of bacon is random)";
+        String instructions = "mix ingredients to make batter and then pour into hot pan with lots of bacon";
+        String mealtype = "breakfast";
+        String method = "PUT";
+
+        String urlString = "http://localhost:8100/";
+        URL url = new URI(urlString).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(method);
+        conn.setDoOutput(true);
+
+
+        // writing to the body of the request
+        String reqBody = user + "+" + recipeTitle + "+" + ingred + "+" + instructions;
+        OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+        out.write(URLEncoder.encode(reqBody, "UTF-8"));
+        out.flush();
+        out.close();
+
+
+        // reading the input
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String response = in.readLine();    
+        in.close();
+
+        assertEquals("valid put", response);
+
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+      
+            Bson filter = eq("title", recipeTitle);
+            Bson filter2 = eq("user",user);
+            filter = combine(filter,filter2);
+
+            // checkign that post method correctly added to database
+            Document recipe = collection.find(filter).first();
+            assertEquals(recipeTitle, recipe.getString("title"));
+            assertEquals(ingred, recipe.getString("ingredients"));
+            assertEquals(instructions,recipe.getString("instructions"));
+            assertEquals(user,recipe.getString("user"));
+            assertEquals(mealtype, recipe.getString("mealtype"));
+
+        }
+        
+        MyServer.stop();
+    }
+
+    @Test
+    void DELETErequestHandlerTest() throws IOException, URISyntaxException{
+        MyServer.main(null);
+
+        // setting up a fake recipe to test the DELETE endpoint for requesthandler route
+        String t = "testTitle";
+        String i = "testIngredients";
+        String ins = "testInstructinos";
+        String u = "testUser";
+        String m = "testMealtype";
+
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+            
+            Document recipe = new Document("_id", new ObjectId());
+            recipe.append("title", t);
+            recipe.append("ingredients", i);
+            recipe.append("instructions", ins);
+            recipe.append("user", u);
+            recipe.append("mealtype", m);
+
+            collection.insertOne(recipe);
+        }
+
+        // starting the delete request
+        String method = "DELETE";
+        String query = URLEncoder.encode("u=" + u + "&q=" + t, "UTF-8");
+        String urlString = "http://localhost:8100/?" + query;
+        URL url = new URI(urlString).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(method);
+        conn.setDoOutput(true);
+
+        // reading the output
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String response = in.readLine();  
+        assertEquals("valid delete", response);
+        
+        in.close();
+
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+
+            Bson filter = Filters.and(Filters.eq("title",t),Filters.eq("user", u));
+            Document recipe = collection.find(filter).first();
+            assertNull(recipe);
+        }
+
+        
+        MyServer.stop();
+    }
 
 
 }
