@@ -229,7 +229,7 @@ class AppTest {
     // USER+TITLE+INGREDIENTS+INSTRUCTIONS+MEALTYPE
     // UNIT TEST
     @Test
-    void requestHandlerUnitTest() throws IOException, URISyntaxException{
+    void GETrequestHandlerUnitTest() throws IOException, URISyntaxException{
         MyServer.main(null);
         // have a recipe in the database already
         String recipeTitle = "Hash Brown and Bacon Breakfast Bake";
