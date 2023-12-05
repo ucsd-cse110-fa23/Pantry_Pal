@@ -7,7 +7,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
@@ -25,9 +24,9 @@ import static com.mongodb.client.model.Updates.*;
 
 
 public class MealTypeFilterHandler implements HttpHandler{
-    
-    private String URI = MyServer.MONGO_URI;
 
+    private String URI = MyServer.MONGO_URI;
+    
       // general method and calls certain methods to handle http request
   public void handle(HttpExchange httpExchange) throws IOException {
     String response = "Request Received";
@@ -85,7 +84,7 @@ public class MealTypeFilterHandler implements HttpHandler{
         if (recipe != null) {
             response = "";
             for(Document a : recipe) {
-                response += "_" + a.getString("title") + "+" + a.getString("mealtype");
+                response += "+" + a.getString("title") + "+" + a.getString("mealtype");
             }
             // takign out the first + 
           response = response.substring(1);

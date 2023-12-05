@@ -10,13 +10,14 @@ import java.util.Scanner;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 public class LoginHandler implements HttpHandler {
 
@@ -36,6 +37,8 @@ public class LoginHandler implements HttpHandler {
 
             // Sending back response to the client
             httpExchange.sendResponseHeaders(200, response.length());
+            
+
             OutputStream outStream = httpExchange.getResponseBody();
             outStream.write(response.getBytes());
             outStream.close();

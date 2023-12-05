@@ -17,8 +17,9 @@ import com.mongodb.client.model.Filters;
 
 import static com.mongodb.client.model.Filters.*;
 
-public class LoadRecipeHandler implements HttpHandler{
-    
+public class loadRecipeHandler implements HttpHandler{
+
+    // loads recipes
     private String URI = MyServer.MONGO_URI;
 
     // general method and calls certain methods to handle http request
@@ -87,7 +88,8 @@ public class LoadRecipeHandler implements HttpHandler{
             response = response.substring(1);
             System.out.println(response);
         } else {
-            System.out.println("NO RECIPES SAVED");
+          System.out.println("NO RECIPES SAVED");
+          return "";
         }
       }
       System.out.println("received get request on server with value " + user);
