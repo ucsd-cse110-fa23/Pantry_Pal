@@ -11,10 +11,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import org.bson.Document;
-<<<<<<< HEAD
 import org.bson.conversions.Bson;
-=======
->>>>>>> origin/main
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
