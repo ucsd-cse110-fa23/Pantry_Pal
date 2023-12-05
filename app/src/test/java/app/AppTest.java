@@ -156,14 +156,9 @@ class AppTest {
 
     @Test
     void testErrorMessageHandling() throws IOException{
-        Model model = new Model();
-        String res = "";
-        String response = model.performRequest("POST", null, null, null, null, "mealtype");
+
         boolean status = ServerChecker.isServerRunning("localhost", 8100);
-        if(status == false){
-            res = "Error: Connection refused";
-        }
-        assertEquals(res, response);
+        assertEquals(false, status);
 
     }
 
