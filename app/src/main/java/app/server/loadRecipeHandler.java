@@ -15,7 +15,7 @@ import com.mongodb.client.MongoDatabase;
 
 import static com.mongodb.client.model.Filters.*;
 
-public class LoadRecipeHandler implements HttpHandler{
+public class loadRecipeHandler implements HttpHandler{
     
     private String URI = MyServer.MONGO_URI;
 
