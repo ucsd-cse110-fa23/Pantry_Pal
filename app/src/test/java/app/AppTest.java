@@ -22,25 +22,23 @@ class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
 
     @Test 
-    void gptSameIngredientsTest() throws IOException {
-        // MyServer.main(null);
-        String user = "refreshUser";
-        String pass = "pass";
+    void testGptSameIngredients() throws IOException {
+        MyServer.main(null);
         String mealType = "dinner";
         String ingredients = "steak, potatoes, butter";
         Model model = new Model();
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = model.performRequest("POST", user, pass, prompt, null, "chatgpt");
+        String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
 
         // API call should have successfully been made and returned thorugh model with the mealType and ingredients
         assertFalse(response.equals(""));
+        MyServer.stop();
     }
 
     @Test
-    void gptBddRefreshTest() throws IOException {
+    void testGptBddRefresh() throws IOException {
+        MyServer.main(null);
         // BDD TEST
-        //MyServer.main(null);
-
         String user = "userBDD"; 
 
         // Scenario: I don't like the recipe generated
@@ -55,55 +53,62 @@ class AppTest {
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
         String response = refreshTest.performRequest("POST", user, null, prompt, null, "chatgpt");
         assertNotEquals(response, generatedText);
+        MyServer.stop();
+    }
+
+    // Tests successful sign up
+    @Test
+    void testValidSignup() throws IOException {
+        MyServer.main(null);
+        Model model = new Model();
+        String newUser = Long.toHexString(System.currentTimeMillis());
+        String password = Long.toHexString(System.currentTimeMillis() + 3);
+        String response = model.performRequest("POST", newUser, password, null, null, "signup");
+        assertTrue(response.equals("NEW USER CREATED"));
+        MyServer.stop();
     }
 
     // Tests signing up on a name thats taken already 
     @Test
-    void signupTakenTest() throws IOException { 
+    void testSignupUsernameTaken() throws IOException { 
         MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "signup");
-        assertEquals("NAME TAKEN", response);
+        assertEquals("USERNAME TAKEN", response);
+        MyServer.stop();
     }
 
     // Tests a valid login
-    // @Test
-    // void loginValidTest() throws IOException { 
-    //     //MyServer.main(null);
-    //     Model loginTest = new Model();
-    //     String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "login");
-    //     assertEquals("SUCCESS", response);
-    // }
+    @Test
+    void testValidLoginValid() throws IOException { 
+        MyServer.main(null);
+        Model loginTest = new Model();
+        String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "login");
+        assertEquals("SUCCESS", response);
+        MyServer.stop();
+    }
 
-    // // Tests a invalid login password
-    // @Test
-    // void loginInvalidTest() throws IOException { 
-    //     //MyServer.main(null);
-    //     Model loginTest = new Model();
-    //     String response = loginTest.performRequest("POST", "Bob", "wrongPassword", null, null, "login");
-    //     assertEquals("PASSWORD FAILED", response);
-    // }
+    // Tests a invalid login password
+    @Test
+    void testInvalidLoginCredentials() throws IOException { 
+        MyServer.main(null);
+        Model loginTest = new Model();
+        String response = loginTest.performRequest("POST", "Bob", "wrongPassword", null, null, "login");
+        assertEquals("INCORRECT CREDENTIALS", response);
+        MyServer.stop();
+    }
 
-    // // Tests a username that doesn't exist for login
-    // @Test
-    // void loginDoesntExistTest() throws IOException { 
-    //     //MyServer.main(null);
-    //     Model loginTest = new Model();
-    //     String response = loginTest.performRequest("POST", "fakeName", "password12", null, null, "login");
-    //     assertEquals("NAME FAILED", response);
-    // }
+    // Tests a username that doesn't exist for login
+    @Test
+    void testLoginDoesntExist() throws IOException { 
+        MyServer.main(null);
+        Model loginTest = new Model();
+        String response = loginTest.performRequest("POST", "fakeName", "password12", null, null, "login");
+        assertEquals("USER NOT FOUND", response);
+        MyServer.stop();
+    }
 
-    // @Test
-    // void getMealTypeTest() throws IOException {
-    //     //MyServer.main(null);
-    //     Model mealtype = new Model();
-    //     String response = mealtype.performRequest("GET", null, null, null, "breakfast", "mealtype");
-    //     assertEquals("breakfast",response);
-    // }
-
-    // get URL of photo from google and use that to test dalle
-    // mock file, to return fake url
-
+    // Test /mealtype route to filter breakfast recipes belonging to "testGetMealType" account
     @Test
     void dalleLinkGenerationTest() throws IOException{
         //MyServer.main(null);
@@ -116,5 +121,47 @@ class AppTest {
         
         assertEquals(url, response);
     }
+
+    @Test
+    void testGetMealType() throws IOException {
+        MyServer.main(null);
+        String user = "testGetMealType";
+        Model mealtype = new Model();
+        String response = mealtype.performRequest("GET", user, null, null, "breakfast", "mealtype");
+        
+        // Account with username "testGetMealType" has ONE breakfast recipe named "Egg Bacon and Ham Breakfast Recipe"
+        assertEquals("Egg Bacon and Ham Breakfast Recipe+breakfast", response);
+        MyServer.stop();
+    }
+
+    // Test /mealtype route to filter lunch recipes belonging to "testGetMealType" account
+    @Test
+    void testGetEmptyMealType() throws IOException {
+        MyServer.main(null);
+        String user = "testGetMealType";
+        Model mealtype = new Model();
+        String response = mealtype.performRequest("GET", user, null, null, "lunch", "mealtype");
+        
+        // Account with username "testGetMealType" has NO lunch recipes
+        assertEquals(null, response);
+        MyServer.stop();
+    }
+
+    @Test
+    void testErrorPostMessageHandling() throws IOException{
+        Model model = new Model();
+        String meal = "lunch";
+        String response = model.performRequest("POST", null, null, null, meal, "mealtype");
+        assertEquals("Error: Connection refused", response);
+    }
+
+    @Test
+    void testErrorGetMessageHandling() throws IOException{
+        Model model = new Model();
+        String meal = "dinner";
+        String response = model.performRequest("GET", null, null, null, meal, "mealtype");
+        assertEquals("Error: Connection refused", response);
+    }
+
 
 }

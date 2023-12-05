@@ -7,26 +7,23 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Projections.*;
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.*;
+import com.mongodb.client.model.Filters;
 
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.and;
 
 
 public class loadRecipeHandler implements HttpHandler{
     private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
     private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
     private String adrianURI = "mongodb+srv://adw004:13531Caravel%26@cluster0.nmzzqtt.mongodb.net/?retryWrites=true&w=majority";
-    private String URI = adrianURI;
+    private String URI = peterURI;
 
       // general method and calls certain methods to handle http request
   public void handle(HttpExchange httpExchange) throws IOException {
@@ -64,30 +61,41 @@ public class loadRecipeHandler implements HttpHandler{
 
     if (query != null) {
       // gets the query from the url 
-      String value = query.substring(query.indexOf("=") + 1);
-      System.out.println("GET VALUE: " + value);
+      String value = query.substring(query.indexOf("?") + 1);
       value = URLDecoder.decode(value, "UTF-8");
-      System.out.println("DECODED VALUE: " + value);
-      
+      Map<String, String> paramMap = QueryParser.parseQuery(value);
+      String user = paramMap.get("q");
+
       try (MongoClient mongoClient = MongoClients.create(URI)) {
         MongoDatabase database = mongoClient.getDatabase("PantryPal");
         MongoCollection<Document> collection = database.getCollection("recipes");
 
-        FindIterable<Document> recipe = collection.find(new Document("user", value));
-        
+        Bson filter = Filters.and(Filters.eq("user", user), Filters.nin("password"));
+        long recipeCount = collection.countDocuments(filter);
+        System.out.println("LOG COUNT: " + recipeCount);
+
+        // Only the login credentials for user were found in the collection so no recipes
+        if (recipeCount == 0) {
+          System.out.println("NO RECIPES SAVED");
+          return "";
+        }
+
+        FindIterable<Document> recipe = collection.find(new Document("user", user));
+
         if (recipe != null) {
             response = "";
-            for(Document a : recipe){
-                response += "+" + a.getString("title") + "+" + a.getString("mealtype");
+            for(Document a : recipe) {
+                response += "_" + a.getString("title") + "+" + a.getString("mealtype");
             }
-            // takign out the first + 
+            // taking out the first + 
           response = response.substring(1);
           System.out.println(response);
         } else {
-          System.out.println("null find");
+          System.out.println("NO RECIPES SAVED");
+          return "";
         }
       }
-      System.out.println("received get request on server with value " + value);
+      System.out.println("received get request on server with value " + user);
       System.out.println("response is " + response);
     }
 

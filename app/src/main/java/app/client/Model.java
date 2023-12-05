@@ -27,11 +27,14 @@ public class Model {
     private File audioFile;
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
+    String errorMessage;
 
     public Model() {
         audioFile = new File("recording.wav");
         audioFormat = getAudioFormat();
     }
+
+    
 
     /**
      * 
@@ -95,11 +98,30 @@ public class Model {
             String response = in.readLine();
             System.out.println("[ MODEL RESPONSE ]: " + response);
 
+            int responseCode = ((HttpURLConnection) conn).getResponseCode();
+            System.out.println("Response code: [" + responseCode + "]");
+
+            errorMessage = errorHandler(responseCode);
+            System.out.println("error message: " + errorMessage);
             in.close();
             return response;
         } catch (Exception ex) {
             ex.printStackTrace();
             return "Error: " + ex.getMessage();
+        }
+
+    }
+
+    public String errorHandler(int responseCode){
+        String message;
+        if(responseCode > 399 && responseCode < 500){
+            message = "Client side ERROR: please check input";
+            return message;
+        } else if (responseCode > 500){
+            message = "ERROR: Server side error - please check server status";
+            return message;
+        } else {
+            return null;
         }
 
     }
@@ -212,6 +234,10 @@ public class Model {
             targetDataLine.stop();
             targetDataLine.close();
         }
+    }
+
+    public String getErrorMessage(){
+        return errorMessage;
     }
     
     public static void main(String[] args) throws IOException {
