@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.swing.Action;
 
+import app.server.ServerChecker;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -117,7 +118,7 @@ public class Controller {
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
         // checks if server is still running
-        boolean checker = isServerRunning("localhost", 8100);
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
@@ -152,7 +153,7 @@ public class Controller {
         recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();;
         
         // checks if server is still running
-        boolean checker = isServerRunning("localhost", 8100);
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
@@ -184,7 +185,7 @@ public class Controller {
 
         model.stopRecording();
          // checks if server is still running
-        boolean checker = isServerRunning("localhost", 8100);
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
@@ -243,7 +244,7 @@ public class Controller {
 
         model.stopRecording();
          // checks if server is still running
-        boolean checker = isServerRunning("localhost", 8100);
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
@@ -299,11 +300,10 @@ public class Controller {
         fullRecipe += "+" + mealType;
 
         //check if server is still running
-        boolean checker = isServerRunning("localhost", 8100);
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
-
 
         String fullRecipeList = model.performRequest("GET", username, null, null, null, "load-recipe");
 
@@ -325,7 +325,7 @@ public class Controller {
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
         String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
         //check if server is still running
-        boolean checker = isServerRunning("localhost", 8100);
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
@@ -367,7 +367,7 @@ public class Controller {
         String response = model.performRequest("PUT", username, null, updatedRecipe, null, "");
         
         //check if server is still running
-        boolean checker = isServerRunning("localhost", 8100);
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
@@ -381,7 +381,7 @@ public class Controller {
         String response = model.performRequest("DELETE", username, null, null, recipeTitle, "");
        
         //check if server is still running
-        boolean checker = isServerRunning("localhost", 8100);
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
@@ -396,7 +396,7 @@ public class Controller {
         String response = model.performRequest("GET", username, null, null, "breakfast", "mealtype");
         
         //check if server is still running
-        boolean checker = isServerRunning("localhost", 8100);
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
@@ -408,7 +408,7 @@ public class Controller {
 
     public void handleFilterLunchButton(ActionEvent event) {
         //check if server is still running
-        boolean checker = isServerRunning("localhost", 8100);
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
@@ -423,7 +423,7 @@ public class Controller {
     public void handleFilterDinnerButton(ActionEvent event) {
         String response = model.performRequest("GET", username, null, null, "dinner", "mealtype");
         //check if server is still running
-        boolean checker = isServerRunning("localhost", 8100);
+        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
@@ -500,12 +500,4 @@ public class Controller {
         }
     }
 
-    // CHECKS IF THE SERVER IS STILL RUNNING OR NOT
-    public static boolean isServerRunning(String serverAddress, int port) {
-        try (Socket socket = new Socket(serverAddress, port)) {
-            return true; 
-        } catch (Exception e) {
-            return false; 
-        }
-    }
 }

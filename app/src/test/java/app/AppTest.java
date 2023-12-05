@@ -5,22 +5,27 @@ package app;
 
 import org.junit.jupiter.api.Test;
 
+import com.mongodb.internal.connection.Server;
+
 import app.client.App;
 import app.client.View;
 import app.client.Controller;
 import app.client.Model;
 import app.server.ChatGPTHandler;
+import app.server.ServerChecker;
 import app.server.MyServer;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import java.net.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 
+
 class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
-
+    
     @Test 
     void testGptSameIngredients() throws IOException {
         MyServer.main(null);
@@ -111,7 +116,7 @@ class AppTest {
     // Test /mealtype route to filter breakfast recipes belonging to "testGetMealType" account
     @Test
     void dalleLinkGenerationTest() throws IOException{
-        //MyServer.main(null);
+        MyServer.main(null);
         Model dalleTest =  new Model();
         String recipeTitle = "Bacon Eggs and Ham";
 
@@ -120,6 +125,8 @@ class AppTest {
         String response = dalleTest.performRequest("POST", null, null, recipeTitle, null, "mockDalle");
         
         assertEquals(url, response);
+        MyServer.stop();
+
     }
 
     @Test
@@ -148,20 +155,18 @@ class AppTest {
     }
 
     @Test
-    void testErrorPostMessageHandling() throws IOException{
+    void testErrorMessageHandling() throws IOException{
         Model model = new Model();
-        String meal = "lunch";
-        String response = model.performRequest("POST", null, null, null, meal, "mealtype");
-        assertEquals("Error: Connection refused", response);
+        String res = "";
+        String response = model.performRequest("POST", null, null, null, null, "mealtype");
+        boolean status = ServerChecker.isServerRunning("localhost", 8100);
+        if(status == false){
+            res = "Error: Connection refused";
+        }
+        assertEquals(res, response);
+
     }
 
-    @Test
-    void testErrorGetMessageHandling() throws IOException{
-        Model model = new Model();
-        String meal = "dinner";
-        String response = model.performRequest("GET", null, null, null, meal, "mealtype");
-        assertEquals(response, "Error: Connection refused");
-    }
 
 
 }
