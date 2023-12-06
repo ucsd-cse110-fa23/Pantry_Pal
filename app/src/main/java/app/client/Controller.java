@@ -262,7 +262,9 @@ public class Controller {
         System.out.println(ingredients);
 
         // Create prompt with mealType and ingredients and pass to ChatGPT API, Dall-E API for the picture
-        String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
+        String prompt = "Please provide a" + mealType + " recipe using" + ingredients
+             + ". Can you format the response to have zero newlines with fields \"Title:\",\"Ingredients:\", and \"Instructions:\" .These" 
+             + " fields will be formated such that it looks like \"Title:\"+\"Ingredients:\"+\"Instructions\" with one newline between each field";
         System.out.println("PROMPT +++ " + prompt);
         String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
         fullRecipe = response;
@@ -329,7 +331,9 @@ public class Controller {
     // tells ChatGPT to regenerate response with the set of ingredients
     private void handleGptRefreshButton(ActionEvent event) {
         
-        String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
+        String prompt = "Please provide a" + mealType + " recipe using" + ingredients
+             + ". Can you format the response to have zero newlines with fields \"Title:\",\"Ingredients:\", and \"Instructions:\" .These" 
+             + " fields will be formated such that it looks like \"Title:\"+\"Ingredients:\"+\"Instructions\" with one newline between each field";
         String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
         //check if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);

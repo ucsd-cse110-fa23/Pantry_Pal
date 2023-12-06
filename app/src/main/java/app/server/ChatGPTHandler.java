@@ -98,19 +98,33 @@ public class ChatGPTHandler implements HttpHandler {
         JSONObject responseJson = new JSONObject(responseBody);
         JSONArray choices = responseJson.getJSONArray("choices");
         generatedText = choices.getJSONObject(0).getString("text");
-        int startIndex = generatedText.indexOf("{");
-        int endIndex = generatedText.length();
-        generatedText = generatedText.substring(startIndex, endIndex);
-        System.out.println("++GENTEXT++ " + generatedText);
-        
-        JSONObject toJson = new JSONObject(generatedText);
 
-        String res = toJson.getString("title");
-        res += "+" + toJson.getString("ingredients");
-        res += "+" + toJson.getString("instructions");
+        int titleStart = generatedText.indexOf("Title:");
+        int ingStart = generatedText.indexOf("Ingredients:");
+        int insStart = generatedText.indexOf("Instructions:");
+        String titleString = "Title:";
+        String ingString = "Ingredients:";
+        String insString = "Instructions:";
+        int skipTitle = titleString.length();
+        int skipIng = ingString.length();
+        int skipIns = insString.length();
+
+        String title = generatedText.substring(titleStart+skipTitle,ingStart);
+        String ing = generatedText.substring(ingStart+skipIng,insStart);
+        String ins = generatedText.substring(insStart+skipIns);
+
+        // cleaning newlines from output
+        title = title.replace("\n", "");
+        ing = ing.replace("\n","");
+        ins = ins.replace("\n", "");
+
+        System.out.println("title:" + title);
+        System.out.println("ingredients" + ing);
+        System.out.println("instructions;" + ins);
+
+        String res = title + "+" + ing + "+" + ins;
 
         System.out.println("responsebody:" + responseBody);
-        System.out.println("generated text:" + generatedText);
         System.out.println("return" + res);
         scanner.close();
         res = res.replace("&", " and ");
