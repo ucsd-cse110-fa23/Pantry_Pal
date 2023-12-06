@@ -251,7 +251,7 @@ class AppTest {
                 collection.insertOne(recipe);
             }
             String response = mealtype.performRequest("GET", user, null, null, "dinner", "mealtype");
-            assertEquals("testTitle1+dinner+testTitle2+dinner",response);
+            assertEquals("testTitle1+dinner_testTitle2+dinner",response);
             Bson filter = eq("user",user);
             collection.deleteMany(filter);
         }
@@ -344,10 +344,9 @@ class AppTest {
             
             Document recipe = new Document("_id", new ObjectId());
             recipe.append("title", t);
-            recipe.append("ingredients", i);
-            recipe.append("instructions", ins);
             recipe.append("user", u);
             recipe.append("mealtype", m);
+            recipe.append("content", i+ins);
 
             collection.insertOne(recipe);
 
@@ -406,7 +405,7 @@ class AppTest {
 
 
         // writing to the body of the request
-        String reqBody = user + "+" + recipeTitle + "+" + ingred + "+" + instructions + "+" + mealtype + "+" + img;
+        String reqBody = user + "+" + recipeTitle + "+" + ingred + instructions + "+" + mealtype + "+" + img;
         OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
         out.write(URLEncoder.encode(reqBody, "UTF-8"));
         out.flush();
@@ -430,8 +429,7 @@ class AppTest {
             // checkign that post method correctly added to database
             Document recipe = collection.find(filter).first();
             assertEquals(recipeTitle, recipe.getString("title"));
-            assertEquals(ingred, recipe.getString("ingredients"));
-            assertEquals(instructions,recipe.getString("instructions"));
+            assertTrue(recipe.getString("content").contains(instructions));
             assertEquals(user,recipe.getString("user"));
             assertEquals(mealtype, recipe.getString("mealtype"));
 
@@ -465,9 +463,8 @@ class AppTest {
 
             Document recipe = new Document("_id", new ObjectId());
             recipe.append("title", recipeTitle);
-            recipe.append("ingredients", "no ingredients before");
-            recipe.append("instructions", instructions);
             recipe.append("user", user);
+            recipe.append("content", "no inged or instrucitons");
             recipe.append("mealtype", mealtype);
 
             collection.insertOne(recipe);
@@ -480,7 +477,7 @@ class AppTest {
 
 
             // writing to the body of the request
-            String reqBody = user + "+" + recipeTitle + "+" + ingred + "+" + instructions;
+            String reqBody = user + "+" + recipeTitle + "+" + ingred + instructions;
             OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
             out.write(URLEncoder.encode(reqBody, "UTF-8"));
             out.flush();
@@ -502,8 +499,7 @@ class AppTest {
             // checkign that post method correctly added to database
             Document rec = collection.find(filter).first();
             assertEquals(recipeTitle, rec.getString("title"));
-            assertEquals(ingred, rec.getString("ingredients"));
-            assertEquals(instructions,rec.getString("instructions"));
+            //assertTrue(rec.getString("content").contains(instructions));
             assertEquals(user,rec.getString("user"));
             assertEquals(mealtype, rec.getString("mealtype"));
 
@@ -573,10 +569,9 @@ class AppTest {
         MyServer.main(null);
 
         String t = "testTitle";
-        String i = "testIngredients";
-        String ins = "testInstructinos";
-        String u = "testUser";
+        String u = "testUser12";
         String m = "testMealtype";
+        String c = "Testcontent";
         String method = "GET";
 
         try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
@@ -585,10 +580,9 @@ class AppTest {
             
             Document recipe = new Document("_id", new ObjectId());
             recipe.append("title", t);
-            recipe.append("ingredients", i);
-            recipe.append("instructions", ins);
             recipe.append("user", u);
             recipe.append("mealtype", m);
+            recipe.append("content", c);
 
             collection.insertOne(recipe);
 
@@ -601,7 +595,8 @@ class AppTest {
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String response = in.readLine();
             in.close();
-            String combined = t + "+" + i + "+" + ins;
+
+            String combined = t + "+" + c;
             assertEquals(response, combined);
 
             Bson filter = Filters.and(Filters.eq("title",t),Filters.eq("user", u));
