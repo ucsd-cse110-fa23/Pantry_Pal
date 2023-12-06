@@ -15,6 +15,13 @@ import com.mongodb.client.MongoDatabase;
 
 import static com.mongodb.client.model.Filters.*;
 
+
+/*
+ * This class helps to load all the recipes back onto the 
+ * app when a user logs into the app.
+ * 
+ */
+
 public class loadRecipeHandler implements HttpHandler{
     
     private String URI = MyServer.MONGO_URI;

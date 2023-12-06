@@ -6,6 +6,11 @@ import java.net.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+/*
+ * This class mocks ChatGPT for testing
+ * 
+ */
+
 public class MockGPT implements HttpHandler {
     String url;
 

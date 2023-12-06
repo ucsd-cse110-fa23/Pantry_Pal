@@ -16,6 +16,16 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+/* 
+ * This class handles the sign up aspect of the app.
+ * 
+ * Takes in information from the front page,
+ * username and password,
+ * then creates an entry in the database so that 
+ * the user+password combo can be used to login a person.
+ * 
+ */
+
 public class SignupHandler implements HttpHandler {
 
     private String URI = MyServer.MONGO_URI;
@@ -43,6 +53,11 @@ public class SignupHandler implements HttpHandler {
         }
     }
     
+    /*
+     * Takes in the inputs of the username and password
+     * parses the information and adds it to the database
+     */
+
     private String handlePost(HttpExchange httpExchange) throws IOException {
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);

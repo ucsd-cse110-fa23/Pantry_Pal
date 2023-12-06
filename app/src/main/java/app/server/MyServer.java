@@ -5,6 +5,13 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.*;
 
+
+/*
+ * This class starts our server on the localhost,
+ * must be ran before running our gradle app
+ * 
+ */
+
 public class MyServer {
 
     // initialize server port and hostname

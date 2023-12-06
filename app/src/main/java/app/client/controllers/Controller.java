@@ -389,8 +389,7 @@ public class Controller {
 
     private void handleRecipeSaveButton(ActionEvent event) {
         checkServer();
-        String updatedRecipe = view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
-        updatedRecipe = updatedRecipe.replace("\n\n","+");
+        String updatedRecipe = recipeTitle + view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
         System.out.println("CLEANED newlines"+ updatedRecipe);
         //Make PUT request and save updatedRecipe as second param
         String response = model.performRequest("PUT", username, null, updatedRecipe, null, "");

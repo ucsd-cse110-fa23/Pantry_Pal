@@ -19,6 +19,15 @@ import org.json.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+/*
+ * implementing the DALL-E Handler that parses a prompt
+ * that generates an image based on the prompt and then
+ * returns the generated URL
+ * 
+ * Uses: POST
+ * 
+ */
+
 public class DallEHandler implements HttpHandler{
     private static final String API_ENDPOINT = "https://api.openai.com/v1/images/generations";
     private static final String API_KEY = "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";
@@ -56,6 +65,11 @@ public class DallEHandler implements HttpHandler{
 
     }
 
+    /*
+     * Handles the prompt given to the httpExchange
+     * Spits out the generated image URL from the servers
+     * 
+     */
     private String handlePost(HttpExchange httpExchange) throws IOException, InterruptedException, URISyntaxException{
         // Set request parameters
         InputStream inStream = httpExchange.getRequestBody();

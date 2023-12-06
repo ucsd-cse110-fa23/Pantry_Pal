@@ -43,6 +43,10 @@ public class WhisperHandler implements HttpHandler {
         }
     }
 
+    /*
+     * Handles the audio file and transcribes the audio
+     * that writes the response to output stream
+     */
     private String handlePost(HttpExchange httpExchange) throws IOException, InterruptedException, URISyntaxException{
         String generatedText = "post request at whisper";
 
