@@ -200,7 +200,7 @@ public class Controller {
                     handleLogin(username, password);
                 }   
             } else {
-                System.out.println("[LOGIN RESPONSE] " + response);
+                view.showAlert("Input Error", response);
             }
         }
     }
@@ -750,10 +750,8 @@ public class Controller {
                 clearRecipes();
                 loadRecipes(recipes);
                 frameController.getFrame("home");
-            } else if (response.equals("INVALID CREDENTIALS") || response.equals("USER NOT FOUND")){
-                System.out.println("[ LOGIN RESPONSE ] " + response);
             } else {
-                view.showAlert("Error", response);
+                view.showAlert("Input Error", response);
             }
         }
     }
