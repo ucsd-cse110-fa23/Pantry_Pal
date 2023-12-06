@@ -267,6 +267,7 @@ class AppTest {
         String ingred = "flour,eggs,sugar,milk";
         String instructions = "mix ingredients to make batter and then pour into hot pan";
         String mealtype = "breakfast";
+        String img = "test-img";
         String method = "POST";
 
         //String query = URLEncoder.encode("u=" + user + "&q=" + recipeTitle, "UTF-8");
@@ -278,7 +279,7 @@ class AppTest {
 
 
         // writing to the body of the request
-        String reqBody = user + "+" + recipeTitle + "+" + ingred + "+" + instructions + "+" + mealtype;
+        String reqBody = user + "+" + recipeTitle + "+" + ingred + "+" + instructions + "+" + mealtype + "+" + img;
         OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
         out.write(URLEncoder.encode(reqBody, "UTF-8"));
         out.flush();
@@ -477,6 +478,8 @@ class AppTest {
         MyServer.stop();
     }
 
-    
+
+
+
 
 }
