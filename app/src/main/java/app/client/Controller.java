@@ -11,7 +11,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import java.net.*;
 
 // Handles switching Scenes upon clicking buttons
 class FrameController {
@@ -42,6 +41,7 @@ public class Controller {
     private String[] recipeParts;
     private String username, password, mealType, ingredients, fullRecipe, recipeTitle;
     private RecipeList recipeList;
+    private String dalleResponse;
 
     public Controller(View view, Model model, Stage primaryStage) {
         this.view = view;
@@ -151,14 +151,17 @@ public class Controller {
         Button target = (Button) event.getTarget();
         recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();
         String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
-        // recipeText = recipeText.replace();
+        //recipeText = recipeText.replace();
+        String imgString = model.performRequest("GET", username, null, null, recipeTitle, "picture");
         
+
         // checks if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false) {
             view.showAlert("Error", "Server connection was interrupted");
         } 
-        
+        // Displays the image and the recipe
+        displayImage(imgString);
         displayRecipe(recipeText);
 
         frameController.getFrame("recipe");
@@ -274,9 +277,9 @@ public class Controller {
         response = response.replace("+", "\n");
 
         String dallePrompt = "Generate a real picture of " + recipeTitle;
-        String dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
+        dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
 
-        Image image = new Image(dalleResponse); 
+        Image image = new Image(dalleResponse);
 
         view.getGptFrame().getImageView().setImage(image);
         view.getGptFrame().getRecipeText().setText(response);
@@ -307,8 +310,9 @@ public class Controller {
         displayMealType(newRecipe, mealType);
         newRecipe.setViewButtonAction(this::handleViewButton);
 
-        fullRecipe += "+" + mealType;
+        fullRecipe += "+" + mealType + "+" + dalleResponse;
         String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
+
 
         //check if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
@@ -322,6 +326,8 @@ public class Controller {
         updateRecipeIndices();
         
         model.performRequest("POST", username, null, fullRecipe, null, "");
+        
+
 
         // Redirect back to Home Page
         frameController.getFrame("home");
@@ -489,6 +495,15 @@ public class Controller {
             System.out.println("RECIPE TEXT ON GET:" + recipeText);
             view.getRecipeFrame().getRecipeSteps().getRecipeName().setText(recipeName);
             view.getRecipeFrame().getRecipeSteps().getTextArea().setText(recipeText);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void displayImage(String img){
+        try {
+            Image image = new Image(img);
+            view.getRecipeFrame().getRecipeSteps().getImageView().setImage(image);
         } catch (Exception e) {
             e.printStackTrace();
         }

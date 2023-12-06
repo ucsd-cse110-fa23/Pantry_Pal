@@ -3,7 +3,6 @@ package app.server;
 import java.io.*;
 import java.net.*;
 
-import org.json.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 

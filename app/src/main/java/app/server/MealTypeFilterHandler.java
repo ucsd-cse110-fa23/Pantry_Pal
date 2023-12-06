@@ -15,7 +15,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
-import static com.mongodb.client.model.Filters.*;
 
 public class MealTypeFilterHandler implements HttpHandler{
 

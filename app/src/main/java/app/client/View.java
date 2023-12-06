@@ -8,13 +8,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -357,19 +354,25 @@ class RecipeList extends VBox {
 class RecipeSteps extends VBox {
 
     private Label recipeName;
-    private TextArea recipeSteps;
+    private TextArea recipeSteps = new TextArea();
+    private ImageView imageView = new ImageView();
 
     RecipeSteps() {
         // this.setPrefSize(500, 500);
         // this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;"); // sets background color of task
+        
         recipeName = new Label();
-        recipeSteps = new TextArea();
+        recipeName.setAlignment(Pos.CENTER);
+        //recipeName.setStyle("-fx-font-size: 20");
+        
         recipeSteps.setEditable(true);
         recipeSteps.setPrefSize(400, 500); // set size of text field
         recipeSteps.setWrapText(true);
         recipeSteps.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;"); // set background color of texfield
         
-        this.getChildren().addAll(recipeName, recipeSteps);
+        HBox container = new HBox();
+        container.getChildren().addAll(imageView,recipeSteps);
+        this.getChildren().addAll(recipeName, container);
     }
 
     public Label getRecipeName() {
@@ -378,6 +381,10 @@ class RecipeSteps extends VBox {
 
     public TextArea getTextArea() {
         return recipeSteps;
+    }
+
+    public ImageView getImageView() {
+        return imageView;
     }
 
 }
@@ -954,7 +961,7 @@ class ShareFrame extends BorderPane{
         footer = new RecordingFooter();
         
         // Set properties for the page
-        this.setPrefSize(370, 120);
+        this.setPrefSize(500, 120);
         shareLink = new TextArea("");
 
         
