@@ -224,7 +224,7 @@ public class Model {
             }
 
             String fin = "";
-            for(int i = recipesArr.length-1; i >= 0; i--){
+            for (int i = 0; i < recipesArr.length; i++) {
                 fin = fin + "_" + recipesArr[i];
             }
             fin = fin.substring(1);
@@ -235,17 +235,15 @@ public class Model {
 
     public String sortRAlphabetically(String recipes) {
         if (recipes != null) {
-            String[] recipesArr = { recipes };
-            String[] reverseRecipesArr = recipesArr;
+            String[] reverseRecipesArr = { recipes };
             if (recipes.contains("_")) {
-                recipesArr = recipes.split("_");
-                reverseRecipesArr = recipesArr;
+                reverseRecipesArr = recipes.split("_");
                 Arrays.sort(reverseRecipesArr);
             }
 
             String fin = "";
-            for(int i = 0; i < recipesArr.length; i++){
-                fin = fin + "_" + recipesArr[i];
+            for (int i = reverseRecipesArr.length-1; i >= 0; i--) {
+                fin += "_" + reverseRecipesArr[i];
             }
             fin = fin.substring(1);
             return fin;
