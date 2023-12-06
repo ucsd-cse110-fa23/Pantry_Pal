@@ -15,10 +15,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import app.Mock.ShareLinkMock;
-import app.Mock.Whisper;
-import app.client.App;
-import app.client.View;
-import app.client.Controller;
 import app.client.Model;
 import app.server.ChatGPTHandler;
 import app.server.MockDallE;
@@ -490,6 +486,7 @@ class AppTest {
         MyServer.stop();
     }
 
+    
 
 
 }
