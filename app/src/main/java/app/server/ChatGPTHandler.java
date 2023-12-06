@@ -100,24 +100,29 @@ public class ChatGPTHandler implements HttpHandler {
         generatedText = choices.getJSONObject(0).getString("text");
 
         int titleStart = generatedText.indexOf("Title:");
-        int conStart = generatedText.indexOf("Content:");
+        int ingStart = generatedText.indexOf("Ingredients:");
+        int insStart = generatedText.indexOf("Instructions:");
         String titleString = "Title:";
-        String conString = "Content:";
+        String ingString = "Ingredients:";
+        String insString = "Instructions:";
         int skipTitle = titleString.length();
-        int skipCon = conString.length();
+        int skipIng = ingString.length();
+        int skipIns = insString.length();
 
-        String title = generatedText.substring(titleStart+skipTitle,conStart);
-        String content = generatedText.substring(conStart+skipCon);
+        String title = generatedText.substring(titleStart+skipTitle,ingStart);
+        String ing = generatedText.substring(ingStart+skipIng,insStart);
+        String ins = generatedText.substring(insStart+skipIns);
 
         // cleaning newlines from output
         title = title.replace("\n", "");
-        content = content.replace("\n","");
-        content = content.replace("\n", "");
+        ing = ing.replace("\n","");
+        ins = ins.replace("\n", "");
 
         System.out.println("title:" + title);
-        System.out.println("content" + content);
+        System.out.println("ingredients" + ing);
+        System.out.println("instructions;" + ins);
 
-        String res = title + "+" + content;
+        String res = title + "+" + ing + "+" + ins;
 
         System.out.println("responsebody:" + responseBody);
         System.out.println("return" + res);

@@ -34,4 +34,505 @@ import java.io.IOException;
 
 
 class AppTest {
+    
+    private final String MONGOURI =  "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
+
+    // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
+    @Test 
+    void testGptSameIngredients() throws IOException {
+        MyServer.main(null);
+        String mealType = "dinner";
+        String ingredients = "steak, potatoes, butter";
+        Model model = new Model();
+        String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
+        String response = model.performRequest("POST", null, null, prompt, null, "mockGPT");
+
+        // API call should have successfully been made and returned thorugh model with the mealType and ingredients
+        assertFalse(response.equals(""));
+        MyServer.stop();
+    }
+
+    @Test
+    void testGptBddRefresh() throws IOException {
+        MyServer.main(null);
+        // BDD TEST
+        String user = "userBDD"; 
+
+        // Scenario: I don't like the recipe generated
+        String generatedText = "Scrambled eggs with bacon and toast, Step 1:... Step 2:...";
+        // Given: I have chosen breakfast and listed bacon, eggs, and sausage
+        // When: I am given a recipe for scrambled eggs with bacon and toast
+        // And: I do not want this recipe
+        String mealType = "breakfast";
+        String ingredients = "bacon, eggs, sausage";
+        // Then: when I press the refresh button it will generate another recipe like a bacon egg sandwich
+        Model refreshTest = new Model();
+        String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
+        String response = refreshTest.performRequest("POST", user, null, prompt, null, "mockGPT");
+        assertNotEquals(response, generatedText);
+        MyServer.stop();
+    }
+
+    // Tests successful sign up
+    @Test
+    void testValidSignup() throws IOException {
+        MyServer.main(null);
+        Model model = new Model();
+        String newUser = Long.toHexString(System.currentTimeMillis());
+        String password = Long.toHexString(System.currentTimeMillis() + 3);
+        String response = model.performRequest("POST", newUser, password, null, null, "signup");
+        assertTrue(response.equals("NEW USER CREATED"));
+        MyServer.stop();
+    }
+
+    // Tests signing up on a name thats taken already 
+    @Test
+    void testSignupUsernameTaken() throws IOException { 
+        MyServer.main(null);
+        Model loginTest = new Model();
+        String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "signup");
+        assertEquals("USERNAME TAKEN", response);
+        MyServer.stop();
+    }
+
+    // Tests a valid login
+    @Test
+    void testValidLoginValid() throws IOException { 
+        MyServer.main(null);
+        Model loginTest = new Model();
+        String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "login");
+        assertEquals("SUCCESS", response);
+        MyServer.stop();
+    }
+
+    // Tests a invalid login password
+    @Test
+    void testInvalidLoginCredentials() throws IOException { 
+        MyServer.main(null);
+        Model loginTest = new Model();
+        String response = loginTest.performRequest("POST", "Bob", "wrongPassword", null, null, "login");
+        assertEquals("INCORRECT CREDENTIALS", response);
+        MyServer.stop();
+    }
+
+    // Tests a username that doesn't exist for login
+    @Test
+    void testLoginDoesntExist() throws IOException { 
+        MyServer.main(null);
+        Model loginTest = new Model();
+        String response = loginTest.performRequest("POST", "fakeName", "password12", null, null, "login");
+        assertEquals("USER NOT FOUND", response);
+        MyServer.stop();
+    }
+
+    // Test /mealtype route to filter breakfast recipes belonging to "testGetMealType" account
+    @Test
+    void dalleLinkGenerationTest() throws IOException{
+        MyServer.main(null);
+        Model dalleTest =  new Model();
+        String recipeTitle = "Bacon Eggs and Ham";
+
+        String url = "https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2Ff%2Ffa%2FHam_and_eggs_over_easy.jpg%2F1200px-Ham_and_eggs_over_easy.jpg&tbnid=jL-bcwE1AkYVvM&vet=12ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW..i&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FHam_and_eggs&docid=2WM6ZYnDhyPs5M&w=1200&h=789&q=bacon%20eggs%20and%20ham&ved=2ahUKEwjm75GvxvSCAxWwJEQIHRB_BbYQMygBegQIARBW";
+
+        String response = dalleTest.performRequest("POST", null, null, recipeTitle, null, "mockDalle");
+        
+        assertEquals(url, response);
+        MyServer.stop();
+
+    }
+
+    @Test
+    void testGetMealType() throws IOException {
+        MyServer.main(null);
+        String user = "testGetMealType";
+        Model mealtype = new Model();
+        String response = mealtype.performRequest("GET", user, null, null, "breakfast", "mealtype");
+        // Account with username "testGetMealType" has ONE breakfast recipe named "Egg Bacon and Ham Breakfast Recipe"
+        assertEquals(" Bacon and Cheese Jalapeno Frittata;+breakfast", response);
+        MyServer.stop();
+    }
+
+    // Test /mealtype route to filter lunch recipes that have not been saved
+    @Test
+    void testGetNoLunchRecipe() throws IOException {
+        MyServer.main(null);
+        String user = "testGetMealType";
+        Model mealtype = new Model();
+        String response = mealtype.performRequest("GET", user, null, null, "lunch", "mealtype");
+        // Account with username "testGetMealType" has NO lunch recipes
+        assertEquals(null, response);
+        MyServer.stop();
+    }
+
+    // Test /mealtype route to filter the two dinner recipes belonging to "testGetMealType" account
+    @Test
+    void testGetMultipleDinnerRecipes() throws IOException {
+        MyServer.main(null);
+        String user = "testGetMealType";
+        Model mealtype = new Model();
+        String response = mealtype.performRequest("GET", user, null, null, "dinner", "mealtype");
+        // Account with username "testGetMealType" has TWO dinner recipes
+        assertEquals(" Pancake Bake with Maple Syrup Glaze+dinner_Oven-Baked Salmon with Saffron-Rice:\"+dinner", response);
+        MyServer.stop();
+    }
+
+    @Test
+    void testServerNotRunning() throws IOException{
+        boolean status = ServerChecker.isServerRunning("localhost", 8100);
+        assertEquals(false, status);
+    }
+    
+    @Test
+    void testServerRunning() throws IOException{
+        MyServer.main(null);
+        boolean status = ServerChecker.isServerRunning("localhost", 8100);
+        assertEquals(true, status);
+        MyServer.stop();
+    }
+
+    // UNIT TEST
+    @Test
+    void testGetShareLink() throws IOException{
+        // given user has a recipe already
+        Mock m = new Mock();
+        ShareLinkMock mock = m.new ShareLinkMock("adrian", "Sausage and Egg Breakfast Hash");
+        // want to test the share functionality as a unit test
+        String web = mock.getWebString();
+        assertNotEquals("", web);
+        assertTrue(web.contains("adrian"));
+        assertTrue(web.contains("Sausage and Egg Breakfast Hash"));
+    }
+
+    // Integration Test with model and server
+    @Test 
+    void shareIntegrationTest() throws IOException{
+        MyServer.main(null);
+        Model shareTest =  new Model();
+        // have a recipe in the database already
+        String recipeTitle = "Sausage and Egg Breakfast Hash";
+        String user = "adrian";
+        String error = "The recipe you have selected cannont be found by the server";
+        String response = shareTest.performRequest("GET", user, null, null, recipeTitle, "share");
+
+        assertTrue(response.contains(recipeTitle));
+        assertFalse(response.contains(error));
+        
+        MyServer.stop();
+    }
+
+    // just testing server request handler method,  GET METHOD
+    // USER+TITLE+INGREDIENTS+INSTRUCTIONS+MEALTYPE
+    // UNIT TEST
+    @Test
+    void GETrequestHandlerUnitTest() throws IOException, URISyntaxException{
+        MyServer.main(null);
+        // have a recipe in the database already
+        String recipeTitle = "Hash and Egg Breakfast Skillet";
+        String user = "adrian";
+        String ingred = "2 teaspoons olive oil, 2 cups frozen shredded potatoes, 1/2 cup diced onion, 1/2 cup chopped green bell pepper, 1/2 teaspoon garlic pepper seasoning, 1 (12-ounce) package turkey sausage, 8 large eggs, 1/4 teaspoon salt, 1/4 teaspoon black pepper";
+        String instructions = "Heat oil in a large skillet over medium-high heat. Add potatoes, onion, bell pepper, and garlic pepper seasoning. Cook for 10 minutes, stirring often. Move the potato mixture to the side of the skillet and add sausage. Cook for 6-8 minutes, stirring and breaking up the sausage as it cooks. Push the potato mixture to the side and crack eggs into the same skillet. Sprinkle with salt and black pepper. Cook until eggs are scrambled and the sausage and potatoes are cooked through.";
+        String mealtype = "breakfast";
+        String method = "GET";
+        String query = URLEncoder.encode("u=" + user + "&q=" + recipeTitle, "UTF-8");
+        String urlString = "http://localhost:8100/?" + query;
+        URL url = new URI(urlString).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(method);
+        conn.setDoOutput(true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String response = in.readLine();    
+        in.close();
+
+        assertNotEquals("", response);;
+        assertTrue(response.contains(recipeTitle));
+        assertTrue(response.contains(ingred));
+        assertTrue(response.contains(instructions));
+
+        
+        MyServer.stop();
+    }
+
+
+    /**
+     * UNIT TEST
+     * Test for just the server handler method to post the corret data
+     * 
+     * removes added data at the end to make sure to not change user recipes
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test
+    void POSTrequestHandlerTest() throws IOException, URISyntaxException{
+        MyServer.main(null);
+        // have a recipe in the database already
+        String recipeTitle = "Hash and Egg Breakfast Skillet";
+        String user = "adrian";
+        String ingred = "2 teaspoons olive oil, 2 cups frozen shredded potatoes, 1/2 cup diced onion, 1/2 cup chopped green bell pepper, 1/2 teaspoon garlic pepper seasoning, 1 (12-ounce) package turkey sausage, 8 large eggs, 1/4 teaspoon salt, 1/4 teaspoon black pepper";
+        String instructions = "Heat oil in a large skillet over medium-high heat. Add potatoes, onion, bell pepper, and garlic pepper seasoning. Cook for 10 minutes, stirring often. Move the potato mixture to the side of the skillet and add sausage. Cook for 6-8 minutes, stirring and breaking up the sausage as it cooks. Push the potato mixture to the side and crack eggs into the same skillet. Sprinkle with salt and black pepper. Cook until eggs are scrambled and the sausage and potatoes are cooked through.";
+        String mealtype = "breakfast";
+        String img = "test-img";
+        String method = "POST";
+
+        //String query = URLEncoder.encode("u=" + user + "&q=" + recipeTitle, "UTF-8");
+        String urlString = "http://localhost:8100/";
+        URL url = new URI(urlString).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(method);
+        conn.setDoOutput(true);
+
+
+        // writing to the body of the request
+        String reqBody = user + "+" + recipeTitle + "+" + ingred + "+" + instructions + "+" + mealtype + "+" + img;
+        OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+        out.write(URLEncoder.encode(reqBody, "UTF-8"));
+        out.flush();
+        out.close();
+
+
+        // reading the input
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String response = in.readLine();    
+        in.close();
+
+        assertNotEquals("invalid post", response);
+
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+      
+            Bson filter = eq("title", recipeTitle);
+            Bson filter2 = eq("user",user);
+            filter = combine(filter,filter2);
+
+            // checkign that post method correctly added to database
+            Document recipe = collection.find(filter).first();
+            assertEquals(recipeTitle, recipe.getString("title"));
+            assertEquals(ingred, recipe.getString("ingredients"));
+            assertEquals(instructions,recipe.getString("instructions"));
+            assertEquals(user,recipe.getString("user"));
+            assertEquals(mealtype, recipe.getString("mealtype"));
+
+        }
+        
+        MyServer.stop();
+    }
+
+
+    
+    @Test
+    void PUTrequestHandlerTest() throws IOException, URISyntaxException{
+        MyServer.main(null);
+        // have a recipe in the database already channging the ingredients and the instructions
+        
+        String recipeTitle = "Hash and Egg Breakfast Skillet";
+        String user = "adrian";
+        String ingred = "2 teaspoons olive oil, 2 cups frozen shredded potatoes, 1/2 cup diced onion, 1/2 cup chopped green bell pepper, 1/2 teaspoon garlic pepper seasoning, 1 (12-ounce) package turkey sausage, 8 large eggs, 1/4 teaspoon salt, 1/4 teaspoon black pepper";
+        String instructions = "Heat oil in a large skillet over medium-high heat. Add potatoes, onion, bell pepper, and garlic pepper seasoning. Cook for 10 minutes, stirring often. Move the potato mixture to the side of the skillet and add sausage. Cook for 6-8 minutes, stirring and breaking up the sausage as it cooks. Push the potato mixture to the side and crack eggs into the same skillet. Sprinkle with salt and black pepper. Cook until eggs are scrambled and the sausage and potatoes are cooked through.";
+        String mealtype = "breakfast";
+        String method = "PUT";
+
+        String urlString = "http://localhost:8100/";
+        URL url = new URI(urlString).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(method);
+        conn.setDoOutput(true);
+
+
+        // writing to the body of the request
+        String reqBody = user + "+" + recipeTitle + "+" + ingred + "+" + instructions;
+        OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+        out.write(URLEncoder.encode(reqBody, "UTF-8"));
+        out.flush();
+        out.close();
+
+        // reading the input
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String response = in.readLine();    
+        in.close();
+
+        assertEquals("valid put", response);
+
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+      
+            Bson filter = eq("title", recipeTitle);
+            Bson filter2 = eq("user",user);
+            filter = combine(filter,filter2);
+
+            // checkign that post method correctly added to database
+            Document recipe = collection.find(filter).first();
+            assertEquals(recipeTitle, recipe.getString("title"));
+            assertEquals(ingred, recipe.getString("ingredients"));
+            assertEquals(instructions,recipe.getString("instructions"));
+            assertEquals(user,recipe.getString("user"));
+            assertEquals(mealtype, recipe.getString("mealtype"));
+
+        }
+        
+        MyServer.stop();
+    }
+
+    @Test
+    void DELETErequestHandlerTest() throws IOException, URISyntaxException{
+        MyServer.main(null);
+
+        // setting up a fake recipe to test the DELETE endpoint for requesthandler route
+        String t = "testTitle";
+        String i = "testIngredients";
+        String ins = "testInstructinos";
+        String u = "testUser";
+        String m = "testMealtype";
+
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+            
+            Document recipe = new Document("_id", new ObjectId());
+            recipe.append("title", t);
+            recipe.append("ingredients", i);
+            recipe.append("instructions", ins);
+            recipe.append("user", u);
+            recipe.append("mealtype", m);
+
+            collection.insertOne(recipe);
+        }
+
+        // starting the delete request
+        String method = "DELETE";
+        String query = URLEncoder.encode("u=" + u + "&q=" + t, "UTF-8");
+        String urlString = "http://localhost:8100/?" + query;
+        URL url = new URI(urlString).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(method);
+        conn.setDoOutput(true);
+
+        // reading the output
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String response = in.readLine();  
+        assertEquals("valid delete", response);
+        
+        in.close();
+
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+
+            Bson filter = Filters.and(Filters.eq("title",t),Filters.eq("user", u));
+            Document recipe = collection.find(filter).first();
+            assertNull(recipe);
+        }
+
+        MyServer.stop();
+    }
+
+    // just testing Share request handler method,  GET METHOD
+    // USER+TITLE+INGREDIENTS+INSTRUCTIONS+MEALTYPE
+    // UNIT TEST
+    @Test
+    void GETShareHandlerUnitTest() throws IOException, URISyntaxException{
+        MyServer.main(null);
+        // have a recipe in the database already
+        String recipeTitle = "Hash and Egg Breakfast Skillet";
+        String user = "adrian";
+        String method = "GET";
+        String recipe = "Hash and Egg Breakfast Skillet+2 teaspoons olive oil, 2 cups frozen shredded potatoes, 1/2 cup diced onion, 1/2 cup chopped green bell pepper, 1/2 teaspoon garlic pepper seasoning, 1 (12-ounce) package turkey sausage, 8 large eggs, 1/4 teaspoon salt, 1/4 teaspoon black pepper+Heat oil in a large skillet over medium-high heat. Add potatoes, onion, bell pepper, and garlic pepper seasoning. Cook for 10 minutes, stirring often. Move the potato mixture to the side of the skillet and add sausage. Cook for 6-8 minutes, stirring and breaking up the sausage as it cooks. Push the potato mixture to the side and crack eggs into the same skillet. Sprinkle with salt and black pepper. Cook until eggs are scrambled and the sausage and potatoes are cooked through.";
+
+        String query = URLEncoder.encode("u=" + user + "&q=" + recipeTitle, "UTF-8");
+        String urlString = "http://localhost:8100/?" + query;
+        URL url = new URI(urlString).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(method);
+        conn.setDoOutput(true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String response = in.readLine();
+        in.close();
+
+        assertEquals(response, recipe);
+        
+        MyServer.stop();
+    }
+
+    // UNIT TEST
+    /*
+     * Mocks the whisper prompt
+     * Takes the mealtype, ingredients and makes it into a prompt
+     * Pushes the prompt through Model to check if the Whisper gets the same information
+     * compares the prompts
+     */
+    @Test
+    void WhisperPromptTest() throws IOException, URISyntaxException{
+        MyServer.main(null);
+        String mealType = "lunch";
+        String ingredients = "Bacon, Eggs and ham";
+        String prompt = "Make me a " + mealType + " recipe with " + ingredients;
+
+        Model model = new Model();
+        String response = model.performRequest("POST", mealType, ingredients, null, null, "mockwhisper");
+        
+        System.out.println(response);
+
+        assertEquals(response, prompt);
+        MyServer.stop();
+    }
+
+
+
+
+
+    @Test
+    void sortAlphabeticallyTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe1 = "B";
+        String recipe2 = "A";
+        String recipe3 = "C";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        String temp = sortModelTest.sortAlphabetically(input);  
+        
+        String sorted = recipe2 + "_" + recipe1 + "_" + recipe3;
+        assertEquals(temp, sorted);
+    }
+
+    @Test
+    void sortRAlphabeticallyTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe1 = "B";
+        String recipe2 = "A";
+        String recipe3 = "C";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        String temp = sortModelTest.sortRAlphabetically(input);  
+        
+        String sorted = recipe3 + "_" + recipe1 + "_" + recipe2;
+        assertEquals(temp, sorted);
+    }
+
+    @Test
+    void sortChronologicalTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe1 = "B";
+        String recipe2 = "A";
+        String recipe3 = "C";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        String temp = sortModelTest.sortChronological(input);  
+        
+        String sorted = recipe1 + "_" + recipe2 + "_" + recipe3;
+        assertEquals(temp, sorted);
+    }
+
+    @Test
+    void sortRChronologicalTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe1 = "B";
+        String recipe2 = "A";
+        String recipe3 = "C";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        String temp = sortModelTest.sortRChronological(input);  
+        
+        String sorted = recipe3 + "_" + recipe2 + "_" + recipe1;
+        assertEquals(temp, sorted);
+    }
 }
