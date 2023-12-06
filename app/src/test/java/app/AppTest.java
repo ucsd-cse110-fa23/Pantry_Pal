@@ -248,8 +248,6 @@ class AppTest {
         String response = in.readLine();    
         in.close();
 
-
-
         assertNotEquals("", response);;
         assertTrue(response.contains(recipeTitle));
         assertTrue(response.contains(ingred));
@@ -356,7 +354,6 @@ class AppTest {
         out.flush();
         out.close();
 
-
         // reading the input
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String response = in.readLine();    
@@ -438,6 +435,36 @@ class AppTest {
         
         MyServer.stop();
     }
+
+
+
+    // just testing Share request handler method,  GET METHOD
+    // USER+TITLE+INGREDIENTS+INSTRUCTIONS+MEALTYPE
+    // UNIT TEST
+    @Test
+    void GETShareHandlerUnitTest() throws IOException, URISyntaxException{
+        MyServer.main(null);
+        // have a recipe in the database already
+        String recipeTitle = "Hash Brown and Bacon Breakfast Bake";
+        String user = "Bryan";
+        String method = "GET";
+        String recipe = "Hash Brown and Bacon Breakfast Bake+1 package (20 ounces) refrigerated shredded hash brown potatoes, 8 strips bacon, cooked and crumbled, 2 cups shredded cheddar cheese, 1/2 cup chopped onion, 1/2 cup sour cream, 1/4 teaspoon salt, 1/4 teaspoon pepper and 2 tablespoons butter+Preheat oven to 375 degrees F. Grease 9-inch deep dish pie plate. Combine hash browns, bacon, cheese and onion in large bowl. Blend sour cream, salt and pepper; stir into hash brown mixture. Spread in pie plate. Dot with butter. Bake 40 to 45 minutes or until golden brown and bubbly. This is an edit to the recipe";
+
+        String query = URLEncoder.encode("u=" + user + "&q=" + recipeTitle, "UTF-8");
+        String urlString = "http://localhost:8100/?" + query;
+        URL url = new URI(urlString).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod(method);
+        conn.setDoOutput(true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String response = in.readLine();
+        in.close();
+
+        assertEquals(response, recipe);
+        
+        MyServer.stop();
+    }
+
 
 
 }
