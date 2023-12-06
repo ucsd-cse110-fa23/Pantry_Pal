@@ -286,8 +286,8 @@ public class Controller {
 
         // Create prompt with mealType and ingredients and pass to ChatGPT API, Dall-E API for the picture
         String prompt = "Please provide a" + mealType + " recipe using" + ingredients
-             + ". Can you format the response to have zero newlines with fields \"Title:\" and \"Content:\".These" 
-             + " fields will be formated such that it looks like \"Title:\"+\"Content:\" with one newline between each field";
+             + ". Can you format the response to have zero newlines with fields \"Title:\",\"Ingredients:\", and \"Instructions:\" .These" 
+             + " fields will be formated such that it looks like \"Title:\"+\"Ingredients:\"+\"Instructions\" with one newline between each field";
         System.out.println("PROMPT +++ " + prompt);
         String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
         fullRecipe = response;
@@ -353,8 +353,8 @@ public class Controller {
     private void handleGptRefreshButton(ActionEvent event) {
         
         String prompt = "Please provide a" + mealType + " recipe using" + ingredients
-             + ". Can you format the response to have zero newlines with fields \"Title:\" and \"Content:\".These" 
-             + " fields will be formated such that it looks like \"Title:\"+\"Content:\" with one newline between each field";
+             + ". Can you format the response to have zero newlines with fields \"Title:\",\"Ingredients:\", and \"Instructions:\" .These" 
+             + " fields will be formated such that it looks like \"Title:\"+\"Ingredients:\"+\"Instructions\" with one newline between each field";
         String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
         checkServer();
 
@@ -592,7 +592,8 @@ public class Controller {
     private void displayRecipe(String recipe) {
         try {
             String recipeName = recipe.split("\\+")[0];
-            String recipeText = recipe.split("\\+")[1];
+            String recipeText = recipe.substring(recipe.indexOf("\\+") + 1);
+            recipeText = recipeText.replace("+", "\n\n");
             System.out.println("RECIPE TEXT ON GET:" + recipeText);
             view.getRecipeFrame().getRecipeSteps().getRecipeName().setText(recipeName);
             view.getRecipeFrame().getRecipeSteps().getTextArea().setText(recipeText);
