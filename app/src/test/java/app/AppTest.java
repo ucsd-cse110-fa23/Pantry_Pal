@@ -33,7 +33,7 @@ import java.io.IOException;
 class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
     
-    private final String MONGOURI =  "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
+    private final String MONGOURI =  "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
 
     @Test 
     void testGptSameIngredients() throws IOException {
@@ -87,8 +87,23 @@ class AppTest {
     void testSignupUsernameTaken() throws IOException { 
         MyServer.main(null);
         Model loginTest = new Model();
-        String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "signup");
-        assertEquals("USERNAME TAKEN", response);
+
+
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("credentials");
+            
+            Document user = new Document("_id", new ObjectId());
+            user.append("user", "Bob");
+            user.append("password","password12");
+
+            collection.insertOne(user);
+
+            String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "signup");
+            assertEquals("USERNAME TAKEN", response);
+            Bson filter = eq("user","Bob");
+            collection.deleteMany(filter);
+        }
         MyServer.stop();
     }
 
@@ -97,8 +112,22 @@ class AppTest {
     void testValidLoginValid() throws IOException { 
         MyServer.main(null);
         Model loginTest = new Model();
-        String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "login");
-        assertEquals("SUCCESS", response);
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("credentials");
+            
+            Document user = new Document("_id", new ObjectId());
+            user.append("user", "Bob");
+            user.append("password","password12");
+
+            collection.insertOne(user);
+
+            String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "login");
+            assertEquals("SUCCESS", response);
+            Bson filter = eq("user","Bob");
+            collection.deleteMany(filter);
+        }
+
         MyServer.stop();
     }
 
@@ -107,8 +136,23 @@ class AppTest {
     void testInvalidLoginCredentials() throws IOException { 
         MyServer.main(null);
         Model loginTest = new Model();
-        String response = loginTest.performRequest("POST", "Bob", "wrongPassword", null, null, "login");
-        assertEquals("INCORRECT CREDENTIALS", response);
+
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("credentials");
+            
+            Document user = new Document("_id", new ObjectId());
+            user.append("user", "Bob");
+            user.append("password","password12");
+
+            collection.insertOne(user);
+
+            String response = loginTest.performRequest("POST", "Bob", "wrongPassword", null, null, "login");
+            assertEquals("INCORRECT CREDENTIALS", response);
+            Bson filter = eq("user","Bob");
+            collection.deleteMany(filter);
+        }
+
         MyServer.stop();
     }
 
@@ -143,9 +187,22 @@ class AppTest {
         MyServer.main(null);
         String user = "testGetMealType";
         Model mealtype = new Model();
-        String response = mealtype.performRequest("GET", user, null, null, "breakfast", "mealtype");
-        // Account with username "testGetMealType" has ONE breakfast recipe named "Egg Bacon and Ham Breakfast Recipe"
-        assertEquals("Egg Bacon and Ham Breakfast Recipe+breakfast", response);
+
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+            
+            Document doc = new Document("_id", new ObjectId());
+            doc.append("title", "Egg Bacon and Ham Breakfast Recipe");
+            doc.append("mealtype","breakfast");
+            doc.append("user",user);
+
+            collection.insertOne(doc);
+            String response = mealtype.performRequest("GET", user, null, null, "breakfast", "mealtype");
+            // Account with username "testGetMealType" has ONE breakfast recipe named "Egg Bacon and Ham Breakfast Recipe"
+            assertEquals("Egg Bacon and Ham Breakfast Recipe+breakfast", response);
+
+        }
         MyServer.stop();
     }
 
@@ -162,14 +219,43 @@ class AppTest {
     }
 
     // Test /mealtype route to filter the two dinner recipes belonging to "testGetMealType" account
+    // 
     @Test
     void testGetMultipleDinnerRecipes() throws IOException {
         MyServer.main(null);
-        String user = "testGetMealType";
         Model mealtype = new Model();
-        String response = mealtype.performRequest("GET", user, null, null, "dinner", "mealtype");
         // Account with username "testGetMealType" has TWO dinner recipes
-        assertEquals("Cheesy Vegetable Tortellini Bake+dinner+Savory Stuffed Pancakes+dinner", response);
+        String t = "testTitle";
+        String i = "testIngredients";
+        String ins = "testInstructinos";
+        String user = "testGetMealType";
+        String m = "dinner";
+        String method = "GET";
+        
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+            
+            for(int x = 1; x < 3;x++){
+                Document recipe = new Document("_id", new ObjectId());
+                String abc = t + x;
+                recipe.append("title", abc);
+                recipe.append("ingredients", i);
+                recipe.append("instructions", ins);
+                recipe.append("user", user);
+                recipe.append("mealtype", m);
+                
+                collection.insertOne(recipe);
+            }
+            String response = mealtype.performRequest("GET", user, null, null, "dinner", "mealtype");
+            assertEquals("testTitle1+dinner+testTitle2+dinner",response);
+            Bson filter = eq("user",user);
+            collection.deleteMany(filter);
+        }
+
+
+
+        // assertEquals("Cheesy Vegetable Tortellini Bake+dinner+Savory Stuffed Pancakes+dinner", response);
         MyServer.stop();
     }
 
@@ -209,10 +295,26 @@ class AppTest {
         String recipeTitle = "Steak and Egg Skillet";
         String user = "Bryan";
         String error = "The recipe you have selected cannont be found by the server";
-        String response = shareTest.performRequest("GET", user, null, null, recipeTitle, "share");
+        
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+            
+            Document doc = new Document("_id", new ObjectId());
+            doc.append("title", recipeTitle);
+            doc.append("mealtype","breakfast");
+            doc.append("user",user);
 
-        assertTrue(response.contains(recipeTitle));
-        assertFalse(response.contains(error));
+            collection.insertOne(doc);
+            String response = shareTest.performRequest("GET", user, null, null, recipeTitle, "share");
+
+            assertTrue(response.contains(recipeTitle));
+            assertFalse(response.contains(error));
+
+            Bson filter = eq("title",recipeTitle);
+            collection.deleteMany(filter);
+        }
+
         
         MyServer.stop();
     }
@@ -224,28 +326,48 @@ class AppTest {
     void GETrequestHandlerUnitTest() throws IOException, URISyntaxException{
         MyServer.main(null);
         // have a recipe in the database already
-        String recipeTitle = "Hash Brown and Bacon Breakfast Bake";
-        String user = "Bryan";
-        String ingred = "1 package (20 ounces) refrigerated shredded hash brown potatoes, 8 strips bacon, cooked and crumbled, 2 cups shredded cheddar cheese, 1/2 cup chopped onion, 1/2 cup sour cream, 1/4 teaspoon salt, 1/4 teaspoon pepper and 2 tablespoons butter";
-        String instructions = "Preheat oven to 375 degrees F. Grease 9-inch deep dish pie plate. Combine hash browns, bacon, cheese and onion in large bowl. Blend sour cream, salt and pepper; stir into hash brown mixture. Spread in pie plate. Dot with butter. Bake 40 to 45 minutes or until golden brown and bubbly. This is an edit to the recipe";
-        String mealtype = "breakfast";
+
+
+        String t = "testTitle";
+        String i = "testIngredients";
+        String ins = "testInstructinos";
+        String u = "testUser";
+        String m = "testMealtype";
         String method = "GET";
-        String query = URLEncoder.encode("u=" + user + "&q=" + recipeTitle, "UTF-8");
-        String urlString = "http://localhost:8100/?" + query;
-        URL url = new URI(urlString).toURL();
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(method);
-        conn.setDoOutput(true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String response = in.readLine();    
-        in.close();
 
-        assertNotEquals("", response);;
-        assertTrue(response.contains(recipeTitle));
-        assertTrue(response.contains(ingred));
-        assertTrue(response.contains(instructions));
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+            
+            Document recipe = new Document("_id", new ObjectId());
+            recipe.append("title", t);
+            recipe.append("ingredients", i);
+            recipe.append("instructions", ins);
+            recipe.append("user", u);
+            recipe.append("mealtype", m);
 
-        
+            collection.insertOne(recipe);
+
+            String query = URLEncoder.encode("u=" + u + "&q=" + t, "UTF-8");
+            String urlString = "http://localhost:8100/?" + query;
+            URL url = new URI(urlString).toURL();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod(method);
+            conn.setDoOutput(true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String response = in.readLine();    
+            in.close();
+
+            assertNotEquals("", response);;
+            assertTrue(response.contains(t));
+            assertTrue(response.contains(i));
+            assertTrue(response.contains(ins));
+
+
+            Bson filter = Filters.and(Filters.eq("title",t),Filters.eq("user", u));
+            collection.findOneAndDelete(filter);
+
+        }
         MyServer.stop();
     }
 
@@ -261,6 +383,8 @@ class AppTest {
     @Test
     void POSTrequestHandlerTest() throws IOException, URISyntaxException{
         MyServer.main(null);
+
+
         // have a recipe in the database already
         String recipeTitle = "pancakes with maple syrup";
         String user = "Bryan";
@@ -290,7 +414,6 @@ class AppTest {
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String response = in.readLine();    
         in.close();
-
         assertNotEquals("invalid post", response);
 
         try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
@@ -333,42 +456,53 @@ class AppTest {
         String mealtype = "breakfast";
         String method = "PUT";
 
-        String urlString = "http://localhost:8100/";
-        URL url = new URI(urlString).toURL();
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(method);
-        conn.setDoOutput(true);
-
-
-        // writing to the body of the request
-        String reqBody = user + "+" + recipeTitle + "+" + ingred + "+" + instructions;
-        OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-        out.write(URLEncoder.encode(reqBody, "UTF-8"));
-        out.flush();
-        out.close();
-
-        // reading the input
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String response = in.readLine();    
-        in.close();
-
-        assertEquals("valid put", response);
-
         try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
             MongoDatabase database = mongoClient.getDatabase("PantryPal");
             MongoCollection<Document> collection = database.getCollection("recipes");
+
+            Document recipe = new Document("_id", new ObjectId());
+            recipe.append("title", recipeTitle);
+            recipe.append("ingredients", "no ingredients before");
+            recipe.append("instructions", instructions);
+            recipe.append("user", user);
+            recipe.append("mealtype", mealtype);
+
+            collection.insertOne(recipe);
+
+            String urlString = "http://localhost:8100/";
+            URL url = new URI(urlString).toURL();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod(method);
+            conn.setDoOutput(true);
+
+
+            // writing to the body of the request
+            String reqBody = user + "+" + recipeTitle + "+" + ingred + "+" + instructions;
+            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+            out.write(URLEncoder.encode(reqBody, "UTF-8"));
+            out.flush();
+            out.close();
+
+            // reading the input
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String response = in.readLine();    
+            in.close();
+
+            assertEquals("valid put", response);
+
+
       
             Bson filter = eq("title", recipeTitle);
             Bson filter2 = eq("user",user);
             filter = combine(filter,filter2);
 
             // checkign that post method correctly added to database
-            Document recipe = collection.find(filter).first();
-            assertEquals(recipeTitle, recipe.getString("title"));
-            assertEquals(ingred, recipe.getString("ingredients"));
-            assertEquals(instructions,recipe.getString("instructions"));
-            assertEquals(user,recipe.getString("user"));
-            assertEquals(mealtype, recipe.getString("mealtype"));
+            Document rec = collection.find(filter).first();
+            assertEquals(recipeTitle, rec.getString("title"));
+            assertEquals(ingred, rec.getString("ingredients"));
+            assertEquals(instructions,rec.getString("instructions"));
+            assertEquals(user,rec.getString("user"));
+            assertEquals(mealtype, rec.getString("mealtype"));
 
         }
         
@@ -434,23 +568,46 @@ class AppTest {
     @Test
     void GETShareHandlerUnitTest() throws IOException, URISyntaxException{
         MyServer.main(null);
-        // have a recipe in the database already
-        String recipeTitle = "Hash Brown and Bacon Breakfast Bake";
-        String user = "Bryan";
+
+        String t = "testTitle";
+        String i = "testIngredients";
+        String ins = "testInstructinos";
+        String u = "testUser";
+        String m = "testMealtype";
         String method = "GET";
-        String recipe = "Hash Brown and Bacon Breakfast Bake+1 package (20 ounces) refrigerated shredded hash brown potatoes, 8 strips bacon, cooked and crumbled, 2 cups shredded cheddar cheese, 1/2 cup chopped onion, 1/2 cup sour cream, 1/4 teaspoon salt, 1/4 teaspoon pepper and 2 tablespoons butter+Preheat oven to 375 degrees F. Grease 9-inch deep dish pie plate. Combine hash browns, bacon, cheese and onion in large bowl. Blend sour cream, salt and pepper; stir into hash brown mixture. Spread in pie plate. Dot with butter. Bake 40 to 45 minutes or until golden brown and bubbly. This is an edit to the recipe";
 
-        String query = URLEncoder.encode("u=" + user + "&q=" + recipeTitle, "UTF-8");
-        String urlString = "http://localhost:8100/?" + query;
-        URL url = new URI(urlString).toURL();
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(method);
-        conn.setDoOutput(true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String response = in.readLine();
-        in.close();
+        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+            MongoDatabase database = mongoClient.getDatabase("PantryPal");
+            MongoCollection<Document> collection = database.getCollection("recipes");
+            
+            Document recipe = new Document("_id", new ObjectId());
+            recipe.append("title", t);
+            recipe.append("ingredients", i);
+            recipe.append("instructions", ins);
+            recipe.append("user", u);
+            recipe.append("mealtype", m);
 
-        assertEquals(response, recipe);
+            collection.insertOne(recipe);
+
+            String query = URLEncoder.encode("u=" + u + "&q=" + t, "UTF-8");
+            String urlString = "http://localhost:8100/?" + query;
+            URL url = new URI(urlString).toURL();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod(method);
+            conn.setDoOutput(true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String response = in.readLine();
+            in.close();
+            String combined = t + "+" + i + "+" + ins;
+            assertEquals(response, combined);
+
+            Bson filter = Filters.and(Filters.eq("title",t),Filters.eq("user", u));
+            collection.findOneAndDelete(filter);
+
+        }
+
+        // have a recipe in the database already
+
         
         MyServer.stop();
     }
