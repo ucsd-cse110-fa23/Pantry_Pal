@@ -14,7 +14,16 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
-
+/*
+ * This class handles the sharing of the recipes
+ * Takes in the username and the title of the
+ * recipe, then gets the information and 
+ * is then called with a localhost URI,
+ * and the recipe is displayed in the HTML.
+ * 
+ * Returns: Response if the request was sucessful or not
+ * 
+ */
 
 public class ShareHandler implements HttpHandler{
     

@@ -6,6 +6,11 @@ import java.net.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+/*
+ * This class is used to MockDalle for testing
+ * 
+ */
+
 public class MockDallE implements HttpHandler{
     String url;
 

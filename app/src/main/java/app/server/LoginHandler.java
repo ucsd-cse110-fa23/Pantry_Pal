@@ -16,6 +16,17 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+/*
+ * This class handles the login request.
+ * When the user is attempting to login,
+ * the request gets sent through here.
+ * 
+ * returns: status of login
+ * uses: POST
+ * 
+ */
+
+
 public class LoginHandler implements HttpHandler {
 
     private String URI = MyServer.MONGO_URI;
@@ -46,6 +57,14 @@ public class LoginHandler implements HttpHandler {
         }
     }
     
+    /*
+     * Goes into the database to check if the user+pass
+     * combo is in there
+     * 
+     * Returns Success if the user+pass combo exists
+     * Returns Incorrect or User not found otherwise
+     */
+
     private String handlePost(HttpExchange httpExchange) throws IOException {
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);

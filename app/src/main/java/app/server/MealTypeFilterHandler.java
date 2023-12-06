@@ -15,6 +15,14 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
+/*
+ * This class helps to filter
+ * each recipe by mealtype in the database
+ * 
+ * Returns: response from database
+ * uses: GET
+ */
+
 public class MealTypeFilterHandler implements HttpHandler{
 
     private String URI = MyServer.MONGO_URI;

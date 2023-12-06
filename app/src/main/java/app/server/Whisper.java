@@ -6,6 +6,11 @@ import java.net.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/*
+ * This class calls the Whisper API
+ * Returns the response from the API
+ */
+
 public class Whisper {
     private static final String API_ENDPOINT = "https://api.openai.com/v1/audio/transcriptions";
     private static final String TOKEN = "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";

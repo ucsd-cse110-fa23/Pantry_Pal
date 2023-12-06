@@ -101,6 +101,23 @@ public class Controller {
         view.getSortFrame().setRChronoButtonAction(this::handleSortRChronoButton);
         view.getSortFrame().setCancelButtonAction(this::handleSortCancelButton);
         
+        // Auto Login Initializer
+        boolean autoLoginEnabled = model.getAutoLoginStatus();
+        if (autoLoginEnabled) {
+            view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: green;");
+            view.getLoginFrame().getAutoLoginButton().setText("ON");
+            view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: green;");
+            view.getHomeFrame().getAutoLoginButton().setText("ON");
+            String[] loginDetails = model.getAutoLoginDetails().split("\n");
+            if(loginDetails[0].equals("") == false) {
+                handleLogin(loginDetails[0], loginDetails[1]);
+            }
+        } else {
+            view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: red;");
+            view.getLoginFrame().getAutoLoginButton().setText("OFF");
+            view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: red;");
+            view.getHomeFrame().getAutoLoginButton().setText("OFF");
+        }
     }
 
     public FrameController getFrameController() {
@@ -392,8 +409,7 @@ public class Controller {
 
     private void handleRecipeSaveButton(ActionEvent event) {
         checkServer();
-        String updatedRecipe = view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
-        updatedRecipe = updatedRecipe.replace("\n\n","+");
+        String updatedRecipe = recipeTitle + view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
         System.out.println("CLEANED newlines"+ updatedRecipe);
         //Make PUT request and save updatedRecipe as second param
         String response = model.performRequest("PUT", username, null, updatedRecipe, null, "");

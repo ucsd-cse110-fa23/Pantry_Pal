@@ -7,6 +7,11 @@ import java.util.Scanner;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+/*
+ * This class mocks Whisper for testing
+ * 
+ */
+
 public class MockWhisper implements HttpHandler {
     String url;
 
