@@ -50,12 +50,18 @@ public class IngredientsFrame extends BorderPane {
     public Prompt getPrompt() { return prompt; }
 
     // Writes audio into "recording.wav"
-    public void setStartButtonAction(EventHandler<ActionEvent> eventHandler) { startButton.setOnAction(eventHandler); }
+    public void setStartButtonAction(EventHandler<ActionEvent> eventHandler) {
+        startButton.setOnAction(eventHandler);
+    }
 
     // Needs to detect either "Breakfast," "Lunch," or "Dinner" to move to next Frame
-    public void setStopButtonAction(EventHandler<ActionEvent> eventHandler) { stopButton.setOnAction(eventHandler); }
+    public void setStopButtonAction(EventHandler<ActionEvent> eventHandler) {
+        stopButton.setOnAction(eventHandler);
+    }
 
     // Cancel Button goes to Home Page
-    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) { cancelButton.setOnAction(eventHandler); }
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
+    }
 
 }

@@ -54,14 +54,24 @@ public class HomeFrame extends BorderPane {
     public Button getAutoLoginButton() { return autoLoginButton; }
 
     // Sets the Buttons actions so they function when clicked
-    public void setNewRecipeButtonAction(EventHandler<ActionEvent> eventHandler) { newRecipeButton.setOnAction(eventHandler); }
+    public void setNewRecipeButtonAction(EventHandler<ActionEvent> eventHandler) {
+        newRecipeButton.setOnAction(eventHandler);
+    }
 
-    public void setFilterMealTypeButtonAction(EventHandler<ActionEvent> eventHandler) { filterMealTypeButton.setOnAction(eventHandler); }
+    public void setFilterMealTypeButtonAction(EventHandler<ActionEvent> eventHandler) {
+        filterMealTypeButton.setOnAction(eventHandler);
+    }
 
-    public void setSortButtonAction(EventHandler<ActionEvent> eventHandler) { sortButton.setOnAction(eventHandler); }
+    public void setSortButtonAction(EventHandler<ActionEvent> eventHandler) {
+        sortButton.setOnAction(eventHandler);
+    }
 
-    public void setAutoLoginButtonAction(EventHandler<ActionEvent> eventHandler) { autoLoginButton.setOnAction(eventHandler); }
+    public void setAutoLoginButtonAction(EventHandler<ActionEvent> eventHandler) {
+        autoLoginButton.setOnAction(eventHandler);
+    }
 
-    public void setSignOutButtonAction(EventHandler<ActionEvent> eventHandler) { signOutButton.setOnAction(eventHandler); }
+    public void setSignOutButtonAction(EventHandler<ActionEvent> eventHandler) {
+        signOutButton.setOnAction(eventHandler);
+    }
 
 }

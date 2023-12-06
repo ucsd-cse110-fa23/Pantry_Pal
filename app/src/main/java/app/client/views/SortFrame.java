@@ -51,14 +51,24 @@ public class SortFrame extends BorderPane {
     public SortContent getSort() { return sortContent; }
 
     // Sets the Buttons actions so they function when clicked
-    public void setAlphaButtonAction(EventHandler<ActionEvent> eventHandler) { alphaButton.setOnAction(eventHandler); }
+    public void setAlphaButtonAction(EventHandler<ActionEvent> eventHandler) {
+        alphaButton.setOnAction(eventHandler);
+    }
 
-    public void setRAlphaButtonAction(EventHandler<ActionEvent> eventHandler) { ralphaButton.setOnAction(eventHandler); }
+    public void setRAlphaButtonAction(EventHandler<ActionEvent> eventHandler) {
+        ralphaButton.setOnAction(eventHandler);
+    }
 
-    public void setChronoButtonAction(EventHandler<ActionEvent> eventHandler) { chronoButton.setOnAction(eventHandler); }
+    public void setChronoButtonAction(EventHandler<ActionEvent> eventHandler) {
+        chronoButton.setOnAction(eventHandler);
+    }
 
-    public void setRChronoButtonAction(EventHandler<ActionEvent> eventHandler) { rchronoButton.setOnAction(eventHandler); }
+    public void setRChronoButtonAction(EventHandler<ActionEvent> eventHandler) {
+        rchronoButton.setOnAction(eventHandler);
+    }
 
-    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) { cancelButton.setOnAction(eventHandler); }
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
+    }
 
 }

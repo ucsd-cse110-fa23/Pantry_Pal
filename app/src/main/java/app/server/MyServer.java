@@ -20,7 +20,7 @@ public class MyServer {
 
     private static String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
     private static String PeterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-    public static String MONGO_URI = MongoURI;
+    public static String MONGO_URI = PeterURI;
     
     private static HttpServer server;
 

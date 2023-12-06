@@ -53,14 +53,22 @@ public class RecipeFrame extends BorderPane {
     public Button getShareButton() { return shareButton; }
 
     // Cancel Button goes to Home Page
-    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) { cancelButton.setOnAction(eventHandler); }
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
+    }
 
     // Save updates then redirect to Home Page
-    public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) { saveButton.setOnAction(eventHandler); }
+    public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) {
+        saveButton.setOnAction(eventHandler);
+    }
 
     // Delete Recipe from database and app then redirect to Home Page
-    public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) { deleteButton.setOnAction(eventHandler); }
+    public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {
+        deleteButton.setOnAction(eventHandler);
+    }
 
-    public void setShareButtonAction(EventHandler<ActionEvent> eventHandler){ shareButton.setOnAction(eventHandler); }
+    public void setShareButtonAction(EventHandler<ActionEvent> eventHandler) {
+        shareButton.setOnAction(eventHandler);
+    }
 
 }

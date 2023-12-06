@@ -17,6 +17,9 @@ public class FilterPrompt extends VBox {
 
     FilterPrompt() {
 
+        // Set spacing between buttons
+        this.setSpacing(50);
+
         // Initialize the Label Object
         text = new Label("Select Meal Type Filter");
 
@@ -36,6 +39,7 @@ public class FilterPrompt extends VBox {
         allButton.setStyle("-fx-background-color: #7D7C7C; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px");
 
         HBox.setMargin(breakfastButton, new Insets(5));
+        HBox.setMargin(dinnerButton, new Insets(5));
 
         // Top row of Filter Buttons
         buttonContainerRow1.setAlignment(Pos.CENTER);

@@ -110,7 +110,10 @@ public class Controller {
             view.getHomeFrame().getAutoLoginButton().setText("ON");
             String[] loginDetails = model.getAutoLoginDetails().split("\n");
             if(loginDetails[0].equals("") == false) {
-                handleLogin(loginDetails[0], loginDetails[1]);
+                username = loginDetails[0];
+                password = loginDetails[1];
+                handleLogin(username, password);
+                
             }
         } else {
             view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: red;");
@@ -349,12 +352,10 @@ public class Controller {
         displayMealTypeTag(newRecipe, mealType);
         newRecipe.setViewButtonAction(this::handleViewButton);
 
-        //fullRecipe = view.getGptFrame().getRecipeText().getText();
         fullRecipe += "+" + mealType + "+" + dalleResponse;
         String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
 
         checkServer();
-
         clearRecipes();
         loadRecipes(fullRecipeList);
         recipeList.getChildren().add(0, newRecipe);
@@ -362,8 +363,6 @@ public class Controller {
         
         model.performRequest("POST", username, null, fullRecipe, null, "");
         
-
-
         // Redirect back to Home Page
         frameController.getFrame("home");
     }
@@ -648,6 +647,10 @@ public class Controller {
                 updateRecipeIndices();
             }
         }
+    }
+
+    public void loadSorted(String recipes) {
+
     }
 
     public void clearRecipes() {

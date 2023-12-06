@@ -67,10 +67,16 @@ public class GptFrame extends BorderPane {
     public Button getRefreshButton() { return refreshButton; }
 
     // Sets the Buttons actions so they function when clicked
-    public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler){ saveButton.setOnAction(eventHandler); }
+    public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) {
+        saveButton.setOnAction(eventHandler);
+    }
 
-    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) { cancelButton.setOnAction(eventHandler); }
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
+    }
 
-    public void setRefreshButtonAction(EventHandler<ActionEvent> eventHandler){ refreshButton.setOnAction(eventHandler); }
+    public void setRefreshButtonAction(EventHandler<ActionEvent> eventHandler) {
+        refreshButton.setOnAction(eventHandler);
+    }
     
 }

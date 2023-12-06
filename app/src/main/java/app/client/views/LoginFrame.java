@@ -44,10 +44,16 @@ public class LoginFrame extends BorderPane {
     public HBox getAutoLoginContainer() { return autoLoginContainer; }
 
     // Sets the Buttons actions so they function when clicked
-    public void setLoginButtonAction(EventHandler<ActionEvent> eventHandler) { loginButton.setOnAction(eventHandler); }
+    public void setLoginButtonAction(EventHandler<ActionEvent> eventHandler) {
+        loginButton.setOnAction(eventHandler);
+    }
 
-    public void setCreateAccountButtonAction(EventHandler<ActionEvent> eventHandler) { createAccountButton.setOnAction(eventHandler); }
+    public void setCreateAccountButtonAction(EventHandler<ActionEvent> eventHandler) {
+        createAccountButton.setOnAction(eventHandler);
+    }
 
-    public void setAutoLoginButtonAction(EventHandler<ActionEvent> eventHandler) { autoLoginButton.setOnAction(eventHandler); }
+    public void setAutoLoginButtonAction(EventHandler<ActionEvent> eventHandler) {
+        autoLoginButton.setOnAction(eventHandler);
+    }
 
 }
