@@ -37,6 +37,7 @@ class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
     
     private final String MONGOURI =  "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
+    public String IPHOST = "192.168.1.173";
 
     @Test 
     void testGptSameIngredients() throws IOException {
@@ -264,14 +265,14 @@ class AppTest {
 
     @Test
     void testServerNotRunning() throws IOException{
-        boolean status = ServerChecker.isServerRunning("localhost", 8100);
+        boolean status = ServerChecker.isServerRunning(IPHOST, 8100);
         assertEquals(false, status);
     }
     
     @Test
     void testServerRunning() throws IOException{
         MyServer.main(null);
-        boolean status = ServerChecker.isServerRunning("localhost", 8100);
+        boolean status = ServerChecker.isServerRunning(IPHOST, 8100);
         assertEquals(true, status);
         MyServer.stop();
     }
@@ -353,7 +354,7 @@ class AppTest {
     //         collection.insertOne(recipe);
 
     //         String query = URLEncoder.encode("u=" + u + "&q=" + t, "UTF-8");
-    //         String urlString = "http://localhost:8100/?" + query;
+    //         String urlString = "http://IPHOST:8100/?" + query;
     //         URL url = new URI(urlString).toURL();
     //         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     //         conn.setRequestMethod(method);
@@ -399,7 +400,7 @@ class AppTest {
         String method = "POST";
 
         //String query = URLEncoder.encode("u=" + user + "&q=" + recipeTitle, "UTF-8");
-        String urlString = "http://localhost:8100/";
+        String urlString = "http://"+IPHOST+":8100/";
         URL url = new URI(urlString).toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(method);
@@ -471,7 +472,7 @@ class AppTest {
 
             collection.insertOne(recipe);
 
-            String urlString = "http://localhost:8100/";
+            String urlString = "http://"+IPHOST+":8100/";
             URL url = new URI(urlString).toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method);
@@ -538,7 +539,7 @@ class AppTest {
         // starting the delete request
         String method = "DELETE";
         String query = URLEncoder.encode("u=" + u + "&q=" + t, "UTF-8");
-        String urlString = "http://localhost:8100/?" + query;
+        String urlString = "http://"+IPHOST+":8100/?" + query;
         URL url = new URI(urlString).toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(method);
@@ -591,7 +592,7 @@ class AppTest {
     //         collection.insertOne(recipe);
 
     //         String query = URLEncoder.encode("u=" + u + "&q=" + t, "UTF-8");
-    //         String urlString = "http://localhost:8100/?" + query;
+    //         String urlString = "http://IPHOST:8100/?" + query;
     //         URL url = new URI(urlString).toURL();
     //         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     //         conn.setRequestMethod(method);
