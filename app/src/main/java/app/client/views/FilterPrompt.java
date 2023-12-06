@@ -17,8 +17,12 @@ public class FilterPrompt extends VBox {
 
     FilterPrompt() {
 
+        // Initialize the Label Object
         text = new Label("Select Meal Type Filter");
 
+        // Initialize the breakfastButton, lunchButton, dinnerButton, and allButton
+        // Sets the displayed texts on the buttons
+        // Sets all of their styles to the default button style
         breakfastButton = new Button("Breakfast");
         breakfastButton.setStyle("-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px");
 
@@ -45,6 +49,7 @@ public class FilterPrompt extends VBox {
 
     }
 
+    // Sets the get methods that allow access to the buttons of FilterPrompt
     public Button getBreakfastButton() { return breakfastButton; }
     
     public Button getLunchButton() { return lunchButton; }

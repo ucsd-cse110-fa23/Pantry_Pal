@@ -15,10 +15,15 @@ public class RecipeFrame extends BorderPane {
     private Button cancelButton, saveButton, deleteButton, shareButton;
 
     RecipeFrame() {
+        
+        // Initializes the Header Object
         header = new Header("Recipe");
+        // Initializes the RecipeSteps Object
         recipeSteps = new RecipeSteps();
+        // Initializes the RecipeFooter Object
         footer = new RecipeFooter();
 
+        // Initialise Button Variables through the getters in footer
         cancelButton = footer.getCancelButton();
         saveButton = footer.getSaveButton();
         deleteButton = footer.getDeleteButton();
@@ -32,10 +37,13 @@ public class RecipeFrame extends BorderPane {
         this.setTop(header);
         this.setCenter(s);
         this.setBottom(footer);
+
     }
 
+    // The method to get the recipe steps
     public RecipeSteps getRecipeSteps() { return recipeSteps; }
 
+    // Sets the get methods that allow access to the buttons of RecipeFrame
     public Button getCancelButton() { return cancelButton; }
 
     public Button getSaveButton() { return saveButton; }
@@ -45,22 +53,14 @@ public class RecipeFrame extends BorderPane {
     public Button getShareButton() { return shareButton; }
 
     // Cancel Button goes to Home Page
-    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
-        cancelButton.setOnAction(eventHandler);
-    }
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) { cancelButton.setOnAction(eventHandler); }
 
     // Save updates then redirect to Home Page
-    public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) {
-        saveButton.setOnAction(eventHandler);
-    }
+    public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) { saveButton.setOnAction(eventHandler); }
 
     // Delete Recipe from database and app then redirect to Home Page
-    public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {
-        deleteButton.setOnAction(eventHandler);
-    }
+    public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) { deleteButton.setOnAction(eventHandler); }
 
-    public void setShareButtonAction(EventHandler<ActionEvent> eventHandler){
-        shareButton.setOnAction(eventHandler);
-    }
+    public void setShareButtonAction(EventHandler<ActionEvent> eventHandler){ shareButton.setOnAction(eventHandler); }
 
 }
