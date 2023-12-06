@@ -2,12 +2,13 @@ package app.client.views;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
 // Footer for Home Page
 public class HomeFooter extends HBox {
 
-    private Button newRecipeButton, filterMealTypeButton, sortButton, signOutButton;
+    private Button newRecipeButton, filterMealTypeButton, sortButton, autoLoginButton, signOutButton;
 
     public HomeFooter() {
         this.setPrefSize(500, 60);
@@ -29,8 +30,15 @@ public class HomeFooter extends HBox {
         signOutButton = new Button("Sign Out");
         signOutButton.setStyle(defaultButtonStyle);
 
+        Label autoLoginLabel = new Label("Automatic Login: ");
+        autoLoginButton = new Button("Loading");
+        autoLoginButton.setStyle(defaultButtonStyle);
+
+        HBox autoLoginContainer = new HBox();
+        autoLoginContainer.setAlignment(Pos.CENTER);
+        autoLoginContainer.getChildren().addAll(autoLoginLabel, autoLoginButton);
         
-        this.getChildren().addAll(newRecipeButton, filterMealTypeButton, sortButton, signOutButton); // adding button to footer
+        this.getChildren().addAll(newRecipeButton, filterMealTypeButton, sortButton, autoLoginContainer, signOutButton); // adding button to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
     }
 
@@ -41,5 +49,7 @@ public class HomeFooter extends HBox {
     public Button getSortButton() { return sortButton; }
 
     public Button getSignOutButton() { return signOutButton; }
+
+    public Button getAutoLoginButton() { return autoLoginButton; }
 
 }

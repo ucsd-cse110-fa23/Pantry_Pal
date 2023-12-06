@@ -2,6 +2,7 @@ package app.client.views;
 
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -10,7 +11,8 @@ public class LoginFrame extends BorderPane {
 
     private Header header;
     private LoginContent loginContent;
-    private Button loginButton, createAccountButton;
+    private Button loginButton, createAccountButton, autoLoginButton;
+    private HBox autoLoginContainer;
 
    public LoginFrame() {
         
@@ -25,10 +27,16 @@ public class LoginFrame extends BorderPane {
 
         loginButton = loginContent.getLoginButton();
         createAccountButton = loginContent.getCreateAccountButton();
+        autoLoginButton = loginContent.getAutoLoginButton();
+        autoLoginContainer = loginContent.getAutoLoginContainer();
 
     }
 
     public LoginContent getLoginContent() { return loginContent; }
+
+    public Button getAutoLoginButton() { return autoLoginButton; }
+
+    public HBox getAutoLoginContainer() { return autoLoginContainer; }
 
     public void setLoginButtonAction(EventHandler<ActionEvent> eventHandler) {
         loginButton.setOnAction(eventHandler);
@@ -36,6 +44,10 @@ public class LoginFrame extends BorderPane {
 
     public void setCreateAccountButtonAction(EventHandler<ActionEvent> eventHandler) {
         createAccountButton.setOnAction(eventHandler);
+    }
+
+    public void setAutoLoginButtonAction(EventHandler<ActionEvent> eventHandler) {
+        autoLoginButton.setOnAction(eventHandler);
     }
 
 }

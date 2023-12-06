@@ -2,6 +2,7 @@ package app.client.views;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.HBox;
@@ -12,7 +13,8 @@ public class LoginContent extends VBox {
 
     private TextField username;
     private PasswordField password;
-    private Button createAccountButton, loginButton;
+    private Button createAccountButton, loginButton, autoLoginButton;
+    private HBox autoLoginContainer;
 
     LoginContent() {
 
@@ -41,7 +43,18 @@ public class LoginContent extends VBox {
         buttonContainer.setAlignment(Pos.CENTER);
         buttonContainer.getChildren().addAll(loginButton, createAccountButton);
 
-        this.getChildren().addAll(username, password, buttonContainer);
+        HBox spaceContainer = new HBox();
+        Label spaceLabel = new Label("");
+        spaceContainer.getChildren().addAll(spaceLabel);
+
+        Label autoLoginLabel = new Label("Automatic Login: ");
+        autoLoginButton = new Button("Loading");
+
+        autoLoginContainer = new HBox();
+        autoLoginContainer.setAlignment(Pos.CENTER);
+        autoLoginContainer.getChildren().addAll(autoLoginLabel, autoLoginButton);
+
+        this.getChildren().addAll(username, password, buttonContainer, spaceContainer, autoLoginContainer);
         
     }
     
@@ -52,5 +65,9 @@ public class LoginContent extends VBox {
     public Button getLoginButton() { return loginButton; }
 
     public Button getCreateAccountButton() { return createAccountButton; }
+
+    public Button getAutoLoginButton() { return autoLoginButton; }
+
+    public HBox getAutoLoginContainer() { return autoLoginContainer; }
 
 }

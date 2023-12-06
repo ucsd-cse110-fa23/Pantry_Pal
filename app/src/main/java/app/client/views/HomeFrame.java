@@ -12,7 +12,7 @@ public class HomeFrame extends BorderPane {
     private Header header;
     private HomeFooter footer;
     private RecipeList recipeList;
-    private Button newRecipeButton, filterMealTypeButton, sortButton, signOutButton;
+    private Button newRecipeButton, filterMealTypeButton, sortButton, autoLoginButton, signOutButton;
 
     public HomeFrame() {
         // Initialize the Header Object
@@ -38,21 +38,18 @@ public class HomeFrame extends BorderPane {
         newRecipeButton = footer.getNewRecipeButton();
         filterMealTypeButton = footer.getFilterMealTypeButton();
         sortButton = footer.getSortButton();
+        autoLoginButton = footer.getAutoLoginButton();
         signOutButton = footer.getSignOutButton();
-
+        
     }
 
-    public RecipeList getRecipeList() {
-        return recipeList;
-    }
+    public RecipeList getRecipeList() { return recipeList; }
 
-    public Button getNewRecipeButton() {
-        return newRecipeButton;
-    }
+    public Button getNewRecipeButton() { return newRecipeButton; }
 
-    public Button getSortButton() {
-        return sortButton;
-    }
+    public Button getSortButton() { return sortButton; }
+
+    public Button getAutoLoginButton() { return autoLoginButton; }
 
     public void setNewRecipeButtonAction(EventHandler<ActionEvent> eventHandler) {
         newRecipeButton.setOnAction(eventHandler);
@@ -64,6 +61,10 @@ public class HomeFrame extends BorderPane {
 
     public void setSortButtonAction(EventHandler<ActionEvent> eventHandler) {
         sortButton.setOnAction(eventHandler);
+    }
+
+    public void setAutoLoginButtonAction(EventHandler<ActionEvent> eventHandler) {
+        autoLoginButton.setOnAction(eventHandler);
     }
 
     public void setSignOutButtonAction(EventHandler<ActionEvent> eventHandler) {

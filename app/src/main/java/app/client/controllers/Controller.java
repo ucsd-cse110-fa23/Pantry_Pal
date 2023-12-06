@@ -6,6 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import java.io.IOException;
 
 import app.client.*;
 import app.client.views.*;
@@ -18,8 +19,9 @@ public class Controller {
     private String[] recipeParts;
     private String username, password, mealType, ingredients, fullRecipe, recipeTitle;
     private RecipeList recipeList;
+    private String dalleResponse;
 
-    public Controller(View view, Model model, Stage primaryStage) {
+    public Controller(View view, Model model, Stage primaryStage) throws IOException {
         this.view = view;
         this.model = model;
         frameController = new FrameController(primaryStage);
@@ -27,12 +29,32 @@ public class Controller {
 
         // LoginFrame Event Listeners
         view.getLoginFrame().setLoginButtonAction(this::handleLoginButton);
-        view.getLoginFrame().setCreateAccountButtonAction(this::handleCreateAccountButton);
+        view.getLoginFrame().setCreateAccountButtonAction(event -> {
+            try {
+                handleCreateAccountButton(event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        view.getLoginFrame().setAutoLoginButtonAction(event -> {
+            try {
+                handleAutoLoginButton(event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         // HomeFrame Event Listeners
         view.getHomeFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
         view.getHomeFrame().setFilterMealTypeButtonAction(this::handleFilterMealTypeButton);
         view.getHomeFrame().setSortButtonAction(this::handleSortButton);
+        view.getHomeFrame().setAutoLoginButtonAction(event -> {
+            try {
+                handleAutoLoginButton(event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         view.getHomeFrame().setSignOutButtonAction(this::handleSignOutButton);
 
         // MealFrame Event Listeners
@@ -56,7 +78,7 @@ public class Controller {
         view.getRecipeFrame().setDeleteButtonAction(this::handleRecipeDeleteButton);
         view.getRecipeFrame().setShareButtonAction(this::handleShareButton);
         
-        // FilterFrame Event Listerners
+        // FilterFrame Event Listeners
         view.getFilterFrame().setBreakfastButtonAction(this::handleFilterBreakfastButton);
         view.getFilterFrame().setLunchButtonAction(this::handleFilterLunchButton);
         view.getFilterFrame().setDinnerButtonAction(this::handleFilterDinnerButton);
@@ -101,7 +123,28 @@ public class Controller {
         }
     }
 
-    private void handleCreateAccountButton(ActionEvent event) {
+    private void handleAutoLoginButton(ActionEvent event) throws IOException {
+        boolean autoLoginEnabled = model.getAutoLoginStatus();
+        autoLoginEnabled = !autoLoginEnabled;
+        model.setAutoLoginStatus(autoLoginEnabled);
+        if(autoLoginEnabled) {
+            view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: green;");
+            view.getLoginFrame().getAutoLoginButton().setText("ON");
+            view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: green;");
+            view.getHomeFrame().getAutoLoginButton().setText("ON");
+            String[] loginDetails = model.getAutoLoginDetails().split("\n");
+            if(loginDetails[0].equals("") == false) {
+                handleLogin(loginDetails[0], loginDetails[1]);
+            }
+        } else {
+            view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: red;");
+            view.getLoginFrame().getAutoLoginButton().setText("OFF");
+            view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: red;");
+            view.getHomeFrame().getAutoLoginButton().setText("OFF");
+        }
+    }
+
+    private void handleCreateAccountButton(ActionEvent event) throws IOException {
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
 
@@ -109,8 +152,14 @@ public class Controller {
             view.showAlert("Input Error", "Required field(s) missing!");
         } else {
             String response = model.performRequest("POST", username, password, null, null, "signup");
-            if (response.equals("SUCCESS")) {
-                frameController.getFrame("home");
+            if (response.equals("NEW USER CREATED")) {
+                // Redirect back to Login Page if new user successfully created
+                frameController.getFrame("login");
+                if (model.getAutoLoginStatus()) {
+                    model.setAutoLoginDetails(username, password);
+                    model.setLogInDetails(username, password);
+                    handleLogin(username, password);
+                }   
             } else {
                 System.out.println("[LOGIN RESPONSE] " + response);
             }
@@ -131,10 +180,12 @@ public class Controller {
         Button target = (Button) event.getTarget();
         recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();
         String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
-        // recipeText = recipeText.replace();
+        //recipeText = recipeText.replace();
+        String imgString = model.performRequest("GET", username, null, null, recipeTitle, "picture");
         
         checkServer(); 
-        
+        // Displays the image and the recipe
+        displayImage(imgString);
         displayRecipe(recipeText);
 
         frameController.getFrame("recipe");
@@ -194,7 +245,6 @@ public class Controller {
             startButton.setStyle(view.getDefaultButtonStyle());
             stopButton.setStyle(view.getDefaultButtonStyle());
         }
-
     }
 
     private void handleMealCancelButton(ActionEvent event) {
@@ -247,9 +297,9 @@ public class Controller {
         response = response.replace("+", "\n");
 
         String dallePrompt = "Generate a real picture of " + recipeTitle;
-        String dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
+        dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
 
-        Image image = new Image(dalleResponse); 
+        Image image = new Image(dalleResponse);
 
         view.getGptFrame().getImageView().setImage(image);
         view.getGptFrame().getRecipeText().setText(response);
@@ -280,7 +330,7 @@ public class Controller {
         displayMealTypeTag(newRecipe, mealType);
         newRecipe.setViewButtonAction(this::handleViewButton);
 
-        fullRecipe += "+" + mealType;
+        fullRecipe += "+" + mealType + "+" + dalleResponse;
         String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
 
         checkServer();
@@ -291,6 +341,8 @@ public class Controller {
         updateRecipeIndices();
         
         model.performRequest("POST", username, null, fullRecipe, null, "");
+        
+
 
         // Redirect back to Home Page
         frameController.getFrame("home");
@@ -551,6 +603,15 @@ public class Controller {
         }
     }
 
+    private void displayImage(String img){
+        try {
+            Image image = new Image(img);
+            view.getRecipeFrame().getRecipeSteps().getImageView().setImage(image);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     // Load Recipes into Home Page once User has signed in
     public void loadRecipes(String recipes) {
         if (recipes != null) {
@@ -597,12 +658,24 @@ public class Controller {
         }
     }
 
-    // public void updateViewButton() {
-    //     for (int i = 0; i < recipeList.getChildren().size(); i++) {
-    //         if (recipeList.getChildren().get(i) instanceof Recipe) {
-    //             Recipe temp = ((Recipe) recipeList.getChildren().get(i));
-    //             temp.setViewButtonAction(this::handleViewButton);
-    //         }
-    //     }
-    // }
+    private void handleLogin(String username, String password) {
+        if(!model.getIsLoggedIn()) {
+            String response = model.performRequest("POST", username, password, null, null, "login");
+            if (response.equals("SUCCESS")) {
+                model.setIsLoggedIn();
+                model.setLogInDetails(username, password);
+                String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
+                clearRecipes();
+                loadRecipes(recipes);
+                frameController.getFrame("home");
+
+                System.out.println("[ Frame changed ]");
+            } else if (response.equals("INVALID CREDENTIALS") || response.equals("USER NOT FOUND")){
+                System.out.println("[ LOGIN RESPONSE ] " + response);
+            } else {
+                view.showAlert("Error", response);
+            }
+        }
+    }
+
 }

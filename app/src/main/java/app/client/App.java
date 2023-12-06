@@ -50,7 +50,11 @@ public class App extends Application {
 
         // Show the app
         primaryStage.show();
-        
+
+        // Check if auto-login succeeded
+        if (model.getIsLoggedIn()) {
+            controller.getFrameController().getFrame("home");
+        }
     }
 
     public static void main(String[] args) {

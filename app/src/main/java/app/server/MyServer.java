@@ -40,6 +40,8 @@ public class MyServer {
         server.createContext("/mealtype", new MealTypeFilterHandler());
         server.createContext("/share", new ShareHandler());
         server.createContext("/mockGPT", new MockGPT());
+        server.createContext("/mockwhisper", new MockWhisper());
+        server.createContext("/picture", new pictureHandler());
 
         server.setExecutor(threadPoolExecutor);
         server.start();
