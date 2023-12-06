@@ -8,13 +8,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -964,7 +961,7 @@ class ShareFrame extends BorderPane{
         footer = new RecordingFooter();
         
         // Set properties for the page
-        this.setPrefSize(370, 120);
+        this.setPrefSize(500, 120);
         shareLink = new TextArea("");
 
         

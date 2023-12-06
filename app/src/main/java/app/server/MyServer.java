@@ -1,6 +1,5 @@
 package app.server;
 
-import com.mongodb.client.internal.MongoBatchCursorAdapter;
 import com.sun.net.httpserver.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
