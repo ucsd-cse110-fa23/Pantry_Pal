@@ -422,7 +422,7 @@ public class Controller {
         response = response.replace("+", "\n");
 
         String dallePrompt = "Generate a real picture of " + recipeTitle;
-        String dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
+        dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
         
         Image image = new Image(dalleResponse); 
 
