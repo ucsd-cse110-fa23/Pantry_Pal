@@ -15,6 +15,9 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import app.Mock.ShareLinkMock;
+import app.client.App;
+import app.client.views.*;
+import app.client.controllers.*;
 import app.client.Model;
 import app.server.ServerChecker;
 import app.server.MyServer;
@@ -31,10 +34,10 @@ import java.io.IOException;
 
 
 class AppTest {
-    // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
     
     private final String MONGOURI =  "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
 
+    // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
     @Test 
     void testGptSameIngredients() throws IOException {
         MyServer.main(null);
@@ -169,7 +172,7 @@ class AppTest {
         Model mealtype = new Model();
         String response = mealtype.performRequest("GET", user, null, null, "dinner", "mealtype");
         // Account with username "testGetMealType" has TWO dinner recipes
-        assertEquals(" Pancake Bake with Maple Syrup Glaze+dinner+Oven-Baked Salmon with Saffron-Rice:\"+dinner", response);
+        assertEquals(" Pancake Bake with Maple Syrup Glaze+dinner_Oven-Baked Salmon with Saffron-Rice:\"+dinner", response);
         MyServer.stop();
     }
 
@@ -477,4 +480,59 @@ class AppTest {
 
 
 
+    @Test
+    void sortAlphabeticallyTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe1 = "B";
+        String recipe2 = "A";
+        String recipe3 = "C";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        String temp = sortModelTest.sortAlphabetically(input);  
+        
+        String sorted = recipe2 + "_" + recipe1 + "_" + recipe3;
+        assertEquals(temp, sorted);
+    }
+
+    @Test
+    void sortRAlphabeticallyTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe1 = "B";
+        String recipe2 = "A";
+        String recipe3 = "C";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        String temp = sortModelTest.sortRAlphabetically(input);  
+        
+        String sorted = recipe3 + "_" + recipe1 + "_" + recipe2;
+        assertEquals(temp, sorted);
+    }
+
+    @Test
+    void sortChronologicalTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe1 = "B";
+        String recipe2 = "A";
+        String recipe3 = "C";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        String temp = sortModelTest.sortChronological(input);  
+        
+        String sorted = recipe1 + "_" + recipe2 + "_" + recipe3;
+        assertEquals(temp, sorted);
+    }
+
+    @Test
+    void sortRChronologicalTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe1 = "B";
+        String recipe2 = "A";
+        String recipe3 = "C";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        String temp = sortModelTest.sortRChronological(input);  
+        
+        String sorted = recipe3 + "_" + recipe2 + "_" + recipe1;
+        assertEquals(temp, sorted);
+    }
 }

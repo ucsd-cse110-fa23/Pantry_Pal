@@ -15,7 +15,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
-
 public class MealTypeFilterHandler implements HttpHandler{
 
     private String URI = MyServer.MONGO_URI;
@@ -78,9 +77,9 @@ public class MealTypeFilterHandler implements HttpHandler{
         if (recipe != null) {
             response = "";
             for(Document a : recipe) {
-                response += "+" + a.getString("title") + "+" + a.getString("mealtype");
+                response += "_" + a.getString("title") + "+" + a.getString("mealtype");
             }
-            // takign out the first + 
+            // takign out the first _ 
           response = response.substring(1);
           System.out.println(response);
         } else {
