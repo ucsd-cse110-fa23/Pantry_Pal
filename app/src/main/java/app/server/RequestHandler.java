@@ -93,7 +93,6 @@ public class RequestHandler implements HttpHandler {
           response = recipe.getString("title");
           response += "+" + recipe.getString("ingredients");
           response += "+" + recipe.getString("instructions");
-          //response += "+" + recipe.getString("mealtype");
           System.out.println(response);
         } else {
           System.out.println("null find");
