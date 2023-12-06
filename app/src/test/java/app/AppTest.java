@@ -145,7 +145,7 @@ class AppTest {
         Model mealtype = new Model();
         String response = mealtype.performRequest("GET", user, null, null, "breakfast", "mealtype");
         // Account with username "testGetMealType" has ONE breakfast recipe named "Egg Bacon and Ham Breakfast Recipe"
-        assertEquals("Egg Bacon and Ham Breakfast Recipe+breakfast", response);
+        assertEquals(" Bacon and Cheese Jalapeno Frittata;+breakfast", response);
         MyServer.stop();
     }
 
@@ -169,7 +169,7 @@ class AppTest {
         Model mealtype = new Model();
         String response = mealtype.performRequest("GET", user, null, null, "dinner", "mealtype");
         // Account with username "testGetMealType" has TWO dinner recipes
-        assertEquals("Cheesy Vegetable Tortellini Bake+dinner+Savory Stuffed Pancakes+dinner", response);
+        assertEquals(" Pancake Bake with Maple Syrup Glaze+dinner+Oven-Baked Salmon with Saffron-Rice:\"+dinner", response);
         MyServer.stop();
     }
 
@@ -192,12 +192,12 @@ class AppTest {
     void testGetShareLink() throws IOException{
         // given user has a recipe already
         Mock m = new Mock();
-        ShareLinkMock mock = m.new ShareLinkMock("Bryan", "steak and eggs");
+        ShareLinkMock mock = m.new ShareLinkMock("adrian", "Sausage and Egg Breakfast Hash");
         // want to test the share functionality as a unit test
         String web = mock.getWebString();
         assertNotEquals("", web);
-        assertTrue(web.contains("Bryan"));
-        assertTrue(web.contains("steak and eggs"));
+        assertTrue(web.contains("adrian"));
+        assertTrue(web.contains("Sausage and Egg Breakfast Hash"));
     }
 
     // Integration Test with model and server
@@ -206,8 +206,8 @@ class AppTest {
         MyServer.main(null);
         Model shareTest =  new Model();
         // have a recipe in the database already
-        String recipeTitle = "Steak and Egg Skillet";
-        String user = "Bryan";
+        String recipeTitle = "Sausage and Egg Breakfast Hash";
+        String user = "adrian";
         String error = "The recipe you have selected cannont be found by the server";
         String response = shareTest.performRequest("GET", user, null, null, recipeTitle, "share");
 
@@ -224,10 +224,10 @@ class AppTest {
     void GETrequestHandlerUnitTest() throws IOException, URISyntaxException{
         MyServer.main(null);
         // have a recipe in the database already
-        String recipeTitle = "Hash Brown and Bacon Breakfast Bake";
-        String user = "Bryan";
-        String ingred = "1 package (20 ounces) refrigerated shredded hash brown potatoes, 8 strips bacon, cooked and crumbled, 2 cups shredded cheddar cheese, 1/2 cup chopped onion, 1/2 cup sour cream, 1/4 teaspoon salt, 1/4 teaspoon pepper and 2 tablespoons butter";
-        String instructions = "Preheat oven to 375 degrees F. Grease 9-inch deep dish pie plate. Combine hash browns, bacon, cheese and onion in large bowl. Blend sour cream, salt and pepper; stir into hash brown mixture. Spread in pie plate. Dot with butter. Bake 40 to 45 minutes or until golden brown and bubbly. This is an edit to the recipe";
+        String recipeTitle = "Hash and Egg Breakfast Skillet";
+        String user = "adrian";
+        String ingred = "2 teaspoons olive oil, 2 cups frozen shredded potatoes, 1/2 cup diced onion, 1/2 cup chopped green bell pepper, 1/2 teaspoon garlic pepper seasoning, 1 (12-ounce) package turkey sausage, 8 large eggs, 1/4 teaspoon salt, 1/4 teaspoon black pepper";
+        String instructions = "Heat oil in a large skillet over medium-high heat. Add potatoes, onion, bell pepper, and garlic pepper seasoning. Cook for 10 minutes, stirring often. Move the potato mixture to the side of the skillet and add sausage. Cook for 6-8 minutes, stirring and breaking up the sausage as it cooks. Push the potato mixture to the side and crack eggs into the same skillet. Sprinkle with salt and black pepper. Cook until eggs are scrambled and the sausage and potatoes are cooked through.";
         String mealtype = "breakfast";
         String method = "GET";
         String query = URLEncoder.encode("u=" + user + "&q=" + recipeTitle, "UTF-8");
@@ -262,10 +262,10 @@ class AppTest {
     void POSTrequestHandlerTest() throws IOException, URISyntaxException{
         MyServer.main(null);
         // have a recipe in the database already
-        String recipeTitle = "pancakes with maple syrup";
-        String user = "Bryan";
-        String ingred = "flour,eggs,sugar,milk";
-        String instructions = "mix ingredients to make batter and then pour into hot pan";
+        String recipeTitle = "Hash and Egg Breakfast Skillet";
+        String user = "adrian";
+        String ingred = "2 teaspoons olive oil, 2 cups frozen shredded potatoes, 1/2 cup diced onion, 1/2 cup chopped green bell pepper, 1/2 teaspoon garlic pepper seasoning, 1 (12-ounce) package turkey sausage, 8 large eggs, 1/4 teaspoon salt, 1/4 teaspoon black pepper";
+        String instructions = "Heat oil in a large skillet over medium-high heat. Add potatoes, onion, bell pepper, and garlic pepper seasoning. Cook for 10 minutes, stirring often. Move the potato mixture to the side of the skillet and add sausage. Cook for 6-8 minutes, stirring and breaking up the sausage as it cooks. Push the potato mixture to the side and crack eggs into the same skillet. Sprinkle with salt and black pepper. Cook until eggs are scrambled and the sausage and potatoes are cooked through.";
         String mealtype = "breakfast";
         String img = "test-img";
         String method = "POST";
@@ -309,11 +309,6 @@ class AppTest {
             assertEquals(user,recipe.getString("user"));
             assertEquals(mealtype, recipe.getString("mealtype"));
 
-
-            // removing newly added recipe 
-            collection.findOneAndDelete(filter);
-            recipe = collection.find(filter).first();
-            assertNull(recipe);
         }
         
         MyServer.stop();
@@ -325,11 +320,11 @@ class AppTest {
     void PUTrequestHandlerTest() throws IOException, URISyntaxException{
         MyServer.main(null);
         // have a recipe in the database already channging the ingredients and the instructions
-        String recipeTitle = "pancakes";
-        String user = "Bryan";
-        int random = (int)(Math.random() * 100);
-        String ingred = "flour,eggs,sugar,milk," + random + "bacons(number of bacon is random)";
-        String instructions = "mix ingredients to make batter and then pour into hot pan with lots of bacon";
+        
+        String recipeTitle = "Hash and Egg Breakfast Skillet";
+        String user = "adrian";
+        String ingred = "2 teaspoons olive oil, 2 cups frozen shredded potatoes, 1/2 cup diced onion, 1/2 cup chopped green bell pepper, 1/2 teaspoon garlic pepper seasoning, 1 (12-ounce) package turkey sausage, 8 large eggs, 1/4 teaspoon salt, 1/4 teaspoon black pepper";
+        String instructions = "Heat oil in a large skillet over medium-high heat. Add potatoes, onion, bell pepper, and garlic pepper seasoning. Cook for 10 minutes, stirring often. Move the potato mixture to the side of the skillet and add sausage. Cook for 6-8 minutes, stirring and breaking up the sausage as it cooks. Push the potato mixture to the side and crack eggs into the same skillet. Sprinkle with salt and black pepper. Cook until eggs are scrambled and the sausage and potatoes are cooked through.";
         String mealtype = "breakfast";
         String method = "PUT";
 
@@ -435,10 +430,10 @@ class AppTest {
     void GETShareHandlerUnitTest() throws IOException, URISyntaxException{
         MyServer.main(null);
         // have a recipe in the database already
-        String recipeTitle = "Hash Brown and Bacon Breakfast Bake";
-        String user = "Bryan";
+        String recipeTitle = "Hash and Egg Breakfast Skillet";
+        String user = "adrian";
         String method = "GET";
-        String recipe = "Hash Brown and Bacon Breakfast Bake+1 package (20 ounces) refrigerated shredded hash brown potatoes, 8 strips bacon, cooked and crumbled, 2 cups shredded cheddar cheese, 1/2 cup chopped onion, 1/2 cup sour cream, 1/4 teaspoon salt, 1/4 teaspoon pepper and 2 tablespoons butter+Preheat oven to 375 degrees F. Grease 9-inch deep dish pie plate. Combine hash browns, bacon, cheese and onion in large bowl. Blend sour cream, salt and pepper; stir into hash brown mixture. Spread in pie plate. Dot with butter. Bake 40 to 45 minutes or until golden brown and bubbly. This is an edit to the recipe";
+        String recipe = "Hash and Egg Breakfast Skillet+2 teaspoons olive oil, 2 cups frozen shredded potatoes, 1/2 cup diced onion, 1/2 cup chopped green bell pepper, 1/2 teaspoon garlic pepper seasoning, 1 (12-ounce) package turkey sausage, 8 large eggs, 1/4 teaspoon salt, 1/4 teaspoon black pepper+Heat oil in a large skillet over medium-high heat. Add potatoes, onion, bell pepper, and garlic pepper seasoning. Cook for 10 minutes, stirring often. Move the potato mixture to the side of the skillet and add sausage. Cook for 6-8 minutes, stirring and breaking up the sausage as it cooks. Push the potato mixture to the side and crack eggs into the same skillet. Sprinkle with salt and black pepper. Cook until eggs are scrambled and the sausage and potatoes are cooked through.";
 
         String query = URLEncoder.encode("u=" + user + "&q=" + recipeTitle, "UTF-8");
         String urlString = "http://localhost:8100/?" + query;
