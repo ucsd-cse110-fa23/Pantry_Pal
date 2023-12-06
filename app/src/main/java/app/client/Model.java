@@ -170,7 +170,7 @@ public class Model {
                         reqBody += "&" + password;
                     }
                     if (data != null) {
-                        reqBody += "&" + data;
+                        reqBody += "+" + data;
                     }
 
                     OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
@@ -192,11 +192,6 @@ public class Model {
             String response = in.readLine();
             System.out.println("[ MODEL RESPONSE ]: " + response);
 
-            int responseCode = ((HttpURLConnection) conn).getResponseCode();
-            System.out.println("Response code: [" + responseCode + "]");
-
-            errorMessage = errorHandler(responseCode);
-            System.out.println("error message: " + errorMessage);
             in.close();
             return response;
         } catch (Exception ex) {

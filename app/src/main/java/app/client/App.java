@@ -5,7 +5,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
     
 public class App extends Application {
-    Scene loginScene, homeScene, mealScene, ingredScene, gptScene, recipeScene, filterScene;
+    Scene homeScene, mealScene, ingredScene, gptScene, recipeScene, loginScene, filterScene, shareScene;
     
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -25,6 +25,9 @@ public class App extends Application {
         gptScene = new Scene(view.getGptFrame(), 700, 500);
         recipeScene = new Scene(view.getRecipeFrame(), 700, 500);
         filterScene = new Scene(view.getFilterFrame(), 700, 500);
+        
+        shareScene = new Scene(view.getShareFrame());
+
 
         // Add each scene to the frameController to switch scenes on button click
         controller.getFrameController().addFrame("login", loginScene);
@@ -33,6 +36,8 @@ public class App extends Application {
         controller.getFrameController().addFrame("ingredients", ingredScene);
         controller.getFrameController().addFrame("gpt", gptScene);
         controller.getFrameController().addFrame("recipe", recipeScene);
+
+        controller.getFrameController().addFrame("share",shareScene);
         controller.getFrameController().addFrame("filter", filterScene);
         
         // Create scene of mentioned size/ with the border pane
