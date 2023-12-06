@@ -12,6 +12,8 @@ public class RecordingFooter extends HBox{
     String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 12 monaco;";
 
     public RecordingFooter() {
+
+        // Sets the size of the Recording Footer
         this.setPrefSize(500, 60);
         this.setStyle("-fx-background-color: #F0F8FF;");
         this.setSpacing(15);
@@ -21,8 +23,10 @@ public class RecordingFooter extends HBox{
         
         this.getChildren().add(cancelButton); // adding button to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
+
     }
 
+    // Sets the method to get the cancelButton for RecordingFooter
     public Button getCancelButton() { return cancelButton; }
 
 }

@@ -11,11 +11,14 @@ public class Header extends HBox {
 
     public Header(String text) {
 
+        // Sets the size of the Header
         this.setPrefSize(500, 70); // Size of the header
         this.setStyle("-fx-background-color: #9EB8D9;");
 
+        // Initializes the text that is displayed in the header
         titleText = new Text(text); // Text of the Header
         titleText.setStyle("-fx-font: 24 moncao; -fx-text-fill: #FFFFFF;");
+        // Adds the text to the Header
         this.getChildren().add(titleText);
         this.setAlignment(Pos.CENTER); // Align the text to the Center
 

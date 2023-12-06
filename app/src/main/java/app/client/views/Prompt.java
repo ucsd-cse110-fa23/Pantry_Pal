@@ -22,6 +22,8 @@ public class Prompt extends VBox{
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
 
     public Prompt(String text) {
+
+        // Initializes the spacing and size of the label
         this.setSpacing(50);
         this.text = new Label();
         this.text.setText(text);
@@ -41,12 +43,15 @@ public class Prompt extends VBox{
         
         HBox.setMargin(startButton, new Insets(5));
 
+        // Adds the buttons to the container and adds everything to the prompt
         buttonContainer.setAlignment(Pos.CENTER);
         buttonContainer.getChildren().addAll(startButton, stopButton);
         this.getChildren().addAll(this.text, buttonContainer, recordingLabel);
         this.setAlignment(Pos.CENTER);
+        
     }
 
+    // Sets the get methods that allow access to the contents of Prompt
     public Button getStartButton() { return startButton; }
 
     public Button getStopButton() { return stopButton; }

@@ -28,7 +28,13 @@ public class Controller {
         recipeList = view.getHomeFrame().getRecipeList();
 
         // LoginFrame Event Listeners
-        view.getLoginFrame().setLoginButtonAction(this::handleLoginButton);
+        view.getLoginFrame().setLoginButtonAction(event -> {
+            try {
+                handleLoginButton(event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         view.getLoginFrame().setCreateAccountButtonAction(event -> {
             try {
                 handleCreateAccountButton(event);
@@ -103,22 +109,18 @@ public class Controller {
 
     //================ LoginFrame Event Handlers ====================================================
 
-    private void handleLoginButton(ActionEvent event) {
+    private void handleLoginButton(ActionEvent event) throws IOException {
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
 
-        if (username.equals("") || password.equals("")) {
-            view.showAlert("Input Error", "Required field(s) missing!");
-        } else {
-            String response = model.performRequest("POST", username, password, null, null, "login");
-            
-            if (response.equals("SUCCESS")) {
-            String recipes = model.performRequest("GET", username, null, null, username, "load-recipe");
-            loadRecipes(recipes);
-            frameController.getFrame("home");
-            System.out.println("|||Frame changed|||");
+        if(!model.getIsLoggedIn()) {
+            if (username.equals("") || password.equals("")) {
+                view.showAlert("Input Error", "Required field(s) missing!");
             } else {
-                System.out.println("[LOGIN RESPONSE] " + response);
+                handleLogin(username, password);
+                if(model.getAutoLoginStatus() && model.getIsLoggedIn()) {
+                    model.setAutoLoginDetails(username, password);
+                }
             }
         }
     }
