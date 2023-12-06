@@ -52,12 +52,12 @@ class AppTest {
 
         // API call should have successfully been made and returned thorugh model with the mealType and ingredients
         assertFalse(response.equals(""));
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     @Test
     void testGptBddRefresh() throws IOException {
-        ////MyServer.main(null);
+        MyServer.main(null);
         // BDD TEST
         String user = "userBDD"; 
 
@@ -73,65 +73,65 @@ class AppTest {
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
         String response = refreshTest.performRequest("POST", user, null, prompt, null, "mockGPT");
         assertNotEquals(response, generatedText);
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     // Tests successful sign up
     @Test
     void testValidSignup() throws IOException {
-        ////MyServer.main(null);
+        MyServer.main(null);
         Model model = new Model();
         String newUser = Long.toHexString(System.currentTimeMillis());
         String password = Long.toHexString(System.currentTimeMillis() + 3);
         String response = model.performRequest("POST", newUser, password, null, null, "signup");
         assertTrue(response.equals("NEW USER CREATED"));
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     // Tests signing up on a name thats taken already 
     @Test
     void testSignupUsernameTaken() throws IOException { 
-        ////MyServer.main(null);
+        MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "signup");
         assertEquals("USERNAME TAKEN", response);
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     // Tests a valid login
     @Test
     void testValidLoginValid() throws IOException { 
-        ////MyServer.main(null);
+        MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "login");
         assertEquals("SUCCESS", response);
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     // Tests a invalid login password
     @Test
     void testInvalidLoginCredentials() throws IOException { 
-        ////MyServer.main(null);
+        MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "Bob", "wrongPassword", null, null, "login");
         assertEquals("INCORRECT CREDENTIALS", response);
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     // Tests a username that doesn't exist for login
     @Test
     void testLoginDoesntExist() throws IOException { 
-        ////MyServer.main(null);
+        MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "fakeName", "password12", null, null, "login");
         assertEquals("USER NOT FOUND", response);
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     // Test /mealtype route to filter breakfast recipes belonging to "testGetMealType" account
     @Test
     void dalleLinkGenerationTest() throws IOException{
-        ////MyServer.main(null);
+        MyServer.main(null);
         Model dalleTest =  new Model();
         String recipeTitle = "Bacon Eggs and Ham";
 
@@ -140,43 +140,43 @@ class AppTest {
         String response = dalleTest.performRequest("POST", null, null, recipeTitle, null, "mockDalle");
         
         assertEquals(url, response);
-        //MyServer.stop();
+        MyServer.stop();
 
     }
 
     @Test
     void testGetMealType() throws IOException {
-        ////MyServer.main(null);
+        MyServer.main(null);
         String user = "testGetMealType";
         Model mealtype = new Model();
         String response = mealtype.performRequest("GET", user, null, null, "breakfast", "mealtype");
         // Account with username "testGetMealType" has ONE breakfast recipe named "Egg Bacon and Ham Breakfast Recipe"
         assertEquals(" Bacon and Cheese Jalapeno Frittata;+breakfast", response);
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     // Test /mealtype route to filter lunch recipes that have not been saved
     @Test
     void testGetNoLunchRecipe() throws IOException {
-        ////MyServer.main(null);
+        MyServer.main(null);
         String user = "testGetMealType";
         Model mealtype = new Model();
         String response = mealtype.performRequest("GET", user, null, null, "lunch", "mealtype");
         // Account with username "testGetMealType" has NO lunch recipes
         assertEquals(null, response);
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     // Test /mealtype route to filter the two dinner recipes belonging to "testGetMealType" account
     @Test
     void testGetMultipleDinnerRecipes() throws IOException {
-        ////MyServer.main(null);
+        MyServer.main(null);
         String user = "testGetMealType";
         Model mealtype = new Model();
         String response = mealtype.performRequest("GET", user, null, null, "dinner", "mealtype");
         // Account with username "testGetMealType" has TWO dinner recipes
         assertEquals(" Pancake Bake with Maple Syrup Glaze+dinner_Oven-Baked Salmon with Saffron-Rice:\"+dinner", response);
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     @Test
@@ -187,10 +187,10 @@ class AppTest {
     
     @Test
     void testServerRunning() throws IOException{
-        ////MyServer.main(null);
+        MyServer.main(null);
         boolean status = ServerChecker.isServerRunning("localhost", 8100);
         assertEquals(true, status);
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     // UNIT TEST
@@ -209,7 +209,7 @@ class AppTest {
     // Integration Test with model and server
     @Test 
     void shareIntegrationTest() throws IOException{
-        ////MyServer.main(null);
+        MyServer.main(null);
         Model shareTest =  new Model();
         // have a recipe in the database already
         String recipeTitle = "Sausage and Egg Breakfast Hash";
@@ -220,7 +220,7 @@ class AppTest {
         assertTrue(response.contains(recipeTitle));
         assertFalse(response.contains(error));
         
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     // just testing server request handler method,  GET METHOD
@@ -228,7 +228,7 @@ class AppTest {
     // UNIT TEST
     @Test
     void GETrequestHandlerUnitTest() throws IOException, URISyntaxException{
-        ////MyServer.main(null);
+        MyServer.main(null);
         // have a recipe in the database already
         String recipeTitle = "Hash and Egg Breakfast Skillet";
         String user = "adrian";
@@ -252,7 +252,7 @@ class AppTest {
         assertTrue(response.contains(instructions));
 
         
-        //MyServer.stop();
+        MyServer.stop();
     }
 
 
@@ -266,7 +266,7 @@ class AppTest {
      */
     @Test
     void POSTrequestHandlerTest() throws IOException, URISyntaxException{
-        ////MyServer.main(null);
+        MyServer.main(null);
         // have a recipe in the database already
         String recipeTitle = "Hash and Egg Breakfast Skillet";
         String user = "adrian";
@@ -317,14 +317,14 @@ class AppTest {
 
         }
         
-        //MyServer.stop();
+        MyServer.stop();
     }
 
 
     
     @Test
     void PUTrequestHandlerTest() throws IOException, URISyntaxException{
-        ////MyServer.main(null);
+        MyServer.main(null);
         // have a recipe in the database already channging the ingredients and the instructions
         
         String recipeTitle = "Hash and Egg Breakfast Skillet";
@@ -373,12 +373,12 @@ class AppTest {
 
         }
         
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     @Test
     void DELETErequestHandlerTest() throws IOException, URISyntaxException{
-        ////MyServer.main(null);
+        MyServer.main(null);
 
         // setting up a fake recipe to test the DELETE endpoint for requesthandler route
         String t = "testTitle";
@@ -426,7 +426,7 @@ class AppTest {
             assertNull(recipe);
         }
 
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     // just testing Share request handler method,  GET METHOD
@@ -434,7 +434,7 @@ class AppTest {
     // UNIT TEST
     @Test
     void GETShareHandlerUnitTest() throws IOException, URISyntaxException{
-        ////MyServer.main(null);
+        MyServer.main(null);
         // have a recipe in the database already
         String recipeTitle = "Hash and Egg Breakfast Skillet";
         String user = "adrian";
@@ -453,7 +453,7 @@ class AppTest {
 
         assertEquals(response, recipe);
         
-        //MyServer.stop();
+        MyServer.stop();
     }
 
     // UNIT TEST
@@ -465,7 +465,7 @@ class AppTest {
      */
     @Test
     void WhisperPromptTest() throws IOException, URISyntaxException{
-        //MyServer.main(null);
+        MyServer.main(null);
         String mealType = "lunch";
         String ingredients = "Bacon, Eggs and ham";
         String prompt = "Make me a " + mealType + " recipe with " + ingredients;
@@ -476,7 +476,7 @@ class AppTest {
         System.out.println(response);
 
         assertEquals(response, prompt);
-        ////MyServer.stop();
+        MyServer.stop();
     }
 
 
