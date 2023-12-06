@@ -117,6 +117,9 @@ public class ChatGPTHandler implements HttpHandler {
         title = title.replace("\n", "");
         ing = ing.replace("\n","");
         ins = ins.replace("\n", "");
+        title = title.trim();
+        ing = ing.trim();
+        ins = ins.trim();
 
         System.out.println("title:" + title);
         System.out.println("ingredients" + ing);

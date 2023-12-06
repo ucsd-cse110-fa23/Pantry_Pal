@@ -65,7 +65,7 @@ public class RequestHandler implements HttpHandler {
   /**
    * need to change to get for the correct user
    * 
-   * @return title+ingredients+instructions+mealtype
+   * @return title+ingredients+instructions
    * 
    */
   private String handleGet(HttpExchange httpExchange) throws IOException {
