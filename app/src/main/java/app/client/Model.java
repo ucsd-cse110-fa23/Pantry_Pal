@@ -27,6 +27,7 @@ public class Model {
     private File audioFile;
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
+    String errorMessage;
 
     public Model() {
         audioFile = new File("recording.wav");
@@ -67,24 +68,33 @@ public class Model {
 
             // Write any data arguments to OS if they are passed in
             if (method.equals("POST") || method.equals("PUT")) {
-                if (username != null || password != null) {    
-                    OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+                if (username != null) {  
+                    String reqBody = username;
+                    if (password != null) {
+                        reqBody += "&" + password;
+                    }
                     if (data != null) {
-                        out.write(URLEncoder.encode((username + "&" + password + "&" + data), "UTF-8"));
-                    } else {
-                        // No data, just user and pass for login/signup
-                        out.write(URLEncoder.encode((username + "&" + password), "UTF-8"));
+                        reqBody += "+" + data;
                     }
 
+                    OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+                    out.write(URLEncoder.encode(reqBody, "UTF-8"));
+                    out.flush();
+                    out.close();
+                } else if (data != null) {
+                    String reqBody = data;
+                    OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+                    out.write(URLEncoder.encode(reqBody, "UTF-8"));
                     out.flush();
                     out.close();
                 }
+                
             }
 
             // Read OS once handlers have written response
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String response = in.readLine();
-            System.out.println("[[MODEL RESPONSE]]: " + response);
+            System.out.println("[ MODEL RESPONSE ]: " + response);
 
             in.close();
             return response;
@@ -96,7 +106,7 @@ public class Model {
     }
 
     // Given transcribed Whisper string, filter for meal type
-    public String mealType(String res) {
+    public String transcribeMealType(String res) {
         String mealType = res.toLowerCase();
 
         if (mealType.contains("breakfast")) { return "breakfast"; }
@@ -206,14 +216,29 @@ public class Model {
     }
 
     public String sortAlphabetically(String recipes) {
-        System.out.println();
-        System.out.println("RECIPES: " + recipes);
-        System.out.println();
         if (recipes != null) {
             String[] recipesArr = {recipes};
+            if (recipes.contains("_")) {
+                recipesArr = recipes.split("_");
+                Arrays.sort(recipesArr);
+            }
+
+            String fin = "";
+            for(int i = recipesArr.length-1; i >= 0; i--){
+                fin = fin + "_" + recipesArr[i];
+            }
+            fin = fin.substring(1);
+            return fin;
+        }
+        return null;
+    }
+
+    public String sortRAlphabetically(String recipes) {
+        if (recipes != null) {
+            String[] recipesArr = { recipes };
             String[] reverseRecipesArr = recipesArr;
-            if (recipes.contains("-")) {
-                recipesArr = recipes.split("-");
+            if (recipes.contains("_")) {
+                recipesArr = recipes.split("_");
                 reverseRecipesArr = recipesArr;
                 Arrays.sort(reverseRecipesArr);
             }
@@ -228,51 +253,33 @@ public class Model {
         return null;
     }
 
-    public String sortRAlphabetically(String recipes) {
+    public String sortChronological(String recipes) {
         if (recipes != null) {
             String[] recipesArr = {recipes};
-            if (recipes.contains("-")) {
-                recipesArr = recipes.split("-");
-                Arrays.sort(recipesArr);
+            if (recipes.contains("_")) {
+                recipesArr = recipes.split("_");
             }
 
             String fin = "";
-            for(int i = recipesArr.length-1; i >= 0; i--){
+            for(int i = 0; i < recipesArr.length; i++){
                 fin = fin + "_" + recipesArr[i];
             }
             fin = fin.substring(1);
             return fin;
         }
+
         return null;
     }
 
     public String sortRChronological(String recipes) {
         if (recipes != null) {
             String[] recipesArr = {recipes};
-            if (recipes.contains("-")) {
-                recipesArr = recipes.split("-");
+            if (recipes.contains("_")) {
+                recipesArr = recipes.split("_");
             }
 
             String fin = "";
             for(int i = recipesArr.length - 1; i >= 0; i--){
-                fin = fin + "_" + recipesArr[i];
-            }
-            fin = fin.substring(1);
-            return fin;
-        }
-
-        return null;
-    }
-
-    public String sortChronological(String recipes) {
-        if (recipes != null) {
-            String[] recipesArr = {recipes};
-            if (recipes.contains("-")) {
-                recipesArr = recipes.split("-");
-            }
-
-            String fin = "";
-            for(int i = 0; i < recipesArr.length; i++){
                 fin = fin + "_" + recipesArr[i];
             }
             fin = fin.substring(1);

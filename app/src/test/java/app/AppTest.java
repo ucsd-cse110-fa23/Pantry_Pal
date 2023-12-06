@@ -5,30 +5,46 @@ package app;
 
 import org.junit.jupiter.api.Test;
 
+import com.mongodb.internal.connection.Server;
+
+import app.client.App;
+import app.client.views.*;
+import app.client.controllers.*;
 import app.client.Model;
+import app.server.ChatGPTHandler;
+import app.server.ServerChecker;
 import app.server.MyServer;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+import java.net.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 
+
 class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
+    
     @Test 
-    void gptSameIngredientsTest() throws IOException {
+    void testGptSameIngredients() throws IOException {
+        MyServer.main(null);
         String mealType = "dinner";
         String ingredients = "steak, potatoes, butter";
         Model model = new Model();
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
+        String response = model.performRequest("POST", null, null, prompt, null, "mockGPT");
 
         // API call should have successfully been made and returned thorugh model with the mealType and ingredients
         assertFalse(response.equals(""));
+        MyServer.stop();
     }
 
     @Test
-    void gptBddRefreshTest() throws IOException {
+    void testGptBddRefresh() throws IOException {
+        MyServer.main(null);
         // BDD TEST
+        String user = "userBDD"; 
 
         // Scenario: I don't like the recipe generated
         String generatedText = "Scrambled eggs with bacon and toast, Step 1:... Step 2:...";
@@ -40,43 +56,57 @@ class AppTest {
         // Then: when I press the refresh button it will generate another recipe like a bacon egg sandwich
         Model refreshTest = new Model();
         String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
-        String response = refreshTest.performRequest("POST", null, null, prompt, null, "chatgpt");
+        String response = refreshTest.performRequest("POST", user, null, prompt, null, "mockGPT");
         assertNotEquals(response, generatedText);
+        MyServer.stop();
+    }
+
+    // Tests successful sign up
+    @Test
+    void testValidSignup() throws IOException {
+        MyServer.main(null);
+        Model model = new Model();
+        String newUser = Long.toHexString(System.currentTimeMillis());
+        String password = Long.toHexString(System.currentTimeMillis() + 3);
+        String response = model.performRequest("POST", newUser, password, null, null, "signup");
+        assertTrue(response.equals("NEW USER CREATED"));
+        MyServer.stop();
     }
 
     // Tests signing up on a name thats taken already 
     @Test
-    void signupTakenTest() throws IOException { 
+    void testSignupUsernameTaken() throws IOException { 
         MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "signup");
-        assertEquals("NAME TAKEN", response);
-        assertNotEquals("SUCCESS", response);
+        assertEquals("USERNAME TAKEN", response);
+        MyServer.stop();
     }
 
     // Tests a valid login
     @Test
-    void loginValidTest() throws IOException { 
-        //MyServer.main(null);
+    void testValidLoginValid() throws IOException { 
+        MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "Bob", "password12", null, null, "login");
         assertEquals("SUCCESS", response);
+        MyServer.stop();
     }
 
     // Tests a invalid login password
     @Test
-    void loginInvalidTest() throws IOException { 
-        //MyServer.main(null);
+    void testInvalidLoginCredentials() throws IOException { 
+        MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "Bob", "wrongPassword", null, null, "login");
-        assertEquals("PASSWORD FAILED", response);
-        assertNotEquals("SUCCESS", response);
+        assertEquals("INCORRECT CREDENTIALS", response);
+        MyServer.stop();
     }
 
     // Tests a username that doesn't exist for login
     @Test
-    void loginDoesntExistTest() throws IOException { 
-        //MyServer.main(null);
+    void testLoginDoesntExist() throws IOException { 
+        MyServer.main(null);
         Model loginTest = new Model();
         String response = loginTest.performRequest("POST", "fakeName", "password12", null, null, "login");
         assertEquals("NAME FAILED", response);

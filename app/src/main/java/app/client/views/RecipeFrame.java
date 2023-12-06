@@ -1,33 +1,20 @@
 package app.client.views;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import java.io.*;
-
-
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
+// Saved Full Recipe Window
 public class RecipeFrame extends BorderPane {
 
     private Header header;
     private RecipeFooter footer;
     private RecipeSteps recipeSteps;
-    private Button cancelButton, saveButton, deleteButton;
+    private Button cancelButton, saveButton, deleteButton, shareButton;
 
-    public RecipeFrame() {
+    RecipeFrame() {
         header = new Header("Recipe");
         recipeSteps = new RecipeSteps();
         footer = new RecipeFooter();
@@ -35,6 +22,7 @@ public class RecipeFrame extends BorderPane {
         cancelButton = footer.getCancelButton();
         saveButton = footer.getSaveButton();
         deleteButton = footer.getDeleteButton();
+        shareButton = footer.getShareButton();
 
         ScrollPane s = new ScrollPane(recipeSteps);
         s.setFitToHeight(true);
@@ -46,33 +34,33 @@ public class RecipeFrame extends BorderPane {
         this.setBottom(footer);
     }
 
-    public RecipeSteps getRecipeSteps() {
-        return recipeSteps;
-    }
+    public RecipeSteps getRecipeSteps() { return recipeSteps; }
 
-    public Button getCancelButton() {
-        return cancelButton;
-    }
+    public Button getCancelButton() { return cancelButton; }
 
-    public Button getSaveButton() {
-        return saveButton;
-    }
+    public Button getSaveButton() { return saveButton; }
 
-    public Button getDeleteButton() {
-        return deleteButton;
-    }
+    public Button getDeleteButton() { return deleteButton; }
+
+    public Button getShareButton() { return shareButton; }
 
     // Cancel Button goes to Home Page
     public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
         cancelButton.setOnAction(eventHandler);
     }
 
+    // Save updates then redirect to Home Page
     public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) {
         saveButton.setOnAction(eventHandler);
     }
 
+    // Delete Recipe from database and app then redirect to Home Page
     public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {
         deleteButton.setOnAction(eventHandler);
+    }
+
+    public void setShareButtonAction(EventHandler<ActionEvent> eventHandler){
+        shareButton.setOnAction(eventHandler);
     }
 
 }

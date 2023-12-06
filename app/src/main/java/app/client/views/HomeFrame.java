@@ -1,38 +1,24 @@
 package app.client.views;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import java.io.*;
-
-
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
+// Home Page Window after loggin in
 public class HomeFrame extends BorderPane {
 
     private Header header;
-    private Footer footer;
+    private HomeFooter footer;
     private RecipeList recipeList;
-    private Button newRecipeButton;
-    private Button sortButton;
+    private Button newRecipeButton, filterMealTypeButton, sortButton, signOutButton;
 
     public HomeFrame() {
         // Initialize the Header Object
         header = new Header("PantryPal");
         // Initialize the Footer Object
-        footer = new Footer();
+        footer = new HomeFooter();
 
         // Create a RecipeList Object to hold the recipes
         recipeList = new RecipeList();
@@ -50,7 +36,10 @@ public class HomeFrame extends BorderPane {
 
         // Initialise Button Variables through the getters in Footer
         newRecipeButton = footer.getNewRecipeButton();
+        filterMealTypeButton = footer.getFilterMealTypeButton();
         sortButton = footer.getSortButton();
+        signOutButton = footer.getSignOutButton();
+
     }
 
     public RecipeList getRecipeList() {
@@ -69,8 +58,16 @@ public class HomeFrame extends BorderPane {
         newRecipeButton.setOnAction(eventHandler);
     }
 
+    public void setFilterMealTypeButtonAction(EventHandler<ActionEvent> eventHandler) {
+        filterMealTypeButton.setOnAction(eventHandler);
+    }
+
     public void setSortButtonAction(EventHandler<ActionEvent> eventHandler) {
         sortButton.setOnAction(eventHandler);
+    }
+
+    public void setSignOutButtonAction(EventHandler<ActionEvent> eventHandler) {
+        signOutButton.setOnAction(eventHandler);
     }
 
 }

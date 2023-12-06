@@ -4,23 +4,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import java.io.*;
 
 
-
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-
-public class Sort extends VBox{
+public class SortContent extends VBox{
 
     private Label text;
     private Button alphaButton, ralphaButton, chronoButton, rchronoButton;
@@ -33,7 +21,7 @@ public class Sort extends VBox{
     // Set a default style for buttons and fields - background color, font size, italics
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
 
-    public Sort(String text) {
+    public SortContent(String text) {
         this.setSpacing(50);
         this.text = new Label();
         this.text.setText(text);

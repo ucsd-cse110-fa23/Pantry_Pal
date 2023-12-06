@@ -2,17 +2,8 @@ package app.client.controllers;
 
 import java.util.HashMap;
 import java.util.Map;
-import javafx.event.ActionEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Arrays;
-
-import app.client.*;
-import app.client.views.*;
 
 public class FrameController {
     private Map<String, Scene> frameMap;

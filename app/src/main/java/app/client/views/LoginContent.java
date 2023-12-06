@@ -1,70 +1,56 @@
 package app.client.views;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import java.io.*;
 
-
-
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-
+// Username and Passsword Fields for Login Page
 public class LoginContent extends VBox {
 
     private TextField username;
     private PasswordField password;
-    private Label userLabel, passLabel;
     private Button createAccountButton, loginButton;
 
-    public LoginContent() {
+    LoginContent() {
 
         this.setPrefWidth(10);
+        this.setAlignment(Pos.CENTER);
+        this.setSpacing(20);
 
         username = new TextField();
         password = new PasswordField();
+    
+        username.setMaxSize(400, 60);
+        username.setMinSize(200, 40);
+        password.setMaxSize(400, 60);
+        password.setMinSize(200, 40);
 
-        userLabel = new Label("Username");
-        userLabel.setTextAlignment(TextAlignment.CENTER);
+        username.setPromptText("Username");
+        password.setPromptText("Password");
 
-        passLabel = new Label("Password");
-        passLabel.setTextAlignment(TextAlignment.CENTER);
+        username.setStyle("-fx-font: 18 monaco;");
+        password.setStyle("-fx-font: 18 monaco;");
 
         createAccountButton = new Button("Create Account");
         loginButton = new Button("Login");
 
-        HBox buttonContainer = new HBox();
+        HBox buttonContainer = new HBox(15);
         buttonContainer.setAlignment(Pos.CENTER);
         buttonContainer.getChildren().addAll(loginButton, createAccountButton);
 
-        this.getChildren().addAll(userLabel, username, passLabel,password, buttonContainer);
-
+        this.getChildren().addAll(username, password, buttonContainer);
+        
     }
     
-    public TextField getUsername() {
-        return username;
-    }
+    public TextField getUsername() { return username; }
 
-    public PasswordField getPassword() {
-        return password;
-    }
+    public PasswordField getPassword() { return password; }
 
-    public Button getLoginButton() {
-        return loginButton;
-    }
+    public Button getLoginButton() { return loginButton; }
 
-    public Button getCreateAccountButton() {
-        return createAccountButton;
-    }
+    public Button getCreateAccountButton() { return createAccountButton; }
 
 }

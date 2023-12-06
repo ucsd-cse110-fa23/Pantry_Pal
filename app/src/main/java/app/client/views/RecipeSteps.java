@@ -1,25 +1,10 @@
 package app.client.views;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import java.io.*;
 
-
-
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-
+// Content of full recipe description
 public class RecipeSteps extends VBox {
 
     private Label recipeName;
@@ -39,12 +24,8 @@ public class RecipeSteps extends VBox {
         // this.getChildren().add(recipeSteps);
     }
 
-    public Label getRecipeName() {
-        return recipeName;
-    }
+    public Label getRecipeName() { return recipeName; }
 
-    public TextArea getTextArea() {
-        return recipeSteps;
-    }
+    public TextArea getTextArea() { return recipeSteps; }
 
 }

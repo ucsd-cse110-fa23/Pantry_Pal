@@ -1,31 +1,15 @@
 package app.client.views;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import java.io.*;
 
+// Footer for Home Page
+public class HomeFooter extends HBox {
 
+    private Button newRecipeButton, filterMealTypeButton, sortButton, signOutButton;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-
-public class Footer extends HBox {
-
-    private Button newRecipeButton;
-    private Button sortButton;
-
-    public Footer() {
+    public HomeFooter() {
         this.setPrefSize(500, 60);
         this.setStyle("-fx-background-color: #F0F8FF;");
         this.setSpacing(15);
@@ -36,19 +20,26 @@ public class Footer extends HBox {
         newRecipeButton = new Button("New Recipe"); // text displayed on add button
         newRecipeButton.setStyle(defaultButtonStyle); // styling the button
 
+        filterMealTypeButton = new Button("Filter Meal");
+        filterMealTypeButton.setStyle(defaultButtonStyle);
+
         sortButton = new Button("Sort Recipes"); // text displayed on add button
         sortButton.setStyle(defaultButtonStyle); // styling the button
+
+        signOutButton = new Button("Sign Out");
+        signOutButton.setStyle(defaultButtonStyle);
+
         
-        this.getChildren().addAll(newRecipeButton, sortButton); // adding button to footer
+        this.getChildren().addAll(newRecipeButton, filterMealTypeButton, sortButton, signOutButton); // adding button to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
     }
 
-    public Button getNewRecipeButton() {
-        return newRecipeButton;
-    }
+    public Button getNewRecipeButton() { return newRecipeButton; }
 
-    public Button getSortButton() {
-        return sortButton;
-    }
+    public Button getFilterMealTypeButton() { return filterMealTypeButton; }
+
+    public Button getSortButton() { return sortButton; }
+
+    public Button getSignOutButton() { return signOutButton; }
 
 }

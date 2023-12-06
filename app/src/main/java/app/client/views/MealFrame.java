@@ -1,37 +1,25 @@
 package app.client.views;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import java.io.*;
-
-
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
+// Record Meal Type Window
 public class MealFrame extends BorderPane {
 
-    private Button startButton, stopButton, cancelButton;
-    private Label recordingLabel;
     private Header header;
     private RecordingFooter footer;
     private Prompt prompt;
+    private Button startButton, stopButton, cancelButton;
+    private Label recordingLabel;
 
     String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     String clickedButtonStyle = "-fx-background-color: #0174BE; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
 
     public MealFrame() {
+
         header = new Header("Record Meal Type");
         footer = new RecordingFooter();
         
@@ -47,36 +35,18 @@ public class MealFrame extends BorderPane {
         stopButton = prompt.getStopButton();
         recordingLabel = prompt.getRecordingLabel();
         cancelButton = footer.getCancelButton();
+
     }
 
-    public Button getStartButton() {
-        return startButton;
-    }
+    public Button getStartButton() { return startButton; }
 
-    public Button getStopButton() {
-        return stopButton;
-    }
+    public Button getStopButton() { return stopButton; }
 
-    public Button getCancelButton() {
-        return cancelButton;
-    }
+    public Button getCancelButton() { return cancelButton; }
 
-    public Label getRecordingLabel() {
-        return recordingLabel;
-    }
+    public Label getRecordingLabel() { return recordingLabel; }
 
-    // Getter to change Start/Stop button style
-    public String getDefaultStyle() {
-        return defaultButtonStyle;
-    }
-
-    public String getClickedStyle() {
-        return clickedButtonStyle;
-    }
-
-    public Prompt getPrompt() {
-        return prompt;
-    }
+    public Prompt getPrompt() { return prompt; }
 
     // Writes audio into "recording.wav"
     public void setStartButtonAction(EventHandler<ActionEvent> eventHandler) {

@@ -3,11 +3,8 @@ package app.server;
 import java.io.*;
 import java.net.*;
 
-import org.json.*;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-
 
 /**
  *  implementing a WhisperAPI route that takes in audio files and translates them into text
@@ -18,8 +15,6 @@ import com.sun.net.httpserver.HttpHandler;
  *  post -> give file and then returns a text version of the file.
  *  
  */
- 
-
 public class WhisperHandler implements HttpHandler {
 
     @Override

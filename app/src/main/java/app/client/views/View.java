@@ -1,50 +1,39 @@
 package app.client.views;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import java.io.*;
-
-
-
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 
 public class View {
 
-    SortFrame sort;
     LoginFrame login;
     HomeFrame home;
     MealFrame meal;
     IngredientsFrame ingredients;
     GptFrame gpt;
     RecipeFrame recipe;
+    FilterFrame filter;
+    ShareFrame share;
+    SortFrame sort;
+
+    String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
+    String clickedButtonStyle = "-fx-background-color: #0174BE; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     
     public View () {
 
         // // Setting the Layout of the Window- Should contain a Header, Footer and content for each Frame
-        sort = new SortFrame();
         login = new LoginFrame();
         home = new HomeFrame();
         meal = new MealFrame();
         ingredients = new IngredientsFrame();
         gpt = new GptFrame();
         recipe = new RecipeFrame();
+        share = new ShareFrame();
+        filter = new FilterFrame();
+        sort = new SortFrame();
         
     }
-
-    public SortFrame getSortFrame() {
-        return sort;
+    
+    public LoginFrame getLoginFrame() {
+        return login;
     }
 
     public HomeFrame getHomeFrame() {
@@ -67,8 +56,32 @@ public class View {
         return recipe;
     }
 
-    public LoginFrame getLoginFrame() {
-        return login;
+    public ShareFrame getShareFrame(){
+        return share;
+    }
+
+    public FilterFrame getFilterFrame() {
+        return filter;
+    }
+
+    public SortFrame getSortFrame() {
+        return sort;
+    }
+
+    public String getDefaultButtonStyle() {
+        return defaultButtonStyle;
+    }
+
+    public String getClickedButtonStyle() {
+        return clickedButtonStyle;
+    }
+    
+    public void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
 }

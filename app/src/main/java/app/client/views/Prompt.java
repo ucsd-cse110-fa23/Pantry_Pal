@@ -4,22 +4,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import java.io.*;
 
-
-
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-
+// Message on MealFrame and IngredientsFrame
 public class Prompt extends VBox{
 
     private Label text;
@@ -49,29 +37,22 @@ public class Prompt extends VBox{
         // Label to be set visible upon starting to record
         recordingLabel = new Label("Recording...");
         recordingLabel.setStyle(defaultLabelStyle);
+        recordingLabel.setAlignment(Pos.CENTER);
         
         HBox.setMargin(startButton, new Insets(5));
 
         buttonContainer.setAlignment(Pos.CENTER);
         buttonContainer.getChildren().addAll(startButton, stopButton);
-        this.getChildren().addAll(this.text, buttonContainer);
+        this.getChildren().addAll(this.text, buttonContainer, recordingLabel);
         this.setAlignment(Pos.CENTER);
     }
 
-    public Button getStartButton() {
-        return startButton;
-    }
+    public Button getStartButton() { return startButton; }
 
-    public Button getStopButton() {
-        return stopButton;
-    }
+    public Button getStopButton() { return stopButton; }
 
-    public Label getRecordingLabel() {
-        return recordingLabel;
-    }
+    public Label getRecordingLabel() { return recordingLabel; }
 
-    public Label getText() {
-        return text;
-    }
+    public Label getText() { return text; }
 
 }
