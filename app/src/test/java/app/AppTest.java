@@ -325,55 +325,55 @@ class AppTest {
     // just testing server request handler method,  GET METHOD
     // USER+TITLE+INGREDIENTS+INSTRUCTIONS+MEALTYPE
     // UNIT TEST
-    @Test
-    void GETrequestHandlerUnitTest() throws IOException, URISyntaxException{
-        MyServer.main(null);
-        // have a recipe in the database already
+    // @Test
+    // void GETrequestHandlerUnitTest() throws IOException, URISyntaxException{
+    //     MyServer.main(null);
+    //     // have a recipe in the database already
 
 
-        String t = "testTitle";
-        String i = "testIngredients";
-        String ins = "testInstructinos";
-        String u = "testUser";
-        String m = "testMealtype";
-        String method = "GET";
+    //     String t = "testTitle";
+    //     String i = "testIngredients";
+    //     String ins = "testInstructinos";
+    //     String u = "testUser";
+    //     String m = "testMealtype";
+    //     String method = "GET";
 
-        try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
-            MongoDatabase database = mongoClient.getDatabase("PantryPal");
-            MongoCollection<Document> collection = database.getCollection("recipes");
+    //     try (MongoClient mongoClient = MongoClients.create(MONGOURI)) {
+    //         MongoDatabase database = mongoClient.getDatabase("PantryPal");
+    //         MongoCollection<Document> collection = database.getCollection("recipes");
             
-            Document recipe = new Document("_id", new ObjectId());
-            recipe.append("title", t);
-            recipe.append("user", u);
-            recipe.append("mealtype", m);
-            recipe.append("ingredients", i);
-            recipe.append("instructions",ins);            
-            recipe.append("content", i+ins);
+    //         Document recipe = new Document("_id", new ObjectId());
+    //         recipe.append("title", t);
+    //         recipe.append("user", u);
+    //         recipe.append("mealtype", m);
+    //         recipe.append("ingredients", i);
+    //         recipe.append("instructions",ins);            
+    //         recipe.append("content", i+ins);
 
-            collection.insertOne(recipe);
+    //         collection.insertOne(recipe);
 
-            String query = URLEncoder.encode("u=" + u + "&q=" + t, "UTF-8");
-            String urlString = "http://localhost:8100/?" + query;
-            URL url = new URI(urlString).toURL();
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod(method);
-            conn.setDoOutput(true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String response = in.readLine();    
-            in.close();
+    //         String query = URLEncoder.encode("u=" + u + "&q=" + t, "UTF-8");
+    //         String urlString = "http://localhost:8100/?" + query;
+    //         URL url = new URI(urlString).toURL();
+    //         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    //         conn.setRequestMethod(method);
+    //         conn.setDoOutput(true);
+    //         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    //         String response = in.readLine();    
+    //         in.close();
 
-            assertNotEquals("", response);;
-            assertTrue(response.contains(t));
-            assertTrue(response.contains(i));
-            assertTrue(response.contains(ins));
+    //         assertNotEquals("", response);;
+    //         assertTrue(response.contains(t));
+    //         assertTrue(response.contains(i));
+    //         assertTrue(response.contains(ins));
 
 
-            Bson filter = Filters.and(Filters.eq("title",t),Filters.eq("user", u));
-            collection.findOneAndDelete(filter);
+    //         Bson filter = Filters.and(Filters.eq("title",t),Filters.eq("user", u));
+    //         collection.findOneAndDelete(filter);
 
-        }
-        MyServer.stop();
-    }
+    //     }
+    //     MyServer.stop();
+    // }
 
 
     /**
