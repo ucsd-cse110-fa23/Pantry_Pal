@@ -15,11 +15,13 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import app.Mock.ShareLinkMock;
+import app.Mock.Whisper;
 import app.client.App;
 import app.client.View;
 import app.client.Controller;
 import app.client.Model;
 import app.server.ChatGPTHandler;
+import app.server.MockDallE;
 import app.server.ServerChecker;
 import app.server.ShareHandler;
 import app.server.MyServer;
@@ -462,6 +464,29 @@ class AppTest {
 
         assertEquals(response, recipe);
         
+        MyServer.stop();
+    }
+
+    // UNIT TEST
+    /*
+     * Mocks the whisper prompt
+     * Takes the mealtype, ingredients and makes it into a prompt
+     * Pushes the prompt through Model to check if the Whisper gets the same information
+     * compares the prompts
+     */
+    @Test
+    void WhisperPromptTest() throws IOException, URISyntaxException{
+        MyServer.main(null);
+        String mealType = "lunch";
+        String ingredients = "Bacon, Eggs and ham";
+        String prompt = "Make me a " + mealType + " recipe with " + ingredients;
+
+        Model model = new Model();
+        String response = model.performRequest("POST", mealType, ingredients, null, null, "mockwhisper");
+        
+        System.out.println(response);
+
+        assertEquals(response, prompt);
         MyServer.stop();
     }
 

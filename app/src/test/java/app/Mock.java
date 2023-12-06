@@ -30,6 +30,21 @@ public class Mock {
         }
     }
 
+    public class Whisper {
+        public String mealType;
+        public String ingredients;
+
+        Whisper(String m, String i){
+            mealType = m;
+            ingredients = i;
+        }
+
+        String generateWhisper(){
+            return "Make me a " + mealType + " recipe with " + ingredients;
+        }
+    }
+
+    
     public class ShareLinkMock{
         public String user;
         public String Recipe;
