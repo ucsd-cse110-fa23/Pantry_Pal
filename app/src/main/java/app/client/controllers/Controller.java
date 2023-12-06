@@ -1,40 +1,18 @@
-package app.client;
+package app.client.controllers;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import app.server.ServerChecker;
 import javafx.event.ActionEvent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import java.io.IOException;
 
-// Handles switching Scenes upon clicking buttons
-class FrameController {
-
-    private Map<String, Scene> frameMap;
-    private Stage primaryStage;
-
-    FrameController(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        frameMap = new HashMap<>();
-    }
-
-    public void addFrame(String name, Scene scene) {
-        frameMap.put(name, scene);
-    }
-
-    public void getFrame(String name) {
-        primaryStage.setScene(frameMap.get(name));
-    }
-
-}
+import app.client.*;
+import app.client.views.*;
+import app.server.ServerChecker;
 
 public class Controller {
-
     private View view;
     private Model model;
     private FrameController frameController;
@@ -43,7 +21,7 @@ public class Controller {
     private RecipeList recipeList;
     private String dalleResponse;
 
-    public Controller(View view, Model model, Stage primaryStage) {
+    public Controller(View view, Model model, Stage primaryStage) throws IOException {
         this.view = view;
         this.model = model;
         frameController = new FrameController(primaryStage);
@@ -51,11 +29,32 @@ public class Controller {
 
         // LoginFrame Event Listeners
         view.getLoginFrame().setLoginButtonAction(this::handleLoginButton);
-        view.getLoginFrame().setCreateAccountButtonAction(this::handleCreateAccountButton);
+        view.getLoginFrame().setCreateAccountButtonAction(event -> {
+            try {
+                handleCreateAccountButton(event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        view.getLoginFrame().setAutoLoginButtonAction(event -> {
+            try {
+                handleAutoLoginButton(event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         // HomeFrame Event Listeners
         view.getHomeFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
         view.getHomeFrame().setFilterMealTypeButtonAction(this::handleFilterMealTypeButton);
+        view.getHomeFrame().setSortButtonAction(this::handleSortButton);
+        view.getHomeFrame().setAutoLoginButtonAction(event -> {
+            try {
+                handleAutoLoginButton(event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         view.getHomeFrame().setSignOutButtonAction(this::handleSignOutButton);
 
         // MealFrame Event Listeners
@@ -79,17 +78,23 @@ public class Controller {
         view.getRecipeFrame().setDeleteButtonAction(this::handleRecipeDeleteButton);
         view.getRecipeFrame().setShareButtonAction(this::handleShareButton);
         
-        // FilterFrame Event Listerners
+        // FilterFrame Event Listeners
         view.getFilterFrame().setBreakfastButtonAction(this::handleFilterBreakfastButton);
         view.getFilterFrame().setLunchButtonAction(this::handleFilterLunchButton);
         view.getFilterFrame().setDinnerButtonAction(this::handleFilterDinnerButton);
         view.getFilterFrame().setAllButtonAction(this::handleFilterAllButton);
         view.getFilterFrame().setCancelButtonAction(this::handleFilterCancelButton);
 
-
         // ShareFrame Event Listeners
         view.getShareFrame().setCancelButtonAction(this::handleShareCancelButton);
 
+        // SortFrame Event Listeners
+        view.getSortFrame().setAlphaButtonAction(this::handleSortAlphaButton);
+        view.getSortFrame().setRAlphaButtonAction(this::handleSortRAlphaButton);
+        view.getSortFrame().setChronoButtonAction(this::handleSortChronoButton);
+        view.getSortFrame().setRChronoButtonAction(this::handleSortRChronoButton);
+        view.getSortFrame().setCancelButtonAction(this::handleSortCancelButton);
+        
     }
 
     public FrameController getFrameController() {
@@ -102,42 +107,66 @@ public class Controller {
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
 
-        String response = model.performRequest("POST", username, password, null, null, "login");
-        if (response.equals("SUCCESS")) {
-            String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
-            clearRecipes();
+        if (username.equals("") || password.equals("")) {
+            view.showAlert("Input Error", "Required field(s) missing!");
+        } else {
+            String response = model.performRequest("POST", username, password, null, null, "login");
+            
+            if (response.equals("SUCCESS")) {
+            String recipes = model.performRequest("GET", username, null, null, username, "load-recipe");
             loadRecipes(recipes);
             frameController.getFrame("home");
-            System.out.println("[ Frame changed ]");
-        } else if (response.equals("INVALID CREDENTIALS") || response.equals("USER NOT FOUND")){
-            System.out.println("[ LOGIN RESPONSE ] " + response);
-        } else {
-            view.showAlert("Error", response);
+            System.out.println("|||Frame changed|||");
+            } else {
+                System.out.println("[LOGIN RESPONSE] " + response);
+            }
         }
-
     }
 
-    private void handleCreateAccountButton(ActionEvent event) {
+    private void handleAutoLoginButton(ActionEvent event) throws IOException {
+        boolean autoLoginEnabled = model.getAutoLoginStatus();
+        autoLoginEnabled = !autoLoginEnabled;
+        model.setAutoLoginStatus(autoLoginEnabled);
+        if(autoLoginEnabled) {
+            view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: green;");
+            view.getLoginFrame().getAutoLoginButton().setText("ON");
+            view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: green;");
+            view.getHomeFrame().getAutoLoginButton().setText("ON");
+            String[] loginDetails = model.getAutoLoginDetails().split("\n");
+            if(loginDetails[0].equals("") == false) {
+                handleLogin(loginDetails[0], loginDetails[1]);
+            }
+        } else {
+            view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: red;");
+            view.getLoginFrame().getAutoLoginButton().setText("OFF");
+            view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: red;");
+            view.getHomeFrame().getAutoLoginButton().setText("OFF");
+        }
+    }
+
+    private void handleCreateAccountButton(ActionEvent event) throws IOException {
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
-        // checks if server is still running
-        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
-        if(checker == false){
-            view.showAlert("Error", "Server connection was interrupted");
-        }
-        
-        String response = model.performRequest("POST", username, password, null, null, "signup");
 
-
-        if (response.equals("NEW USER CREATED")) {
-            // Redirect back to Login Page if new user successfully created
-            frameController.getFrame("login");
+        if (username.equals("") || password.equals("")) {
+            view.showAlert("Input Error", "Required field(s) missing!");
         } else {
-            System.out.println("[ SIGNUP RESPONSE ] " + response);
+            String response = model.performRequest("POST", username, password, null, null, "signup");
+            if (response.equals("NEW USER CREATED")) {
+                // Redirect back to Login Page if new user successfully created
+                frameController.getFrame("login");
+                if (model.getAutoLoginStatus()) {
+                    model.setAutoLoginDetails(username, password);
+                    model.setLogInDetails(username, password);
+                    handleLogin(username, password);
+                }   
+            } else {
+                System.out.println("[LOGIN RESPONSE] " + response);
+            }
         }
     }
 
-    //================ HomeFrame Event Handlers ====================================================
+    //================ AppFrame Event Handlers ====================================================
 
     private void handleNewRecipeButton(ActionEvent event) {
         frameController.getFrame("meal");
@@ -154,17 +183,16 @@ public class Controller {
         //recipeText = recipeText.replace();
         String imgString = model.performRequest("GET", username, null, null, recipeTitle, "picture");
         
-
-        // checks if server is still running
-        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
-        if(checker == false) {
-            view.showAlert("Error", "Server connection was interrupted");
-        } 
+        checkServer(); 
         // Displays the image and the recipe
         displayImage(imgString);
         displayRecipe(recipeText);
 
         frameController.getFrame("recipe");
+    }
+    
+    private void handleSortButton(ActionEvent event) {
+        frameController.getFrame("sort");
     }
 
     private void handleSignOutButton(ActionEvent event) {
@@ -177,6 +205,7 @@ public class Controller {
 
         frameController.getFrame("login");
     }
+
     //================ MealFrame and IngredientsFrame Event Handlers ===============================
 
     private void handleMealStartButton(ActionEvent event) {
@@ -197,11 +226,7 @@ public class Controller {
         view.getMealFrame().getRecordingLabel().setVisible(false);
 
         model.stopRecording();
-         // checks if server is still running
-        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
-        if(checker == false){
-            view.showAlert("Error", "Server connection was interrupted");
-        }
+        checkServer();
 
         mealType = model.performRequest("POST", null, null, null, null, "whisper");
         mealType = model.transcribeMealType(mealType);
@@ -220,7 +245,6 @@ public class Controller {
             startButton.setStyle(view.getDefaultButtonStyle());
             stopButton.setStyle(view.getDefaultButtonStyle());
         }
-
     }
 
     private void handleMealCancelButton(ActionEvent event) {
@@ -255,19 +279,15 @@ public class Controller {
         view.getMealFrame().getRecordingLabel().setVisible(false);
 
         model.stopRecording();
-         // checks if server is still running
-        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
-        if(checker == false){
-            view.showAlert("Error", "Server connection was interrupted");
-        }
+        checkServer();
 
         ingredients = model.performRequest("POST", null, null, null, null, "whisper");
         System.out.println(ingredients);
 
         // Create prompt with mealType and ingredients and pass to ChatGPT API, Dall-E API for the picture
         String prompt = "Please provide a" + mealType + " recipe using" + ingredients
-             + ". Can you format the response to have zero newlines with fields \"Title:\",\"Ingredients:\", and \"Instructions:\" .These" 
-             + " fields will be formated such that it looks like \"Title:\"+\"Ingredients:\"+\"Instructions\" with one newline between each field";
+             + ". Can you format the response to have zero newlines with fields \"Title:\" and \"Content:\".These" 
+             + " fields will be formated such that it looks like \"Title:\"+\"Content:\" with one newline between each field";
         System.out.println("PROMPT +++ " + prompt);
         String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
         fullRecipe = response;
@@ -307,19 +327,14 @@ public class Controller {
         String recipeName = view.getGptFrame().getRecipeText().getText().split("\n")[0];
         Recipe newRecipe = new Recipe();
         newRecipe.getRecipe().setText(recipeName);
-        displayMealType(newRecipe, mealType);
+        displayMealTypeTag(newRecipe, mealType);
         newRecipe.setViewButtonAction(this::handleViewButton);
 
         //fullRecipe = view.getGptFrame().getRecipeText().getText();
         fullRecipe += "+" + mealType + "+" + dalleResponse;
         String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
 
-
-        //check if server is still running
-        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
-        if(checker == false){
-            view.showAlert("Error", "Server connection was interrupted");
-        }
+        checkServer();
 
         clearRecipes();
         loadRecipes(fullRecipeList);
@@ -339,14 +354,10 @@ public class Controller {
     private void handleGptRefreshButton(ActionEvent event) {
         
         String prompt = "Please provide a" + mealType + " recipe using" + ingredients
-             + ". Can you format the response to have zero newlines with fields \"Title:\",\"Ingredients:\", and \"Instructions:\" .These" 
-             + " fields will be formated such that it looks like \"Title:\"+\"Ingredients:\"+\"Instructions\" with one newline between each field";
+             + ". Can you format the response to have zero newlines with fields \"Title:\" and \"Content:\".These" 
+             + " fields will be formated such that it looks like \"Title:\"+\"Content:\" with one newline between each field";
         String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
-        //check if server is still running
-        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
-        if(checker == false){
-            view.showAlert("Error", "Server connection was interrupted");
-        }
+        checkServer();
 
         fullRecipe = response;
 
@@ -378,33 +389,22 @@ public class Controller {
     }
 
     private void handleRecipeSaveButton(ActionEvent event) {
-       
+        checkServer();
         String updatedRecipe = view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
         updatedRecipe = updatedRecipe.replace("\n\n","+");
         System.out.println("CLEANED newlines"+ updatedRecipe);
         //Make PUT request and save updatedRecipe as second param
         String response = model.performRequest("PUT", username, null, updatedRecipe, null, "");
-        
-        //check if server is still running
-        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
-        if(checker == false){
-            view.showAlert("Error", "Server connection was interrupted");
-        }
         System.out.println("[PUT RESPONSE] " + response);
         frameController.getFrame("home");
     }
 
 
     private void handleRecipeDeleteButton(ActionEvent event) {
+        checkServer();
         int delim = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().indexOf("\n");
         String recipeTitle = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().substring(0, delim);
         String response = model.performRequest("DELETE", username, null, null, recipeTitle, "");
-       
-        //check if server is still running
-        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
-        if(checker == false){
-            view.showAlert("Error", "Server connection was interrupted");
-        }
 
         System.out.println("[DELETE RESPONSE] " + response);
         frameController.getFrame("home");
@@ -435,26 +435,21 @@ public class Controller {
     private void handleFilterLunchButton(ActionEvent event) {
         checkServer();
         String response = model.performRequest("GET", username, null, null, "lunch", "mealtype");
-
         clearRecipes();
         loadRecipes(response);
         frameController.getFrame("home");
     }
 
     private void handleFilterDinnerButton(ActionEvent event) {
+        checkServer();
         String response = model.performRequest("GET", username, null, null, "dinner", "mealtype");
-        //check if server is still running
-        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
-        if(checker == false){
-            view.showAlert("Error", "Server connection was interrupted");
-        }
-
         clearRecipes();
         loadRecipes(response);
         frameController.getFrame("home");
     }
 
     private void handleFilterAllButton(ActionEvent event) {
+        checkServer();
         String response = model.performRequest("GET", null, null, null, username, "load-recipe");
         clearRecipes();
         loadRecipes(response);
@@ -465,15 +460,123 @@ public class Controller {
         frameController.getFrame("home");
     }
     
-    //=================== ShareFrame EventListner ==============
+    //=================== ShareFrame Event Handler ==============
 
     private void handleShareCancelButton(ActionEvent event) {
         frameController.getFrame("recipe");
     }
 
-    //=================== HELPER FUNCTIONS ====================
-    
-    private void displayMealType(Recipe recipe, String res) {
+    //================ SortFrame Event Handlers ====================================================
+
+    private void handleSortAlphaButton(ActionEvent event) {
+        if(recipeList.getChildren().size() == 0) {
+            frameController.getFrame("home");
+            return;
+        }
+
+        clearRecipes();
+
+        String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
+
+        String order = model.sortAlphabetically(recipes);
+        System.out.println("NEW SORTED: " + order);
+        loadRecipes(order);
+        updateRecipeIndices();
+        // updateViewButton();
+
+        // Redirect back to Home Page
+        frameController.getFrame("home");
+    }
+
+    private void handleSortRAlphaButton(ActionEvent event) {
+        if(recipeList.getChildren().size() == 0){
+            frameController.getFrame("home");
+            return;
+        }
+        
+        clearRecipes();
+
+        String response = model.performRequest("POST", username, password, null, null, "login");
+        if (response.equals("SUCCESS")) {
+            String recipes = model.performRequest("GET", username, null, null, username, "load-recipe");
+
+            String order = model.sortRAlphabetically(recipes);
+            System.out.println("NEW SORTED: " + order);
+            loadRecipes(order);
+            updateRecipeIndices();
+            // updateViewButton();
+            frameController.getFrame("home");
+            System.out.println("|||Frame changed|||");
+        } else {
+            System.out.println("[LOGIN RESPONSE] " + response);
+        }
+
+        // Redirect back to Home Page
+        frameController.getFrame("home");
+    }
+
+    private void handleSortChronoButton(ActionEvent event) {
+        if(recipeList.getChildren().size() == 0){
+            frameController.getFrame("home");
+            return;
+        }
+        recipeList.getChildren().clear();
+        username = view.getLoginFrame().getLoginContent().getUsername().getText();
+        password = view.getLoginFrame().getLoginContent().getPassword().getText();
+
+        String response = model.performRequest("POST", username, password, null, null, "login");
+        if (response.equals("SUCCESS")) {
+            String recipes = model.performRequest("GET", username, null, null, username, "load-recipe");
+            String order = model.sortChronological(recipes);
+            System.out.println("NEW SORTED: " + order);
+            loadRecipes(order);
+            updateRecipeIndices();
+            // updateViewButton();
+            frameController.getFrame("home");
+            System.out.println("|||Frame changed|||");
+        } else {
+            System.out.println("[LOGIN RESPONSE] " + response);
+        }
+
+        // Redirect back to Home Page
+        frameController.getFrame("home");
+    }
+
+    private void handleSortRChronoButton(ActionEvent event) {
+        if(recipeList.getChildren().size() == 0){
+            frameController.getFrame("home");
+            return;
+        }
+        recipeList.getChildren().clear();
+        username = view.getLoginFrame().getLoginContent().getUsername().getText();
+        password = view.getLoginFrame().getLoginContent().getPassword().getText();
+
+        String response = model.performRequest("POST", username, password, null, null, "login");
+        if (response.equals("SUCCESS")) {
+            String recipes = model.performRequest("GET", username, null, null, username, "load-recipe");
+            
+            String order = model.sortRChronological(recipes);
+            System.out.println("NEW SORTED: " + order);
+            loadRecipes(order);
+            updateRecipeIndices();
+            // updateViewButton();
+            frameController.getFrame("home");
+            System.out.println("|||Frame changed|||");
+        } else {
+            System.out.println("[LOGIN RESPONSE] " + response);
+        }
+
+        // Redirect back to Home Page
+        frameController.getFrame("home");
+    }
+
+    private void handleSortCancelButton(ActionEvent event) {
+        frameController.getFrame("home");
+    }
+
+    //================== HELPER METHODS ========================================
+
+    private void displayMealTypeTag(Recipe recipe, String res) {
         if (res.equals("breakfast")) {
             recipe.getMealType().setText("B");
             recipe.getMealType().setStyle("-fx-background-color: #39A7FF; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;");
@@ -491,8 +594,7 @@ public class Controller {
     private void displayRecipe(String recipe) {
         try {
             String recipeName = recipe.split("\\+")[0];
-            String recipeText = recipe.substring(recipe.indexOf("\\+") + 1);
-            recipeText = recipeText.replace("+", "\n\n");
+            String recipeText = recipe.split("\\+")[1];
             System.out.println("RECIPE TEXT ON GET:" + recipeText);
             view.getRecipeFrame().getRecipeSteps().getRecipeName().setText(recipeName);
             view.getRecipeFrame().getRecipeSteps().getTextArea().setText(recipeText);
@@ -514,17 +616,16 @@ public class Controller {
     public void loadRecipes(String recipes) {
         if (recipes != null) {
             String[] recipesArr = { recipes };
-            if (recipes.contains("+")) {
-                recipesArr = recipes.split("\\+");
+            if (recipes.contains("_")) {
+                recipesArr = recipes.split("_");
             }
-            int i = 0;
-            while (i < recipesArr.length) {
+            for (int i = 0; i < recipesArr.length; i++) {
                 Recipe newRecipe = new Recipe();
-                newRecipe.getRecipe().setText(recipesArr[i++]);
+                newRecipe.getRecipe().setText(recipesArr[i].split("\\+")[0]);
                 newRecipe.setViewButtonAction(this::handleViewButton);
                 recipeList.getChildren().add(0, newRecipe);
-                String meal = recipesArr[i++];
-                displayMealType(newRecipe, meal);
+                String meal = recipesArr[i].split("\\+")[1];
+                displayMealTypeTag(newRecipe, meal);
                 updateRecipeIndices();
             }
         }
@@ -554,6 +655,26 @@ public class Controller {
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
+        }
+    }
+
+    private void handleLogin(String username, String password) {
+        if(!model.getIsLoggedIn()) {
+            String response = model.performRequest("POST", username, password, null, null, "login");
+            if (response.equals("SUCCESS")) {
+                model.setIsLoggedIn();
+                model.setLogInDetails(username, password);
+                String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
+                clearRecipes();
+                loadRecipes(recipes);
+                frameController.getFrame("home");
+
+                System.out.println("[ Frame changed ]");
+            } else if (response.equals("INVALID CREDENTIALS") || response.equals("USER NOT FOUND")){
+                System.out.println("[ LOGIN RESPONSE ] " + response);
+            } else {
+                view.showAlert("Error", response);
+            }
         }
     }
 

@@ -8,8 +8,6 @@ import java.util.Scanner;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-
-
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -41,7 +39,6 @@ public class SignupHandler implements HttpHandler {
             os.close();
         } catch (Exception e) {
             System.out.println("An erroneous request");
-            response = e.toString();
             e.printStackTrace();
         }
     }

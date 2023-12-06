@@ -79,9 +79,9 @@ public class loadRecipeHandler implements HttpHandler{
         if (recipe != null) {
             response = "";
             for(Document a : recipe) {
-                response += "+" + a.getString("title") + "+" + a.getString("mealtype");
+                response += "_" + a.getString("title") + "+" + a.getString("mealtype");
             }
-            // Taking out the first + 
+            // Taking out the first _ 
             response = response.substring(1);
             System.out.println(response);
         } else {

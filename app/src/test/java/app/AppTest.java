@@ -15,6 +15,9 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 import app.Mock.ShareLinkMock;
+import app.client.App;
+import app.client.views.*;
+import app.client.controllers.*;
 import app.client.Model;
 import app.server.ServerChecker;
 import app.server.MyServer;

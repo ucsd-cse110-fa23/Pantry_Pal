@@ -27,11 +27,8 @@ import static com.mongodb.client.model.Updates.*;
  */
 
 public class RequestHandler implements HttpHandler {
-  private String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
-  private String peterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
-  private String adrianURI = "mongodb+srv://adw004:13531Caravel%26@cluster0.nmzzqtt.mongodb.net/?retryWrites=true&w=majority";
-  private String URI = MyServer.MONGO_URI;
 
+  private String URI = MyServer.MONGO_URI;
 
   // general method and calls certain methods to handle http request
   public void handle(HttpExchange httpExchange) throws IOException {
@@ -49,10 +46,6 @@ public class RequestHandler implements HttpHandler {
       } else {
         throw new Exception("Not Valid Request Method");
       }
-      //Sending back response to the client
-      // httpExchange.sendResponseHeaders(200, response.length());
-      // OutputStream outStream = httpExchange.getResponseBody();
-      // outStream.write(response.getBytes());
       
       byte[] bs = response.getBytes("UTF-8");
       httpExchange.sendResponseHeaders(200, bs.length);
@@ -98,9 +91,7 @@ public class RequestHandler implements HttpHandler {
         Document recipe = collection.find(filter).first();
         if (recipe != null) {
           response = recipe.getString("title");
-          response += "+" + recipe.getString("ingredients");
-          response += "+" + recipe.getString("instructions");
-          //response += "+" + recipe.getString("mealtype");
+          response += "+" + recipe.getString("content");
           System.out.println(response);
         } else {
           System.out.println("null find");
@@ -117,7 +108,7 @@ public class RequestHandler implements HttpHandler {
   /**
    *  getting the entire string of the recipe and need to parse for title, set title field and then set text
    * 
-   * EXPECT: USER+TITLE+INGREDIENTS+INSTRUCTIONS+MEALTYPE
+   * EXPECT: USER+TITLE+CONTENT+MEALTYPE
    *  
    * @param httpExchange
    * @return
@@ -140,19 +131,15 @@ public class RequestHandler implements HttpHandler {
     int sDelim = body.indexOf("+",fDelim+1);
     int tDelim = body.indexOf("+",sDelim+1);
     int delim4 = body.indexOf("+", tDelim+1);
-    int delim5 = body.indexOf("+",delim4+1);
 
     String user = body.substring(0,fDelim);
     String title = body.substring(fDelim+1, sDelim);
-    String ingredients = body.substring(sDelim+1,tDelim);
-    String instructions = body.substring(tDelim+1,delim4);
-    String mealtype = body.substring(delim4+1,delim5);
-    String imgUrl = body.substring(delim5+1);
+    String content = body.substring(sDelim+1,tDelim);
+    String mealtype = body.substring(tDelim+1,delim4);
+    String imgUrl = body.substring(delim4+1);
 
-    
     System.out.println("TITLE: " + title);
-    System.out.println("INGRED: " + ingredients);
-    System.out.println("INSTRUCT: " + instructions);
+    System.out.println("CONTENT: " + content);
     System.out.println("USER:" + user);
     System.out.println("MEALTYPE: " + mealtype);
     System.out.println("IMG url: " + imgUrl);
@@ -164,8 +151,7 @@ public class RequestHandler implements HttpHandler {
       
       Document recipe = new Document("_id", new ObjectId());
       recipe.append("title", title);
-      recipe.append("ingredients", ingredients);
-      recipe.append("instructions", instructions);
+      recipe.append("content", content);
       recipe.append("user", user);
       recipe.append("mealtype", mealtype);
       recipe.append("img",imgUrl);
@@ -180,7 +166,7 @@ public class RequestHandler implements HttpHandler {
   }
      
   /**
-   * EXPECT: USER+TITLE+INGREDIENTS+INSTRUCTIONS
+   * EXPECT: USER+TITLE+CONTENT
    * 
    * @return
    */
@@ -197,21 +183,17 @@ public class RequestHandler implements HttpHandler {
     // get the title, ingredients, instructions
     String body = reqBody.toString();
     System.out.println("REQ BODY: " + body);
+
     int fDelim = body.indexOf("+");
     int sDelim = body.indexOf("+",fDelim+1);
-    int tDelim = body.indexOf("+",sDelim+1);
 
     String user = body.substring(0,fDelim);
-    String title = body.substring(fDelim+1, sDelim);
-    String ingredients = body.substring(sDelim+1,tDelim);
-    String instructions = body.substring(tDelim + 1);
-
+    String title = body.substring(fDelim + 1, sDelim);
+    String recipe = body.substring(sDelim + 1);
 
     System.out.println("TITLE: " + title);
-    System.out.println("INGRED: " + ingredients);
-    System.out.println("INSTRUCT: " + instructions);
+    System.out.println("RECIPE: " + recipe);
     System.out.println("USER:" + user);
-
 
     String response = "Not valid put";
     try (MongoClient mongoClient = MongoClients.create(URI)) {
@@ -222,10 +204,8 @@ public class RequestHandler implements HttpHandler {
       Bson filter2 = eq("user",user);
       filter = combine(filter,filter2);
 
-      Bson up1 = set("ingredients", ingredients);
-      Bson up2 = set("instructions", instructions);
-      Bson combined = combine(up1, up2);
-      collection.findOneAndUpdate(filter, combined);
+      Bson up1 = set("recipe", recipe);
+      collection.findOneAndUpdate(filter, up1);
 
       response = "valid put";
     }
@@ -240,8 +220,6 @@ public class RequestHandler implements HttpHandler {
    * Exepects: query paramater in URL, need title and user delimitted by a +, but mgiht need to change + to a -
    *  need to get the correct tuser
    */
-
-  
   private String handleDelete(HttpExchange httpExchange) throws IOException{
     String response = "Invalid delete request";
     URI uri = httpExchange.getRequestURI();
