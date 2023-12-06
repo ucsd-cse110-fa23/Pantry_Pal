@@ -28,6 +28,7 @@ public class Model {
     String errorMessage;
     boolean isLoggedInBool = false;
     String savedName,savedPass = "";
+    public static String IPHOST = "192.168.1.173";
 
     /**
      * Initialize file to record audio
@@ -48,7 +49,7 @@ public class Model {
 
         // Implement HTTP request logic here and return the response
         try {
-            String urlString = "http://localhost:8100/" + route;
+            String urlString = "http://" + IPHOST + ":8100/" + route;
 
             if (username != null && query != null) {
                 query = URLEncoder.encode("u=" + username + "&q=" + query, "UTF-8");

@@ -16,7 +16,7 @@ public class MyServer {
 
     // initialize server port and hostname
     private static final int SERVER_PORT = 8100;
-    private static final String SERVER_HOSTNAME = "LOCALHOST";
+    private static final String SERVER_HOSTNAME = "192.168.1.173";
 
     private static String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
     private static String PeterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";

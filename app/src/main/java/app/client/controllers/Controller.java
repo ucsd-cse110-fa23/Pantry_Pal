@@ -474,7 +474,7 @@ public class Controller {
     // Generate URL that displays recipe on web
     private void handleShareButton(ActionEvent event) {
         String recipeTitle = view.getRecipeFrame().getRecipeSteps().getRecipeName().getText();
-        String response = "http://localhost:8100/share/?u=" + username + "&q="+ recipeTitle;
+        String response = "http://"+Model.IPHOST+":8100/share/?u=" + username + "&q="+ recipeTitle;
         System.out.println("[ SHARE RESPONSE ] " + response);
         view.getShareFrame().getShareArea().setText(response);
         frameController.getFrame("share");
@@ -733,7 +733,7 @@ public class Controller {
 
     // Check if server is still running or throw alert otherwise
     public void checkServer() {
-        boolean checker = ServerChecker.isServerRunning("localhost", 8100);
+        boolean checker = ServerChecker.isServerRunning(model.IPHOST, 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
