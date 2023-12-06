@@ -14,6 +14,9 @@ public class HomeFrame extends BorderPane {
     private RecipeList recipeList;
     private Button newRecipeButton, filterMealTypeButton, sortButton, autoLoginButton, signOutButton;
 
+    /**
+     * Initialize header, content (RecipeList), and footer
+     */
     public HomeFrame() {
         
         // Initialize the Header Object
@@ -44,7 +47,7 @@ public class HomeFrame extends BorderPane {
         
     }
 
-    // Sets the get methods that allow access to the contents of HomeFrame
+    // Get methods that allow access to the contents of HomeFrame
     public RecipeList getRecipeList() { return recipeList; }
 
     public Button getNewRecipeButton() { return newRecipeButton; }
@@ -54,14 +57,24 @@ public class HomeFrame extends BorderPane {
     public Button getAutoLoginButton() { return autoLoginButton; }
 
     // Sets the Buttons actions so they function when clicked
-    public void setNewRecipeButtonAction(EventHandler<ActionEvent> eventHandler) { newRecipeButton.setOnAction(eventHandler); }
+    public void setNewRecipeButtonAction(EventHandler<ActionEvent> eventHandler) {
+        newRecipeButton.setOnAction(eventHandler);
+    }
 
-    public void setFilterMealTypeButtonAction(EventHandler<ActionEvent> eventHandler) { filterMealTypeButton.setOnAction(eventHandler); }
+    public void setFilterMealTypeButtonAction(EventHandler<ActionEvent> eventHandler) {
+        filterMealTypeButton.setOnAction(eventHandler);
+    }
 
-    public void setSortButtonAction(EventHandler<ActionEvent> eventHandler) { sortButton.setOnAction(eventHandler); }
+    public void setSortButtonAction(EventHandler<ActionEvent> eventHandler) {
+        sortButton.setOnAction(eventHandler);
+    }
 
-    public void setAutoLoginButtonAction(EventHandler<ActionEvent> eventHandler) { autoLoginButton.setOnAction(eventHandler); }
+    public void setAutoLoginButtonAction(EventHandler<ActionEvent> eventHandler) {
+        autoLoginButton.setOnAction(eventHandler);
+    }
 
-    public void setSignOutButtonAction(EventHandler<ActionEvent> eventHandler) { signOutButton.setOnAction(eventHandler); }
+    public void setSignOutButtonAction(EventHandler<ActionEvent> eventHandler) {
+        signOutButton.setOnAction(eventHandler);
+    }
 
 }

@@ -14,6 +14,7 @@ public class RecipeSteps extends VBox {
     private TextArea recipeSteps = new TextArea();
     private ImageView imageView = new ImageView();
 
+    // Content displays image next to the full recipe
     public RecipeSteps() {
 
         // Initializes the Label Object

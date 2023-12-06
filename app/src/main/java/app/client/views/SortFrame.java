@@ -12,6 +12,9 @@ public class SortFrame extends BorderPane {
     private RecordingFooter footer;
     private SortContent sortContent;
 
+    /**
+     * Initialize header, content (SortContent), and footer
+     */
     public SortFrame() {
 
         // Initializes the Header Object
@@ -21,7 +24,8 @@ public class SortFrame extends BorderPane {
         
         // Set properties for the page
         this.setPrefSize(370, 120);
-        sortContent = new SortContent(" How would you like to sort your recipe: \n Alphabetically, Reverse Alphabetically, Chronologically, or Reverse Chronologically?");
+        sortContent = new SortContent(
+            " How would you like to sort your recipe: \n Alphabetically, Reverse Alphabetically, Chronologically, or Reverse Chronologically?");
         
         // Add header to the top, sortContent to center, and footer to bottom of Border Pane
         this.setTop(header);
@@ -51,14 +55,24 @@ public class SortFrame extends BorderPane {
     public SortContent getSort() { return sortContent; }
 
     // Sets the Buttons actions so they function when clicked
-    public void setAlphaButtonAction(EventHandler<ActionEvent> eventHandler) { alphaButton.setOnAction(eventHandler); }
+    public void setAlphaButtonAction(EventHandler<ActionEvent> eventHandler) {
+        alphaButton.setOnAction(eventHandler);
+    }
 
-    public void setRAlphaButtonAction(EventHandler<ActionEvent> eventHandler) { ralphaButton.setOnAction(eventHandler); }
+    public void setRAlphaButtonAction(EventHandler<ActionEvent> eventHandler) {
+        ralphaButton.setOnAction(eventHandler);
+    }
 
-    public void setChronoButtonAction(EventHandler<ActionEvent> eventHandler) { chronoButton.setOnAction(eventHandler); }
+    public void setChronoButtonAction(EventHandler<ActionEvent> eventHandler) {
+        chronoButton.setOnAction(eventHandler);
+    }
 
-    public void setRChronoButtonAction(EventHandler<ActionEvent> eventHandler) { rchronoButton.setOnAction(eventHandler); }
+    public void setRChronoButtonAction(EventHandler<ActionEvent> eventHandler) {
+        rchronoButton.setOnAction(eventHandler);
+    }
 
-    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) { cancelButton.setOnAction(eventHandler); }
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
+    }
 
 }

@@ -14,6 +14,9 @@ public class RecipeFrame extends BorderPane {
     private RecipeSteps recipeSteps;
     private Button cancelButton, saveButton, deleteButton, shareButton;
 
+    /**
+     * Initialize header, content (ReccipeSteps), and footer
+     */
     RecipeFrame() {
         
         // Initializes the Header Object
@@ -29,6 +32,7 @@ public class RecipeFrame extends BorderPane {
         deleteButton = footer.getDeleteButton();
         shareButton = footer.getShareButton();
 
+        // Place content in scroller
         ScrollPane s = new ScrollPane(recipeSteps);
         s.setFitToHeight(true);
         s.setFitToWidth(true);
@@ -53,14 +57,22 @@ public class RecipeFrame extends BorderPane {
     public Button getShareButton() { return shareButton; }
 
     // Cancel Button goes to Home Page
-    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) { cancelButton.setOnAction(eventHandler); }
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
+    }
 
     // Save updates then redirect to Home Page
-    public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) { saveButton.setOnAction(eventHandler); }
+    public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) {
+        saveButton.setOnAction(eventHandler);
+    }
 
     // Delete Recipe from database and app then redirect to Home Page
-    public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) { deleteButton.setOnAction(eventHandler); }
+    public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {
+        deleteButton.setOnAction(eventHandler);
+    }
 
-    public void setShareButtonAction(EventHandler<ActionEvent> eventHandler){ shareButton.setOnAction(eventHandler); }
+    public void setShareButtonAction(EventHandler<ActionEvent> eventHandler) {
+        shareButton.setOnAction(eventHandler);
+    }
 
 }

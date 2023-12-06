@@ -15,9 +15,6 @@ public class MealFrame extends BorderPane {
     private Button startButton, stopButton, cancelButton;
     private Label recordingLabel;
 
-    String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
-    String clickedButtonStyle = "-fx-background-color: #0174BE; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
-
     public MealFrame() {
 
         // Initializes the Header Object
@@ -54,12 +51,18 @@ public class MealFrame extends BorderPane {
     public Prompt getPrompt() { return prompt; }
 
     // Writes audio into "recording.wav"
-    public void setStartButtonAction(EventHandler<ActionEvent> eventHandler) { startButton.setOnAction(eventHandler); }
+    public void setStartButtonAction(EventHandler<ActionEvent> eventHandler) { 
+        startButton.setOnAction(eventHandler);
+    }
 
     // Needs to detect either "Breakfast," "Lunch," or "Dinner" to move to next Frame
-    public void setStopButtonAction(EventHandler<ActionEvent> eventHandler) { stopButton.setOnAction(eventHandler); }
+    public void setStopButtonAction(EventHandler<ActionEvent> eventHandler) {
+        stopButton.setOnAction(eventHandler);
+    }
 
     // Cancel Button goes to Home Page
-    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) { cancelButton.setOnAction(eventHandler); }
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
+    }
     
 }

@@ -14,6 +14,9 @@ public class ShareFrame extends BorderPane {
     private RecordingFooter footer;
     private TextArea shareLink = new TextArea();
 
+    /**
+     * Initialize header, content (url link), and footer
+     */
     ShareFrame() {
 
         // Initializes the Header Object
@@ -41,6 +44,8 @@ public class ShareFrame extends BorderPane {
     public Button getCancelButton() { return cancelButton; }
 
     // Cancel Button goes to Home Page
-    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) { cancelButton.setOnAction(eventHandler); }
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
+    }
 
 }

@@ -4,7 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
-public class RecordingFooter extends HBox{
+public class RecordingFooter extends HBox {
 
     private Button cancelButton;
 

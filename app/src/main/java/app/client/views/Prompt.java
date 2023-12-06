@@ -21,6 +21,10 @@ public class Prompt extends VBox{
     // Set a default style for buttons and fields - background color, font size, italics
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-text-fill: red; visibility: hidden";
 
+    /**
+     * Initialize prompt text and buttons and recording queue when recording starts
+     * @param text
+     */
     public Prompt(String text) {
 
         // Initializes the spacing and size of the label

@@ -8,7 +8,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 
-public class SortContent extends VBox{
+public class SortContent extends VBox {
 
     private Label text;
     private Button alphaButton, ralphaButton, chronoButton, rchronoButton;
@@ -43,6 +43,7 @@ public class SortContent extends VBox{
         rchronoButton.setStyle(defaultButtonStyle); // Setting style to default
         
         HBox.setMargin(alphaButton, new Insets(5));
+        HBox.setMargin(chronoButton, new Insets(5));
 
         // Adds the buttons to two contains to space them out properly
         buttonContainer1.setAlignment(Pos.CENTER);

@@ -13,6 +13,9 @@ public class FilterFrame extends BorderPane {
     private FilterPrompt filterPrompt;
     private Button breakfastButton, lunchButton, dinnerButton, allButton, cancelButton;
 
+    /**
+     * Initialize header, content (FilterPrompt) and foooter
+     */
     FilterFrame() {
 
         // Initialize the Header Object
@@ -37,14 +40,24 @@ public class FilterFrame extends BorderPane {
     }
 
     // Sets all of the button actions
-    public void setBreakfastButtonAction(EventHandler<ActionEvent> eventHandler) { breakfastButton.setOnAction(eventHandler); }
+    public void setBreakfastButtonAction(EventHandler<ActionEvent> eventHandler) { 
+        breakfastButton.setOnAction(eventHandler);
+    }
 
-    public void setLunchButtonAction(EventHandler<ActionEvent> eventHandler) { lunchButton.setOnAction(eventHandler); }
+    public void setLunchButtonAction(EventHandler<ActionEvent> eventHandler) { 
+        lunchButton.setOnAction(eventHandler);
+    }
 
-    public void setDinnerButtonAction(EventHandler<ActionEvent> eventHandler) { dinnerButton.setOnAction(eventHandler); }
+    public void setDinnerButtonAction(EventHandler<ActionEvent> eventHandler) { 
+        dinnerButton.setOnAction(eventHandler);
+    }
 
-    public void setAllButtonAction(EventHandler<ActionEvent> eventHandler) { allButton.setOnAction(eventHandler); }
+    public void setAllButtonAction(EventHandler<ActionEvent> eventHandler) {
+        allButton.setOnAction(eventHandler);
+    }
 
-    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) { cancelButton.setOnAction(eventHandler); }
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
+    }
     
 }

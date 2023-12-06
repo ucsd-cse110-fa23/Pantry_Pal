@@ -16,6 +16,9 @@ public class LoginContent extends VBox {
     private Button createAccountButton, loginButton, autoLoginButton;
     private HBox autoLoginContainer;
 
+    /**
+     * Contains fields to enter crendials and automatic login switch
+     */
     LoginContent() {
         
         // Sets the size of LoginContent
@@ -68,7 +71,7 @@ public class LoginContent extends VBox {
         
     }
     
-    // Sets the get methods that allow access to the contents of LoginContent
+    // Get methods that allow access to the contents of LoginContent
     public TextField getUsername() { return username; }
 
     public PasswordField getPassword() { return password; }

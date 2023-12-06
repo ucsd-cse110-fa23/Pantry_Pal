@@ -19,6 +19,9 @@ public class GptFrame extends BorderPane {
     private TextArea recipeText = new TextArea();
     private ImageView imageView = new ImageView();
     
+    /**
+     * Initialize header, content (TextArea, ImageView), and footer
+     */
     GptFrame() {
 
         // Initialize the Header Object
@@ -55,7 +58,7 @@ public class GptFrame extends BorderPane {
 
     }
 
-    // Sets the get methods that allow access to the contents of GptFrame
+    // Get methods that allow access to the contents of GptFrame
     public TextArea getRecipeText() {return recipeText; }
 
     public ImageView getImageView() { return imageView; }
@@ -67,10 +70,16 @@ public class GptFrame extends BorderPane {
     public Button getRefreshButton() { return refreshButton; }
 
     // Sets the Buttons actions so they function when clicked
-    public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler){ saveButton.setOnAction(eventHandler); }
+    public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) {
+        saveButton.setOnAction(eventHandler);
+    }
 
-    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) { cancelButton.setOnAction(eventHandler); }
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
+    }
 
-    public void setRefreshButtonAction(EventHandler<ActionEvent> eventHandler){ refreshButton.setOnAction(eventHandler); }
+    public void setRefreshButtonAction(EventHandler<ActionEvent> eventHandler) {
+        refreshButton.setOnAction(eventHandler);
+    }
     
 }

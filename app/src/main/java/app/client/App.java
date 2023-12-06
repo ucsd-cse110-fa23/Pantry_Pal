@@ -6,9 +6,18 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
     
+/**
+ * App.java
+ * 
+ * Sets up entire app and specifies the dimentions of each page
+ */
 public class App extends Application {
-    Scene homeScene, mealScene, ingredScene, gptScene, recipeScene, loginScene, filterScene, shareScene, sortScene;
+    Scene homeScene, mealScene, ingredScene, gptScene, 
+        recipeScene, loginScene, filterScene, shareScene, sortScene;
     
+    /**
+     * 
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
 
