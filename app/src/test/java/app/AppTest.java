@@ -37,7 +37,7 @@ class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
     
     private final String MONGOURI =  "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
-    public String IPHOST = "100.81.33.231";
+    public String IPHOST = "localhost";
 
     @Test 
     void testGptSameIngredients() throws IOException {
