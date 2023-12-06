@@ -28,7 +28,7 @@ public class Model {
     String errorMessage;
     boolean isLoggedInBool = false;
     String savedName,savedPass = "";
-    public static String IPHOST = "192.168.1.173";
+    public static String IPHOST = "100.81.33.231";
 
     /**
      * Initialize file to record audio
