@@ -37,7 +37,7 @@ public class GptFooter extends HBox{
         
     }
 
-    // Sets the get methods that allow access to the buttons of GptFooter
+    // Get methods that allow access to the buttons of GptFooter
     public Button getSaveButton() { return saveButton; }
 
     public Button getCancelButton() { return cancelButton; }

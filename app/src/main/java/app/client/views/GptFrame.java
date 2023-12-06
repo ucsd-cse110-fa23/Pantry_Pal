@@ -19,6 +19,9 @@ public class GptFrame extends BorderPane {
     private TextArea recipeText = new TextArea();
     private ImageView imageView = new ImageView();
     
+    /**
+     * Initialize header, content (TextArea, ImageView), and footer
+     */
     GptFrame() {
 
         // Initialize the Header Object
@@ -55,7 +58,7 @@ public class GptFrame extends BorderPane {
 
     }
 
-    // Sets the get methods that allow access to the contents of GptFrame
+    // Get methods that allow access to the contents of GptFrame
     public TextArea getRecipeText() {return recipeText; }
 
     public ImageView getImageView() { return imageView; }

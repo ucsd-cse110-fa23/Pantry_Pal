@@ -2,7 +2,7 @@ package app.client.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -12,6 +12,11 @@ import app.client.*;
 import app.client.views.*;
 import app.server.ServerChecker;
 
+/**
+ * Controller.java
+ * 
+ * Presenter passing data from model and updating view UI
+ */
 public class Controller {
     private View view;
     private Model model;
@@ -21,13 +26,21 @@ public class Controller {
     private RecipeList recipeList;
     private String dalleResponse;
 
+    /**
+     * Constructor composes view and model and takes primaryStage to switch scenes
+     * 
+     * @param view
+     * @param model
+     * @param primaryStage
+     * @throws IOException
+     */
     public Controller(View view, Model model, Stage primaryStage) throws IOException {
         this.view = view;
         this.model = model;
         frameController = new FrameController(primaryStage);
         recipeList = view.getHomeFrame().getRecipeList();
 
-        // LoginFrame Event Listeners
+        // LoginFrame Event Listeners - All read from csv file so they need IOException
         view.getLoginFrame().setLoginButtonAction(event -> {
             try {
                 handleLoginButton(event);
@@ -113,13 +126,13 @@ public class Controller {
                 username = loginDetails[0];
                 password = loginDetails[1];
                 handleLogin(username, password);
-                
             }
         } else {
             view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: red;");
             view.getLoginFrame().getAutoLoginButton().setText("OFF");
             view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: red;");
             view.getHomeFrame().getAutoLoginButton().setText("OFF");
+
         }
     }
 
@@ -133,14 +146,13 @@ public class Controller {
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
 
-        if(!model.getIsLoggedIn()) {
-            if (username.equals("") || password.equals("")) {
-                view.showAlert("Input Error", "Required field(s) missing!");
-            } else {
-                handleLogin(username, password);
-                if(model.getAutoLoginStatus() && model.getIsLoggedIn()) {
-                    model.setAutoLoginDetails(username, password);
-                }
+        // Shows alert if username/password fields are not filled out
+        if (username.equals("") || password.equals("")) {
+            view.showAlert("Input Error", "Required field(s) missing!");
+        } else {
+            handleLogin(username, password);
+            if (model.getAutoLoginStatus() && model.getIsLoggedIn()) {
+                model.setAutoLoginDetails(username, password);
             }
         }
     }
@@ -149,15 +161,19 @@ public class Controller {
         boolean autoLoginEnabled = model.getAutoLoginStatus();
         autoLoginEnabled = !autoLoginEnabled;
         model.setAutoLoginStatus(autoLoginEnabled);
-        if(autoLoginEnabled) {
+        // If enable, style button to have green ON on login and home screen and pull credentials from csv file
+        if (autoLoginEnabled) {
             view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: green;");
             view.getLoginFrame().getAutoLoginButton().setText("ON");
             view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: green;");
             view.getHomeFrame().getAutoLoginButton().setText("ON");
             String[] loginDetails = model.getAutoLoginDetails().split("\n");
             if(loginDetails[0].equals("") == false) {
-                handleLogin(loginDetails[0], loginDetails[1]);
+                username = loginDetails[0];
+                password = loginDetails[1];
+                handleLogin(username, password);
             }
+        // Else, button on Login and Home page have red OFF button
         } else {
             view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: red;");
             view.getLoginFrame().getAutoLoginButton().setText("OFF");
@@ -170,6 +186,7 @@ public class Controller {
         username = view.getLoginFrame().getLoginContent().getUsername().getText();
         password = view.getLoginFrame().getLoginContent().getPassword().getText();
 
+        // Throw same alert for missing fields as with Login Button
         if (username.equals("") || password.equals("")) {
             view.showAlert("Input Error", "Required field(s) missing!");
         } else {
@@ -188,21 +205,25 @@ public class Controller {
         }
     }
 
-    //================ AppFrame Event Handlers ====================================================
+    //================ HomeFrame Event Handlers ====================================================
 
+    // Redirect to page to record meal type
     private void handleNewRecipeButton(ActionEvent event) {
         frameController.getFrame("meal");
     }
 
+    // Redirect to page to filter meal type
     private void handleFilterMealTypeButton(ActionEvent event) {
         frameController.getFrame("filter");
     }
 
+    // Connect view button OnClick of specific recipe to its corresponding content
     private void handleViewButton(ActionEvent event) {
+        // Source button of recipe where view was fired
         Button target = (Button) event.getTarget();
-        recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();
+        // Grab container holding button then move to child holding title of the recipe
+        recipeTitle = (String) ((Label) ((HBox) target.getParent()).getChildren().get(1)).getText();
         String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
-        //recipeText = recipeText.replace();
         String imgString = model.performRequest("GET", username, null, null, recipeTitle, "picture");
         
         checkServer(); 
@@ -213,10 +234,12 @@ public class Controller {
         frameController.getFrame("recipe");
     }
     
+    // Redirect to sort button
     private void handleSortButton(ActionEvent event) {
         frameController.getFrame("sort");
     }
 
+    // Clears cached credentials in controller and from model
     private void handleSignOutButton(ActionEvent event) {
         view.getLoginFrame().getLoginContent().getUsername().setText("");
         view.getLoginFrame().getLoginContent().getPassword().setText("");
@@ -224,12 +247,15 @@ public class Controller {
         view.getLoginFrame().getLoginContent().getPassword().setPromptText("Password");
         username = "";
         password = "";
+        
+        model.setIsLoggedIn(false);
 
         frameController.getFrame("login");
     }
 
-    //================ MealFrame and IngredientsFrame Event Handlers ===============================
+    //================ MealFrame Event Handlers ==========================================
 
+    // Change button style and allow audio file to start receiving audio
     private void handleMealStartButton(ActionEvent event) {
         Button startButton = view.getMealFrame().getStartButton();
         Button stopButton = view.getMealFrame().getStopButton();
@@ -240,6 +266,7 @@ public class Controller {
         model.startRecording();
     }
 
+    // Change button style, stop recording, and pass to whisper
     private void handleMealStopButton(ActionEvent event) {
         Button startButton = view.getMealFrame().getStartButton();
         Button stopButton = view.getMealFrame().getStopButton();
@@ -252,9 +279,8 @@ public class Controller {
 
         mealType = model.performRequest("POST", null, null, null, null, "whisper");
         mealType = model.transcribeMealType(mealType);
-        
-        System.out.println("MEALTYPE CONTROLLER: " + mealType);
 
+        // Issues new prompt if Whisper (then model) could not detect meal type
         if (mealType.equals("")) {
             view.getMealFrame().getPrompt().getText().setText("Invalid input. Please select either \n Breakfast, Lunch, or Dinner.");
         } else if (mealType.equals("breakfast") || mealType.equals("lunch") || mealType.equals("dinner")) {
@@ -269,12 +295,14 @@ public class Controller {
         }
     }
 
+    // Clear styling, and return Home
     private void handleMealCancelButton(ActionEvent event) {
         Button startButton = view.getMealFrame().getStartButton();
         Button stopButton = view.getMealFrame().getStopButton();
         startButton.setStyle(view.getDefaultButtonStyle());
         stopButton.setStyle(view.getDefaultButtonStyle());
 
+        // Stops recording if start button was pressed then cancel
         model.stopRecording();
 
         // Redirect back to Home Page
@@ -283,6 +311,7 @@ public class Controller {
 
     //=================== IngredientsFrame Event Handlers ==================================
 
+    // Change button style the start recording
     private void handleIngredientsStartButton(ActionEvent event) {
         Button startButton = view.getIngredientsFrame().getStartButton();
         Button stopButton = view.getIngredientsFrame().getStopButton();
@@ -293,6 +322,7 @@ public class Controller {
         model.startRecording();
     }
 
+    // Change button style then feeds input into ChatGPT API to create a new recipe
     private void handleIngredientsStopButton(ActionEvent event) {
         Button startButton = view.getIngredientsFrame().getStartButton();
         Button stopButton = view.getIngredientsFrame().getStopButton();
@@ -339,6 +369,9 @@ public class Controller {
         startButton.setStyle(view.getDefaultButtonStyle());
         stopButton.setStyle(view.getDefaultButtonStyle());
 
+        // Cancels recording if started but never stopped
+        model.stopRecording();
+
         // Redirect back to Home Page
         frameController.getFrame("home");
     }
@@ -352,12 +385,17 @@ public class Controller {
         displayMealTypeTag(newRecipe, mealType);
         newRecipe.setViewButtonAction(this::handleViewButton);
 
+        // Grab recipe name from UI in case it was edited before saving, the separate from the rest of the text
+        fullRecipe = view.getGptFrame().getRecipeText().getText().replace("\n","+");
         fullRecipe += "+" + mealType + "+" + dalleResponse;
+
         String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
 
         checkServer();
         clearRecipes();
         loadRecipes(fullRecipeList);
+
+        // Add newly saved recipe to top of recipeList then update indices
         recipeList.getChildren().add(0, newRecipe);
         updateRecipeIndices();
         
@@ -388,6 +426,7 @@ public class Controller {
         
         Image image = new Image(dalleResponse); 
 
+        // Change delimiter to make UI readible
         response = response.replace("+", "\n");
 
         view.getGptFrame().getImageView().setImage(image);
@@ -402,38 +441,41 @@ public class Controller {
 
     //================ RecipeFrame Event Handlers =============================
 
+    // Exits content of the recipe clicked
     private void handleRecipeCancelButton(ActionEvent event) {
         frameController.getFrame("home");
     }
 
+    // Detects changes to recipe content then save in database
     private void handleRecipeSaveButton(ActionEvent event) {
         checkServer();
-        String updatedRecipe = recipeTitle + view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
-        System.out.println("CLEANED newlines"+ updatedRecipe);
+        String updatedRecipe = view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
+        updatedRecipe = updatedRecipe.replace("\n","+");
         //Make PUT request and save updatedRecipe as second param
         String response = model.performRequest("PUT", username, null, updatedRecipe, null, "");
-        System.out.println("[PUT RESPONSE] " + response);
+        System.out.println("[ PUT RESPONSE ] " + response);
         frameController.getFrame("home");
     }
 
-
+    // Deletes recipe from database and updates UI to no longer show it
     private void handleRecipeDeleteButton(ActionEvent event) {
         checkServer();
         int delim = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().indexOf("\n");
         String recipeTitle = view.getRecipeFrame().getRecipeSteps().getTextArea().getText().substring(0, delim);
         String response = model.performRequest("DELETE", username, null, null, recipeTitle, "");
 
-        System.out.println("[DELETE RESPONSE] " + response);
+        System.out.println("[ DELETE RESPONSE ] " + response);
         frameController.getFrame("home");
         String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
         clearRecipes();
         loadRecipes(recipes);
     }
 
+    // Generate URL that displays recipe on web
     private void handleShareButton(ActionEvent event) {
         String recipeTitle = view.getRecipeFrame().getRecipeSteps().getRecipeName().getText();
         String response = "http://localhost:8100/share/?u=" + username + "&q="+ recipeTitle;
-        System.out.println("[SHARE RESPONSE] " + response);
+        System.out.println("[ SHARE RESPONSE ] " + response);
         view.getShareFrame().getShareArea().setText(response);
         frameController.getFrame("share");
     }
@@ -441,6 +483,7 @@ public class Controller {
 
     //===================== FilterFrame Handlers ================================
 
+    // Display recipes only with "B" tag
     private void handleFilterBreakfastButton(ActionEvent event) {
         String response = model.performRequest("GET", username, null, null, "breakfast", "mealtype");
         checkServer();
@@ -449,6 +492,7 @@ public class Controller {
         frameController.getFrame("home");
     }
 
+    // Displays recipes only with "L" tag
     private void handleFilterLunchButton(ActionEvent event) {
         checkServer();
         String response = model.performRequest("GET", username, null, null, "lunch", "mealtype");
@@ -457,6 +501,7 @@ public class Controller {
         frameController.getFrame("home");
     }
 
+    // Displays recipes with only "D" tag
     private void handleFilterDinnerButton(ActionEvent event) {
         checkServer();
         String response = model.performRequest("GET", username, null, null, "dinner", "mealtype");
@@ -465,6 +510,7 @@ public class Controller {
         frameController.getFrame("home");
     }
 
+    // Reverts list to show all recipes
     private void handleFilterAllButton(ActionEvent event) {
         checkServer();
         String response = model.performRequest("GET", null, null, null, username, "load-recipe");
@@ -473,6 +519,7 @@ public class Controller {
         frameController.getFrame("home");
     }
 
+    // Cancel page and return Home
     private void handleFilterCancelButton(ActionEvent event) {
         frameController.getFrame("home");
     }
@@ -485,8 +532,9 @@ public class Controller {
 
     //================ SortFrame Event Handlers ====================================================
 
+    // Sort list with A-Z top-to-bottom
     private void handleSortAlphaButton(ActionEvent event) {
-        if(recipeList.getChildren().size() == 0) {
+        if (recipeList.getChildren().size() == 0) {
             frameController.getFrame("home");
             return;
         }
@@ -496,17 +544,16 @@ public class Controller {
         String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
 
         String order = model.sortAlphabetically(recipes);
-        System.out.println("NEW SORTED: " + order);
-        loadRecipes(order);
+        loadSorted(order);
         updateRecipeIndices();
-        // updateViewButton();
 
         // Redirect back to Home Page
         frameController.getFrame("home");
     }
 
+    // Sorts Z-A top-to-bottom
     private void handleSortRAlphaButton(ActionEvent event) {
-        if(recipeList.getChildren().size() == 0){
+        if (recipeList.getChildren().size() == 0) {
             frameController.getFrame("home");
             return;
         }
@@ -519,11 +566,10 @@ public class Controller {
 
             String order = model.sortRAlphabetically(recipes);
             System.out.println("NEW SORTED: " + order);
-            loadRecipes(order);
+            loadSorted(order);
             updateRecipeIndices();
-            // updateViewButton();
+
             frameController.getFrame("home");
-            System.out.println("|||Frame changed|||");
         } else {
             System.out.println("[LOGIN RESPONSE] " + response);
         }
@@ -532,6 +578,7 @@ public class Controller {
         frameController.getFrame("home");
     }
 
+    // Sorts Oldest-Newest top-to-bottom
     private void handleSortChronoButton(ActionEvent event) {
         if(recipeList.getChildren().size() == 0){
             frameController.getFrame("home");
@@ -545,12 +592,8 @@ public class Controller {
         if (response.equals("SUCCESS")) {
             String recipes = model.performRequest("GET", username, null, null, username, "load-recipe");
             String order = model.sortChronological(recipes);
-            System.out.println("NEW SORTED: " + order);
-            loadRecipes(order);
+            loadSorted(order);
             updateRecipeIndices();
-            // updateViewButton();
-            frameController.getFrame("home");
-            System.out.println("|||Frame changed|||");
         } else {
             System.out.println("[LOGIN RESPONSE] " + response);
         }
@@ -559,6 +602,7 @@ public class Controller {
         frameController.getFrame("home");
     }
 
+    // Sorts Newest-Oldest top-to-bottom
     private void handleSortRChronoButton(ActionEvent event) {
         if(recipeList.getChildren().size() == 0){
             frameController.getFrame("home");
@@ -571,14 +615,9 @@ public class Controller {
         String response = model.performRequest("POST", username, password, null, null, "login");
         if (response.equals("SUCCESS")) {
             String recipes = model.performRequest("GET", username, null, null, username, "load-recipe");
-            
             String order = model.sortRChronological(recipes);
-            System.out.println("NEW SORTED: " + order);
-            loadRecipes(order);
+            loadSorted(order);
             updateRecipeIndices();
-            // updateViewButton();
-            frameController.getFrame("home");
-            System.out.println("|||Frame changed|||");
         } else {
             System.out.println("[LOGIN RESPONSE] " + response);
         }
@@ -591,29 +630,31 @@ public class Controller {
         frameController.getFrame("home");
     }
 
-    //================== HELPER METHODS ========================================
+    //================== HELPER METHODS ===========================================================
 
+    // Update meal type tags based on meal type, already handles that res must be on of the three types
     private void displayMealTypeTag(Recipe recipe, String res) {
         if (res.equals("breakfast")) {
             recipe.getMealType().setText("B");
-            recipe.getMealType().setStyle("-fx-background-color: #39A7FF; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;");
+            recipe.getMealType().setStyle(
+                "-fx-background-color: #39A7FF; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;");
         } else if (res.equals("lunch")) {
             recipe.getMealType().setText("L");
-            recipe.getMealType().setStyle("-fx-background-color: #79AC78; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;");
-        } else if (res.equals("dinner")) {
+            recipe.getMealType().setStyle(
+                "-fx-background-color: #79AC78; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;");
+        } else {
             recipe.getMealType().setText("D");
-            recipe.getMealType().setStyle("-fx-background-color: #BE3144; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;");
-        } else { 
-            // Display error message
-        }
+            recipe.getMealType().setStyle(
+                "-fx-background-color: #BE3144; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;");
+        } 
     }
 
+    // Display content when view a certain recipe
     private void displayRecipe(String recipe) {
         try {
             String recipeName = recipe.split("\\+")[0];
             String recipeText = recipe.substring(recipe.indexOf("\\+") + 1);
             recipeText = recipeText.replace("+", "\n\n");
-            System.out.println("RECIPE TEXT ON GET:" + recipeText);
             view.getRecipeFrame().getRecipeSteps().getRecipeName().setText(recipeName);
             view.getRecipeFrame().getRecipeSteps().getTextArea().setText(recipeText);
         } catch (Exception e) {
@@ -621,7 +662,8 @@ public class Controller {
         }
     }
 
-    private void displayImage(String img){
+    // Display image corresponding to recipe and show next to content
+    private void displayImage(String img) {
         try {
             Image image = new Image(img);
             view.getRecipeFrame().getRecipeSteps().getImageView().setImage(image);
@@ -649,10 +691,26 @@ public class Controller {
         }
     }
 
+    // Loads top down instea of the normal bottom-up
     public void loadSorted(String recipes) {
-
+        if (recipes != null) {
+            String[] recipesArr = { recipes };
+            if (recipes.contains("_")) {
+                recipesArr = recipes.split("_");
+            }
+            for (int i = 0; i < recipesArr.length; i++) {
+                Recipe newRecipe = new Recipe();
+                newRecipe.getRecipe().setText(recipesArr[i].split("\\+")[0]);
+                newRecipe.setViewButtonAction(this::handleViewButton);
+                recipeList.getChildren().add(newRecipe);
+                String meal = recipesArr[i].split("\\+")[1];
+                displayMealTypeTag(newRecipe, meal);
+                updateRecipeIndices();
+            }
+        }
     }
 
+    // Updates UI to clear ALL recipes in recipeList
     public void clearRecipes() {
         for (int i = 0; i < recipeList.getChildren().size(); i++) {
             if (recipeList.getChildren().get(i) instanceof Recipe) {
@@ -662,6 +720,7 @@ public class Controller {
         recipeList.getChildren().clear();
     }
 
+    // Updates visual index of recipes in list
     public void updateRecipeIndices() {
         int index = 1;
         for (int i = 0; i < recipeList.getChildren().size(); i++) {
@@ -672,26 +731,25 @@ public class Controller {
         }
     }
 
+    // Check if server is still running or throw alert otherwise
     public void checkServer() {
-        //check if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false){
             view.showAlert("Error", "Server connection was interrupted");
         }
     }
 
+    // Determines whether autoLogin feature is enabled and skips login if so
     private void handleLogin(String username, String password) {
         if(!model.getIsLoggedIn()) {
             String response = model.performRequest("POST", username, password, null, null, "login");
             if (response.equals("SUCCESS")) {
-                model.setIsLoggedIn();
+                model.setIsLoggedIn(true);
                 model.setLogInDetails(username, password);
                 String recipes = model.performRequest("GET", null, null, null, username, "load-recipe");
                 clearRecipes();
                 loadRecipes(recipes);
                 frameController.getFrame("home");
-
-                System.out.println("[ Frame changed ]");
             } else if (response.equals("INVALID CREDENTIALS") || response.equals("USER NOT FOUND")){
                 System.out.println("[ LOGIN RESPONSE ] " + response);
             } else {

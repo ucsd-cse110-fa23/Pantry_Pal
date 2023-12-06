@@ -14,6 +14,9 @@ public class HomeFrame extends BorderPane {
     private RecipeList recipeList;
     private Button newRecipeButton, filterMealTypeButton, sortButton, autoLoginButton, signOutButton;
 
+    /**
+     * Initialize header, content (RecipeList), and footer
+     */
     public HomeFrame() {
         
         // Initialize the Header Object
@@ -44,7 +47,7 @@ public class HomeFrame extends BorderPane {
         
     }
 
-    // Sets the get methods that allow access to the contents of HomeFrame
+    // Get methods that allow access to the contents of HomeFrame
     public RecipeList getRecipeList() { return recipeList; }
 
     public Button getNewRecipeButton() { return newRecipeButton; }

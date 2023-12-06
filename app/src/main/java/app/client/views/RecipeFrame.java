@@ -14,6 +14,9 @@ public class RecipeFrame extends BorderPane {
     private RecipeSteps recipeSteps;
     private Button cancelButton, saveButton, deleteButton, shareButton;
 
+    /**
+     * Initialize header, content (ReccipeSteps), and footer
+     */
     RecipeFrame() {
         
         // Initializes the Header Object
@@ -29,6 +32,7 @@ public class RecipeFrame extends BorderPane {
         deleteButton = footer.getDeleteButton();
         shareButton = footer.getShareButton();
 
+        // Place content in scroller
         ScrollPane s = new ScrollPane(recipeSteps);
         s.setFitToHeight(true);
         s.setFitToWidth(true);

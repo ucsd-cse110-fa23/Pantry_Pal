@@ -118,6 +118,7 @@ public class ChatGPTHandler implements HttpHandler {
         title = title.replace("\n", "");
         ing = ing.replace("\n","");
         ins = ins.replace("\n", "");
+        // Remove leading and trailing spaces
         title = title.trim();
         ing = ing.trim();
         ins = ins.trim();

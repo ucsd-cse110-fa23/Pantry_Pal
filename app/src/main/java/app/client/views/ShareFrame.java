@@ -14,6 +14,9 @@ public class ShareFrame extends BorderPane {
     private RecordingFooter footer;
     private TextArea shareLink = new TextArea();
 
+    /**
+     * Initialize header, content (url link), and footer
+     */
     ShareFrame() {
 
         // Initializes the Header Object

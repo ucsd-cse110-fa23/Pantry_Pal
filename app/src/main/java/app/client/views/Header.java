@@ -9,6 +9,11 @@ public class Header extends HBox {
 
     Text titleText;
 
+    /**
+     * Sets header across all pages based on tite specified
+     * 
+     * @param text
+     */
     public Header(String text) {
 
         // Sets the size of the Header

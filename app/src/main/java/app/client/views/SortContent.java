@@ -8,7 +8,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 
-public class SortContent extends VBox{
+public class SortContent extends VBox {
 
     private Label text;
     private Button alphaButton, ralphaButton, chronoButton, rchronoButton;

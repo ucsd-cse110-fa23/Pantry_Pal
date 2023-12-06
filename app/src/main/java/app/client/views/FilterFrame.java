@@ -13,6 +13,9 @@ public class FilterFrame extends BorderPane {
     private FilterPrompt filterPrompt;
     private Button breakfastButton, lunchButton, dinnerButton, allButton, cancelButton;
 
+    /**
+     * Initialize header, content (FilterPrompt) and foooter
+     */
     FilterFrame() {
 
         // Initialize the Header Object

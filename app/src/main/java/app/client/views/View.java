@@ -2,6 +2,11 @@ package app.client.views;
 
 import javafx.scene.control.Alert;
 
+/**
+ * View.java
+ * 
+ * Pieces together all Frames to be used in UI and updated with controller/model
+ */
 public class View {
 
     LoginFrame login;
@@ -17,6 +22,9 @@ public class View {
     String defaultButtonStyle = "-fx-background-color: #39A7FF; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     String clickedButtonStyle = "-fx-background-color: #0174BE; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px";
     
+    /**
+     * Initialize frames
+     */
     public View () {
 
         // Setting the Layout of the Window- Should contain a Header, Footer and content for each Frame

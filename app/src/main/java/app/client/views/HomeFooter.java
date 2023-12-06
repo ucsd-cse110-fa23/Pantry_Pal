@@ -40,12 +40,17 @@ public class HomeFooter extends HBox {
         autoLoginContainer.setAlignment(Pos.CENTER);
         autoLoginContainer.getChildren().addAll(autoLoginLabel, autoLoginButton);
         
-        this.getChildren().addAll(newRecipeButton, filterMealTypeButton, sortButton, autoLoginContainer, signOutButton); // adding button to footer
+        // Add all buttons to footer
+        this.getChildren().addAll(newRecipeButton,  
+                        filterMealTypeButton,
+                        sortButton, 
+                        autoLoginContainer, 
+                        signOutButton); 
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
         
     }
 
-    // Sets the get methods that allow access to the buttons of HomeFooter
+    // Get methods that allow access to the buttons of HomeFooter
     public Button getNewRecipeButton() { return newRecipeButton; }
 
     public Button getFilterMealTypeButton() { return filterMealTypeButton; }

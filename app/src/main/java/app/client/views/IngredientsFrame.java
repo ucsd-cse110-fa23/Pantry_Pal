@@ -14,6 +14,9 @@ public class IngredientsFrame extends BorderPane {
     private RecordingFooter footer;
     private Prompt prompt;
 
+    /**
+     * Initialize header, content (Prompt), and footer
+     */
     public IngredientsFrame() {
         
         // Initializes the Header Object

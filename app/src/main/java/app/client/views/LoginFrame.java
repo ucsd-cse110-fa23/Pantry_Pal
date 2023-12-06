@@ -14,7 +14,10 @@ public class LoginFrame extends BorderPane {
     private Button loginButton, createAccountButton, autoLoginButton;
     private HBox autoLoginContainer;
 
-   public LoginFrame() {
+    /**
+     * Initialize header, content (LoginContent), and footer
+     */
+    public LoginFrame() {
         
         // Sets the size of LoginFrame
         this.setPrefSize(370, 120);
@@ -36,7 +39,7 @@ public class LoginFrame extends BorderPane {
 
     }
 
-    // Sets the get methods that allow access to the contents of LoginFrame
+    // Get methods that allow access to the contents of LoginFrame
     public LoginContent getLoginContent() { return loginContent; }
 
     public Button getAutoLoginButton() { return autoLoginButton; }

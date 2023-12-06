@@ -4,7 +4,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
@@ -20,10 +19,13 @@ public class Recipe extends VBox {
     private Label recipe;
     private Button viewButton;
     
+    /**
+     * List items saved in RecipeList from home page
+     */
     public Recipe() {
         
         // Sets the size of Recipe
-        // this.setPrefSize(500, 20); // sets size of recipe
+        this.setPrefSize(500, 20); // sets size of recipe
         this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;"); // sets background color of recipe
         
         // Initializes the label object for index
@@ -50,16 +52,12 @@ public class Recipe extends VBox {
         viewButton.setPrefHeight(Double.MAX_VALUE); // Sets the height of the viewButton
         viewButton.setStyle("-fx-background-color: #FAE5EA; -fx-border-width: 0;"); // sets style of button
 
+        // Place Meal Type Tag, recipe name, and view button on same line
         HBox.setMargin(mealType, new Insets(5));
         container.setAlignment(Pos.CENTER_LEFT);
         container.getChildren().addAll(mealType, recipe, viewButton);
         this.getChildren().add(container); // add textlabel to recipe
 
-    }
-
-    // Method to update the indice of the recipe
-    public void setRecipeIndex(int num) {
-        index.setText(num + ""); // num to String
     }
 
     // Sets the get methods that allow access to the contents of Prompt
@@ -70,6 +68,11 @@ public class Recipe extends VBox {
     public Button getViewButton() { return viewButton; }
 
     public int getIndex() { return Integer.valueOf(index.getText().toString()); }
+
+    // Method to update the indice of the recipe
+    public void setRecipeIndex(int num) {
+        index.setText(num + ""); // num to String
+    }
     
     // View button opens full description corresponding to that recipe
     public void setViewButtonAction(EventHandler<ActionEvent> eventHandler) {
