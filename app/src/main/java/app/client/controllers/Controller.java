@@ -111,12 +111,15 @@ public class Controller {
             String[] loginDetails = model.getAutoLoginDetails().split("\n");
             if(loginDetails[0].equals("") == false) {
                 handleLogin(loginDetails[0], loginDetails[1]);
+                username  = loginDetails[0];
+                password = loginDetails[1];
             }
         } else {
             view.getLoginFrame().getAutoLoginButton().setStyle("-fx-text-fill: red;");
             view.getLoginFrame().getAutoLoginButton().setText("OFF");
             view.getHomeFrame().getAutoLoginButton().setStyle("-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial; -fx-text-fill: red;");
             view.getHomeFrame().getAutoLoginButton().setText("OFF");
+
         }
     }
 
@@ -349,10 +352,16 @@ public class Controller {
         displayMealTypeTag(newRecipe, mealType);
         newRecipe.setViewButtonAction(this::handleViewButton);
 
-        //fullRecipe = view.getGptFrame().getRecipeText().getText();
+        fullRecipe = view.getGptFrame().getRecipeText().getText();
+        fullRecipe = fullRecipe.replace("\n","+");
+        System.out.println("fullrecipe" + fullRecipe);
+
         fullRecipe += "+" + mealType + "+" + dalleResponse;
+        System.out.println("fullrecipe" + fullRecipe);
+        System.out.println("USERNANME ======================" + username);
         String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
 
+        System.out.println("resonse ========" + fullRecipeList);
         checkServer();
 
         clearRecipes();
@@ -409,7 +418,8 @@ public class Controller {
 
     private void handleRecipeSaveButton(ActionEvent event) {
         checkServer();
-        String updatedRecipe = recipeTitle + view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
+        String updatedRecipe = view.getRecipeFrame().getRecipeSteps().getTextArea().getText();
+        updatedRecipe = updatedRecipe.replace("\n","+");
         System.out.println("CLEANED newlines"+ updatedRecipe);
         //Make PUT request and save updatedRecipe as second param
         String response = model.performRequest("PUT", username, null, updatedRecipe, null, "");
