@@ -16,13 +16,8 @@ import com.mongodb.client.model.Filters;
 
 import app.Mock.ShareLinkMock;
 import app.client.Model;
-import app.server.ChatGPTHandler;
-import app.server.MockDallE;
 import app.server.ServerChecker;
-import app.server.ShareHandler;
 import app.server.MyServer;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
 import java.net.*;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -30,7 +25,6 @@ import java.io.OutputStreamWriter;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
-import static com.mongodb.client.model.Updates.set;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
@@ -430,11 +424,8 @@ class AppTest {
             assertNull(recipe);
         }
 
-        
         MyServer.stop();
     }
-
-
 
     // just testing Share request handler method,  GET METHOD
     // USER+TITLE+INGREDIENTS+INSTRUCTIONS+MEALTYPE
@@ -487,6 +478,5 @@ class AppTest {
     }
 
     
-
 
 }
