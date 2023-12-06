@@ -10,15 +10,17 @@ import javafx.scene.layout.VBox;
 // Content of full recipe description
 public class RecipeSteps extends VBox {
 
-     private Label recipeName;
+    private Label recipeName;
     private TextArea recipeSteps = new TextArea();
     private ImageView imageView = new ImageView();
 
     public RecipeSteps() {
+
+        // Initializes the Label Object
         recipeName = new Label();
         recipeName.setAlignment(Pos.CENTER);
-        //recipeName.setStyle("-fx-font-size: 20");
         
+        // Initializes the TextArea object that contains the recipe
         recipeSteps.setEditable(true);
         recipeSteps.setPrefSize(400, 500); // set size of text field
         recipeSteps.setWrapText(true);
@@ -28,9 +30,10 @@ public class RecipeSteps extends VBox {
         container.getChildren().addAll(imageView,recipeSteps);
         
         this.getChildren().addAll(recipeName, container);
-        // this.getChildren().add(recipeSteps);
+
     }
 
+    // Sets the get methods that allow access to the contents of RecipeSteps
     public Label getRecipeName() { return recipeName; }
 
     public TextArea getTextArea() { return recipeSteps; }

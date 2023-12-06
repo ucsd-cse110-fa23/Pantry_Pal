@@ -19,7 +19,7 @@ public class View {
     
     public View () {
 
-        // // Setting the Layout of the Window- Should contain a Header, Footer and content for each Frame
+        // Setting the Layout of the Window- Should contain a Header, Footer and content for each Frame
         login = new LoginFrame();
         home = new HomeFrame();
         meal = new MealFrame();
@@ -32,50 +32,30 @@ public class View {
         
     }
     
-    public LoginFrame getLoginFrame() {
-        return login;
-    }
+    // Sets the get methods that allow access to all the frames of View
+    public LoginFrame getLoginFrame() { return login; }
 
-    public HomeFrame getHomeFrame() {
-        return home;
-    }
+    public HomeFrame getHomeFrame() { return home; }
 
-    public MealFrame getMealFrame() {
-        return meal;
-    }
+    public MealFrame getMealFrame() { return meal; }
 
-    public IngredientsFrame getIngredientsFrame() {
-        return ingredients;
-    }
+    public IngredientsFrame getIngredientsFrame() { return ingredients; }
 
-    public GptFrame getGptFrame() {
-        return gpt;
-    }
+    public GptFrame getGptFrame() { return gpt; }
 
-    public RecipeFrame getRecipeFrame() {
-        return recipe;
-    }
+    public RecipeFrame getRecipeFrame() { return recipe; }
 
-    public ShareFrame getShareFrame(){
-        return share;
-    }
+    public ShareFrame getShareFrame(){ return share; }
 
-    public FilterFrame getFilterFrame() {
-        return filter;
-    }
+    public FilterFrame getFilterFrame() { return filter; }
 
-    public SortFrame getSortFrame() {
-        return sort;
-    }
+    public SortFrame getSortFrame() { return sort; }
 
-    public String getDefaultButtonStyle() {
-        return defaultButtonStyle;
-    }
+    public String getDefaultButtonStyle() { return defaultButtonStyle; }
 
-    public String getClickedButtonStyle() {
-        return clickedButtonStyle;
-    }
+    public String getClickedButtonStyle() { return clickedButtonStyle; }
     
+    // Method that shows alerts in case of errors
     public void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);

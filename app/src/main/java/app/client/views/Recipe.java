@@ -21,9 +21,12 @@ public class Recipe extends VBox {
     private Button viewButton;
     
     public Recipe() {
+        
+        // Sets the size of Recipe
         this.setPrefSize(500, 20); // sets size of recipe
         this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;"); // sets background color of recipe
         
+        // Initializes the label object for index
         index = new Label();
         index.setText(""); // create index label
         index.setPrefSize(40, 20); // set size of Index label
@@ -37,13 +40,15 @@ public class Recipe extends VBox {
         index.setTextAlignment(TextAlignment.LEFT); // set alignment of text field
         recipe.setPadding(new Insets(10, 0, 10, 0)); // adds some padding to the text field
         
+        // Initializes the mealType object for index
         mealType = new Label("B");
-        mealType.setStyle("-fx-background-color: #39A7FF; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;");
-        mealType.setPadding(new Insets(0, 5, 0, 5));
+        mealType.setStyle("-fx-background-color: #39A7FF; -fx-font-size: 14; -fx-border-radius: 20; -fx-text-fill: white;"); // Sets the style of the label
+        mealType.setPadding(new Insets(0, 5, 0, 5)); // Adds padding to the label
         
+        // Initializes the viewButton object
         viewButton = new Button("View");
-        viewButton.setPrefSize(50, 20);
-        viewButton.setPrefHeight(Double.MAX_VALUE);
+        viewButton.setPrefSize(50, 20); // Sets the size of the viewButton
+        viewButton.setPrefHeight(Double.MAX_VALUE); // Sets the height of the viewButton
         viewButton.setStyle("-fx-background-color: #FAE5EA; -fx-border-width: 0;"); // sets style of button
 
         HBox.setMargin(mealType, new Insets(5));
@@ -53,11 +58,13 @@ public class Recipe extends VBox {
 
     }
 
+    // Method to update the indice of the recipe
     public void setRecipeIndex(int num) {
         index.setText(num + ""); // num to String
         recipe.setPromptText("Recipe ");
     }
 
+    // Sets the get methods that allow access to the contents of Prompt
     public TextField getRecipe() { return recipe; }
 
     public Label getMealType() { return mealType; }
@@ -67,8 +74,6 @@ public class Recipe extends VBox {
     public int getIndex() { return Integer.valueOf(index.getText().toString()); }
     
     // View button opens full description corresponding to that recipe
-    public void setViewButtonAction(EventHandler<ActionEvent> eventHandler) {
-        viewButton.setOnAction(eventHandler);
-    }
+    public void setViewButtonAction(EventHandler<ActionEvent> eventHandler) { viewButton.setOnAction(eventHandler); }
 
 }

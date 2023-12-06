@@ -11,6 +11,8 @@ public class HomeFooter extends HBox {
     private Button newRecipeButton, filterMealTypeButton, sortButton, autoLoginButton, signOutButton;
 
     public HomeFooter() {
+
+        // Sets the size of the HomeFooter
         this.setPrefSize(500, 60);
         this.setStyle("-fx-background-color: #F0F8FF;");
         this.setSpacing(15);
@@ -18,21 +20,21 @@ public class HomeFooter extends HBox {
         // set a default style for buttons - background color, font size, italics
         String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial;";
 
-        newRecipeButton = new Button("New Recipe"); // text displayed on add button
+        newRecipeButton = new Button("New Recipe"); // text displayed on new recipe button
         newRecipeButton.setStyle(defaultButtonStyle); // styling the button
 
         filterMealTypeButton = new Button("Filter Meal");
-        filterMealTypeButton.setStyle(defaultButtonStyle);
+        filterMealTypeButton.setStyle(defaultButtonStyle); // styling the button
 
-        sortButton = new Button("Sort Recipes"); // text displayed on add button
+        sortButton = new Button("Sort Recipes"); // text displayed on sort button
         sortButton.setStyle(defaultButtonStyle); // styling the button
 
-        signOutButton = new Button("Sign Out");
-        signOutButton.setStyle(defaultButtonStyle);
+        signOutButton = new Button("Sign Out"); // text displayed on sign out button
+        signOutButton.setStyle(defaultButtonStyle); // styling the button
 
         Label autoLoginLabel = new Label("Automatic Login: ");
-        autoLoginButton = new Button("Loading");
-        autoLoginButton.setStyle(defaultButtonStyle);
+        autoLoginButton = new Button("Loading"); // text displayed on login button
+        autoLoginButton.setStyle(defaultButtonStyle); // styling the button
 
         HBox autoLoginContainer = new HBox();
         autoLoginContainer.setAlignment(Pos.CENTER);
@@ -40,8 +42,10 @@ public class HomeFooter extends HBox {
         
         this.getChildren().addAll(newRecipeButton, filterMealTypeButton, sortButton, autoLoginContainer, signOutButton); // adding button to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
+        
     }
 
+    // Sets the get methods that allow access to the buttons of HomeFooter
     public Button getNewRecipeButton() { return newRecipeButton; }
 
     public Button getFilterMealTypeButton() { return filterMealTypeButton; }
