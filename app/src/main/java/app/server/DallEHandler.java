@@ -1,8 +1,8 @@
 package app.server;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -24,6 +23,8 @@ public class DallEHandler implements HttpHandler{
     private static final String API_ENDPOINT = "https://api.openai.com/v1/images/generations";
     private static final String API_KEY = "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";
     private static final String MODEL = "dall-e-2";
+
+    private Path imagePath;
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -106,16 +107,18 @@ public class DallEHandler implements HttpHandler{
         try (InputStream in = new URI(generatedImageURL).toURL().openStream()) {
             // Generate a unique file name using timestamp
             String timestamp = String.valueOf(System.currentTimeMillis());
-            String imagePath = "image_" + timestamp + ".jpg"; 
-    
+            String imagePath = "app/src/main/resources/image_" + timestamp + ".jpg"; 
+
             Path imagePathObj = Paths.get(imagePath);
             Files.copy(in, imagePathObj, StandardCopyOption.REPLACE_EXISTING);
         }
-    
         scanner.close();
     
         return generatedImageURL;
-        
+    }
+
+    public Path getImagePath(){
+        return imagePath;
     }
 
 }

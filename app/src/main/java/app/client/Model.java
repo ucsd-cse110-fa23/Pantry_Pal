@@ -1,25 +1,16 @@
 package app.client;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.io.*;
-
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.TargetDataLine;
-
 
 import java.net.URLEncoder;
 import java.net.URL;
@@ -71,7 +62,7 @@ public class Model {
     }
 
     public void setIsLoggedIn() {
-        isLoggedInBool = true;
+        isLoggedInBool = !isLoggedInBool;
     }
 
     public String getAutoLoginDetails() throws IOException {
@@ -170,7 +161,7 @@ public class Model {
                         reqBody += "&" + password;
                     }
                     if (data != null) {
-                        reqBody += "&" + data;
+                        reqBody += "+" + data;
                     }
 
                     OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
@@ -192,30 +183,11 @@ public class Model {
             String response = in.readLine();
             System.out.println("[ MODEL RESPONSE ]: " + response);
 
-            int responseCode = ((HttpURLConnection) conn).getResponseCode();
-            System.out.println("Response code: [" + responseCode + "]");
-
-            errorMessage = errorHandler(responseCode);
-            System.out.println("error message: " + errorMessage);
             in.close();
             return response;
         } catch (Exception ex) {
             ex.printStackTrace();
             return "Error: " + ex.getMessage();
-        }
-
-    }
-
-    public String errorHandler(int responseCode){
-        String message;
-        if(responseCode > 399 && responseCode < 500){
-            message = "Client side ERROR: please check input";
-            return message;
-        } else if (responseCode > 500){
-            message = "ERROR: Server side error - please check server status";
-            return message;
-        } else {
-            return null;
         }
 
     }
@@ -330,8 +302,76 @@ public class Model {
         }
     }
 
-    public String getErrorMessage(){
-        return errorMessage;
+    public String sortAlphabetically(String recipes) {
+        if (recipes != null) {
+            String[] recipesArr = {recipes};
+            if (recipes.contains("_")) {
+                recipesArr = recipes.split("_");
+                Arrays.sort(recipesArr);
+            }
+
+            String fin = "";
+            for (int i = 0; i < recipesArr.length; i++) {
+                fin = fin + "_" + recipesArr[i];
+            }
+            fin = fin.substring(1);
+            return fin;
+        }
+        return null;
+    }
+
+    public String sortRAlphabetically(String recipes) {
+        if (recipes != null) {
+            String[] reverseRecipesArr = { recipes };
+            if (recipes.contains("_")) {
+                reverseRecipesArr = recipes.split("_");
+                Arrays.sort(reverseRecipesArr);
+            }
+
+            String fin = "";
+            for (int i = reverseRecipesArr.length-1; i >= 0; i--) {
+                fin += "_" + reverseRecipesArr[i];
+            }
+            fin = fin.substring(1);
+            return fin;
+        }
+        return null;
+    }
+
+    public String sortChronological(String recipes) {
+        if (recipes != null) {
+            String[] recipesArr = {recipes};
+            if (recipes.contains("_")) {
+                recipesArr = recipes.split("_");
+            }
+
+            String fin = "";
+            for(int i = 0; i < recipesArr.length; i++){
+                fin = fin + "_" + recipesArr[i];
+            }
+            fin = fin.substring(1);
+            return fin;
+        }
+
+        return null;
+    }
+
+    public String sortRChronological(String recipes) {
+        if (recipes != null) {
+            String[] recipesArr = {recipes};
+            if (recipes.contains("_")) {
+                recipesArr = recipes.split("_");
+            }
+
+            String fin = "";
+            for(int i = recipesArr.length - 1; i >= 0; i--){
+                fin = fin + "_" + recipesArr[i];
+            }
+            fin = fin.substring(1);
+            return fin;
+        }
+
+        return null;
     }
     
     public static void main(String[] args) throws IOException {

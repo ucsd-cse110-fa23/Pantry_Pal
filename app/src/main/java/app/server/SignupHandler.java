@@ -1,17 +1,13 @@
 package app.server;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Scanner;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-
-
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -36,13 +32,13 @@ public class SignupHandler implements HttpHandler {
               throw new Exception("Not Valid Request Method");
             }
             // Sending back response to the client
-            httpExchange.sendResponseHeaders(200, response.length());
-            OutputStream outStream = httpExchange.getResponseBody();
-            outStream.write(response.getBytes());
-            outStream.close();
+            byte[] bs = response.getBytes("UTF-8");
+            httpExchange.sendResponseHeaders(200, bs.length);
+            OutputStream os = httpExchange.getResponseBody();
+            os.write(bs);
+            os.close();
         } catch (Exception e) {
             System.out.println("An erroneous request");
-            response = e.toString();
             e.printStackTrace();
         }
     }

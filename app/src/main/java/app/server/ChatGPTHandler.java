@@ -60,6 +60,7 @@ public class ChatGPTHandler implements HttpHandler {
 
     // need to feed this method the entire prompt before calling
     // prompt: Make me a breakfast recipe using eggs with the recipe in json format with ingredients as one string and instructions as one string 
+    // returns title+ingredients+instructions
 
     private String handlePost(HttpExchange httpExchange) throws IOException, InterruptedException{
         String generatedText = "no response from chatgptHandler";
@@ -97,25 +98,36 @@ public class ChatGPTHandler implements HttpHandler {
         JSONObject responseJson = new JSONObject(responseBody);
         JSONArray choices = responseJson.getJSONArray("choices");
         generatedText = choices.getJSONObject(0).getString("text");
-        System.out.println("++GENTEXT++ " + generatedText);
 
-        int startIndex = generatedText.indexOf("{");
-        int endIndex= generatedText.indexOf("}")+1;
-        generatedText = generatedText.substring(startIndex, endIndex);
-        System.out.println("++GENTEXT PARSED++ " + generatedText);
-        
-        JSONObject toJson = new JSONObject(generatedText);
+        int titleStart = generatedText.indexOf("Title:");
+        int ingStart = generatedText.indexOf("Ingredients:");
+        int insStart = generatedText.indexOf("Instructions:");
+        String titleString = "Title:";
+        String ingString = "Ingredients:";
+        String insString = "Instructions:";
+        int skipTitle = titleString.length();
+        int skipIng = ingString.length();
+        int skipIns = insString.length();
 
-        String res = toJson.getString("title");
-        res += "+" + toJson.getString("ingredients");
-        res += "+" + toJson.getString("instructions");
+        String title = generatedText.substring(titleStart+skipTitle,ingStart);
+        String ing = generatedText.substring(ingStart+skipIng,insStart);
+        String ins = generatedText.substring(insStart+skipIns);
+
+        // cleaning newlines from output
+        title = title.replace("\n", "");
+        ing = ing.replace("\n","");
+        ins = ins.replace("\n", "");
+
+        System.out.println("title:" + title);
+        System.out.println("ingredients" + ing);
+        System.out.println("instructions;" + ins);
+
+        String res = title + "+" + ing + "+" + ins;
 
         System.out.println("responsebody:" + responseBody);
-        System.out.println("generated text:" + generatedText);
         System.out.println("return" + res);
         scanner.close();
         res = res.replace("&", " and ");
         return res;
     }
 }
-

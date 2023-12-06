@@ -10,7 +10,11 @@ public class MyServer {
     // initialize server port and hostname
     private static final int SERVER_PORT = 8100;
     private static final String SERVER_HOSTNAME = "LOCALHOST";
-    public static String MONGO_URI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
+
+    private static String MongoURI = "mongodb+srv://bryancho:73a48JL4@cluster0.jpmyzqg.mongodb.net/?retryWrites=true&w=majority";
+    private static String PeterURI = "mongodb+srv://PeterNguyen4:Pn11222003-@cluster0.webebwr.mongodb.net/?retryWrites=true&w=majority";
+    public static String MONGO_URI = PeterURI;
+    
     private static HttpServer server;
 
     public static void main(String[] args) throws IOException {
@@ -34,6 +38,10 @@ public class MyServer {
         server.createContext("/dalle", new DallEHandler());
         server.createContext("/mockDalle", new MockDallE());
         server.createContext("/mealtype", new MealTypeFilterHandler());
+        server.createContext("/share", new ShareHandler());
+        server.createContext("/mockGPT", new MockGPT());
+        server.createContext("/mockwhisper", new MockWhisper());
+        server.createContext("/picture", new pictureHandler());
 
         server.setExecutor(threadPoolExecutor);
         server.start();
