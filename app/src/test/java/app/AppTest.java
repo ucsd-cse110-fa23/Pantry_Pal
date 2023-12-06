@@ -637,8 +637,287 @@ class AppTest {
         MyServer.stop();
     }
 
+    @Test
+    void sortAlphabeticallyTest() throws IOException { 
+        Model sortModelTest = new Model();
 
+        String recipe1 = "B";
+        String recipe2 = "A";
+        String recipe3 = "C";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        String temp = sortModelTest.sortAlphabetically(input);  
+        
+        String sorted = recipe2 + "_" + recipe1 + "_" + recipe3;
+        assertEquals(sorted, temp);
+    }
 
+    @Test
+    void sortNothingAlphabeticallyTest() throws IOException { 
+        Model sortModelTest = new Model();
 
+        String recipe = null;
+        String temp = sortModelTest.sortAlphabetically(recipe);  
+        assertEquals(null, temp);
+    }
 
+    @Test
+    void sortAlphabeticallyBDDTest() throws IOException { 
+        // Scenario: I have selected alphabetically sort
+        Model sortModelTest = new Model();
+        String recipe1 = "Grilled Cheese";
+        String recipe2 = "Scrambled Eggs";
+        String recipe3 = "Nutella French Toast";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        // Given: I have an account and recipes saved and I want to see recipes in alphabetical order
+        // When: I press the sort button and click on alphabetical order
+        String sorted = sortModelTest.sortAlphabetically(input);  
+        // Then: I should see my recipes sorted alphabetically by the title
+        String expected = recipe1 + "_" + recipe3 + "_" + recipe2;
+        assertEquals(expected, sorted);
+    }
+
+    @Test
+    void sortRAlphabeticallyTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe1 = "B";
+        String recipe2 = "A";
+        String recipe3 = "C";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        String temp = sortModelTest.sortRAlphabetically(input);  
+        
+        String sorted = recipe3 + "_" + recipe1 + "_" + recipe2;
+        assertEquals(sorted, temp);
+    }
+
+    @Test
+    void sortNothingRAlphabeticallyTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe = null;
+        String temp = sortModelTest.sortRAlphabetically(recipe);  
+        assertEquals(null, temp);
+    }
+
+    @Test
+    void sortRAlphabeticallyBDDTest() throws IOException { 
+        // Scenario: I have selected reverse alphabetically sort
+        Model sortModelTest = new Model();
+        String recipe1 = "Grilled Cheese";
+        String recipe2 = "Scrambled Eggs";
+        String recipe3 = "Nutella French Toast";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        // Given: I have an account and recipes saved and I want to see recipes in reverse alphabetical order
+        // When: I press the sort button and click on alphabetical order
+        String sorted = sortModelTest.sortRAlphabetically(input);  
+        // Then: I should see my recipes sorted alphabetically by the title
+        String expected = recipe2 + "_" + recipe3 + "_" + recipe1;
+        assertEquals(expected, sorted);
+    }
+
+    @Test
+    void sortChronologicalTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe1 = "B";
+        String recipe2 = "A";
+        String recipe3 = "C";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        String temp = sortModelTest.sortChronological(input);  
+        
+        String sorted = recipe1 + "_" + recipe2 + "_" + recipe3;
+        assertEquals(sorted, temp);
+    }
+
+    @Test
+    void sortNothingChronologicallyTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe = null;
+        String temp = sortModelTest.sortChronological(recipe);  
+        assertEquals(null, temp);
+    }
+
+    @Test
+    void sortChronologicalBDDTest() throws IOException { 
+        // Scenario: I want newest recipes first
+        Model sortModelTest = new Model();
+        String recipe1 = "Grilled Cheese";
+        String recipe2 = "Scrambled Eggs";
+        String recipe3 = "Nutella French Toast";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        // Given: I have an account and recipes saved and I want to see recipes in newest to oldest
+        // When: I press the sort button and click on chronological order
+        String sorted = sortModelTest.sortChronological(input);
+        // Then: I should see my recipes that I have created the latest at the top going down to my oldest created recipe
+        String expected = recipe1 + "_" + recipe2 + "_" + recipe3;
+        assertEquals(expected, sorted);
+    }
+
+    @Test
+    void sortRChronologicalTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe1 = "B";
+        String recipe2 = "A";
+        String recipe3 = "C";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        String temp = sortModelTest.sortRChronological(input);  
+        
+        String sorted = recipe3 + "_" + recipe2 + "_" + recipe1;
+        assertEquals(sorted, temp);
+    }
+
+    @Test
+    void sortNothingRChronologicallyTest() throws IOException { 
+        Model sortModelTest = new Model();
+
+        String recipe = null;
+        String temp = sortModelTest.sortRChronological(recipe);  
+        assertEquals(null, temp);
+    }
+
+    @Test
+    void sortRChronologicalBDDTest() throws IOException { 
+        // Scenario: I want the oldest recipe first
+        Model sortModelTest = new Model();
+        String recipe1 = "Grilled Cheese";
+        String recipe2 = "Scrambled Eggs";
+        String recipe3 = "Nutella French Toast";
+        String input = recipe1 + "_" + recipe2 + "_" + recipe3;
+        // Given: I have an account and recipes saved and I want to see the recipes in oldest to newest
+        // When: I press the sort button and click on reverse chronological order
+        String sorted = sortModelTest.sortRChronological(input);
+        // Then: I should see my recipes that I have created the oldest at the top going down to my recent created recipe
+        String expected = recipe3 + "_" + recipe2 + "_" + recipe1;
+        assertEquals(expected, sorted);
+    }
+
+    @Test
+    void mealTypeBreakfastTest() throws IOException {
+        Model mealTypeTest = new Model();
+
+        String expected = "breakfast";
+        String testBreakfast = "I want a breakfast meal";
+
+        assertEquals(expected, mealTypeTest.transcribeMealType(testBreakfast));
+    }
+
+    // Scenario: I do not provide one the the 3 listed meal types
+    // Given: I have white bread, eggs, bacon, and orange
+    // And: I want to make a brunch recipe
+    // And: I am prompted to choose either breakfast, lunch, or dinner
+    // When I answer with “brunch”
+    // Then Then I should be informed that “brunch” is not a valid answer
+    // And: I should be prompted again to answer with the provided choices
+
+    @Test
+    void mealTypeBreakfastBDDTest() throws IOException {
+        // Scenario: I select breakfast as the meal type
+        Model mealTypeTest = new Model();
+        // Given: I have logged in and am at the home frame
+        // And: I have clicked the new Recipe button
+        // And: I am prompted to choose either breakfast, lunch, or dinner
+        // When: I press record and state "I want a breakfast meal"
+        String testBreakfast = "I want a breakfast meal";
+        String result = mealTypeTest.transcribeMealType(testBreakfast);
+        // Then: The whisper AI should transcribe my message and select breakfast
+        String expected = "breakfast";
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void mealTypeLunchTest() throws IOException {
+        Model mealTypeTest = new Model();
+
+        String expected = "lunch";
+        String testLunch = "A lunch is the meal I want";
+
+        assertEquals(expected, mealTypeTest.transcribeMealType(testLunch));
+    }
+
+    @Test
+    void mealTypeLunchBDDTest() throws IOException {
+        // Scenario: I select lunch as the meal type
+        Model mealTypeTest = new Model();
+        // Given: I have logged in and am at the home frame
+        // And: I have clicked the new Recipe button
+        // And: I am prompted to choose either breakfast, lunch, or dinner
+        // When: I press record and state "I am craving lunch"
+        String testBreakfast = "I am craving lunch";
+        String result = mealTypeTest.transcribeMealType(testBreakfast);
+        // Then: The whisper AI should transcribe my message and select lunch
+        String expected = "lunch";
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void mealTypeDinnerTest() throws IOException {
+        Model mealTypeTest = new Model();
+
+        String expected = "dinner";
+        String testDinner = "My meal I am asking for is dinner";
+
+        assertEquals(expected, mealTypeTest.transcribeMealType(testDinner));
+    }
+
+    @Test
+    void mealTypeDinnerBDDTest() throws IOException {
+        // Scenario: I select dinner as the meal type
+        Model mealTypeTest = new Model();
+        // Given: I have logged in and am at the home frame
+        // And: I have clicked the new Recipe button
+        // And: I am prompted to choose either breakfast, lunch, or dinner
+        // When: I press record and state "I am wondering what I should have for dinner"
+        String testBreakfast = "I am wondering what I should have for dinner";
+        String result = mealTypeTest.transcribeMealType(testBreakfast);
+        // Then: The whisper AI should transcribe my message and select lunch
+        String expected = "dinner";
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void mealTypeCapitalLetterTest() throws IOException {
+        Model mealTypeTest = new Model();
+
+        String expected = "dinner";
+        String testCapital = "I WANT DINNER!";
+
+        assertEquals(expected, mealTypeTest.transcribeMealType(testCapital));
+    }
+
+    @Test
+    void mealTypeMultipleMealTypesTest() throws IOException {
+        Model mealTypeTest = new Model();
+
+        String expected = "breakfast";
+        String testMultiple = "I want breakfast, lunch, and dinner";
+
+        assertEquals(expected, mealTypeTest.transcribeMealType(testMultiple));
+    }
+
+    @Test
+    void mealTypeNoMealTest() throws IOException {
+        Model mealTypeTest = new Model();
+
+        String expected = "";
+        String testNone = "I do not know what I want";
+
+        assertEquals(expected, mealTypeTest.transcribeMealType(testNone));
+    }
+
+    @Test
+    void mealTypeNoMealBDDTest() throws IOException {
+        // Scenario: I do not select a meal type
+        Model mealTypeTest = new Model();
+        // Given: I have logged in and am at the home frame
+        // And: I have clicked the new Recipe button
+        // And: I am prompted to choose either breakfast, lunch, or dinner
+        // When: I press record and state "I want some food"
+        String testBreakfast = "I want some food";
+        String result = mealTypeTest.transcribeMealType(testBreakfast);
+        // Then: The whisper AI should transcribe my message and return an empty string
+        String expected = "";
+        assertEquals(expected, result);
+    }
 }
