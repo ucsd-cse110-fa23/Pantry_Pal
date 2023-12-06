@@ -43,7 +43,7 @@ class AppTest {
     // Tests whether the prompt we give chatgpt maintains the same provided ingredients as the original recipe
     @Test 
     void testGptSameIngredients() throws IOException {
-        ////MyServer.main(null);
+        MyServer.main(null);
         String mealType = "dinner";
         String ingredients = "steak, potatoes, butter";
         Model model = new Model();
