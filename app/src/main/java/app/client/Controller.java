@@ -3,18 +3,14 @@ package app.client;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.Action;
-
 import app.server.ServerChecker;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import java.net.*;
 
 // Handles switching Scenes upon clicking buttons
 class FrameController {
@@ -45,6 +41,7 @@ public class Controller {
     private String[] recipeParts;
     private String username, password, mealType, ingredients, fullRecipe, recipeTitle;
     private RecipeList recipeList;
+    private String dalleResponse;
 
     public Controller(View view, Model model, Stage primaryStage) {
         this.view = view;
@@ -59,6 +56,7 @@ public class Controller {
         // HomeFrame Event Listeners
         view.getHomeFrame().setNewRecipeButtonAction(this::handleNewRecipeButton);
         view.getHomeFrame().setFilterMealTypeButtonAction(this::handleFilterMealTypeButton);
+        view.getHomeFrame().setSignOutButtonAction(this::handleSignOutButton);
 
         // MealFrame Event Listeners
         view.getMealFrame().setStartButtonAction(this::handleMealStartButton);
@@ -85,6 +83,8 @@ public class Controller {
         view.getFilterFrame().setBreakfastButtonAction(this::handleFilterBreakfastButton);
         view.getFilterFrame().setLunchButtonAction(this::handleFilterLunchButton);
         view.getFilterFrame().setDinnerButtonAction(this::handleFilterDinnerButton);
+        view.getFilterFrame().setAllButtonAction(this::handleFilterAllButton);
+        view.getFilterFrame().setCancelButtonAction(this::handleFilterCancelButton);
 
 
         // ShareFrame Event Listeners
@@ -115,7 +115,6 @@ public class Controller {
             view.showAlert("Error", response);
         }
 
-        // String recipes = model.performRequest("GET", username, null, null, username, "mock-route");
     }
 
     private void handleCreateAccountButton(ActionEvent event) {
@@ -152,17 +151,31 @@ public class Controller {
         Button target = (Button) event.getTarget();
         recipeTitle = (String) ((TextField) ((HBox) target.getParent()).getChildren().get(1)).getText();
         String recipeText = model.performRequest("GET", username, null, null, recipeTitle, "");
-        // recipeText = recipeText.replace();
+        //recipeText = recipeText.replace();
+        String imgString = model.performRequest("GET", username, null, null, recipeTitle, "picture");
         
+
         // checks if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
         if(checker == false) {
             view.showAlert("Error", "Server connection was interrupted");
         } 
-        
+        // Displays the image and the recipe
+        displayImage(imgString);
         displayRecipe(recipeText);
 
         frameController.getFrame("recipe");
+    }
+
+    private void handleSignOutButton(ActionEvent event) {
+        view.getLoginFrame().getLoginContent().getUsername().setText("");
+        view.getLoginFrame().getLoginContent().getPassword().setText("");
+        view.getLoginFrame().getLoginContent().getUsername().setPromptText("Username");
+        view.getLoginFrame().getLoginContent().getPassword().setPromptText("Password");
+        username = "";
+        password = "";
+
+        frameController.getFrame("login");
     }
     //================ MealFrame and IngredientsFrame Event Handlers ===============================
 
@@ -252,7 +265,9 @@ public class Controller {
         System.out.println(ingredients);
 
         // Create prompt with mealType and ingredients and pass to ChatGPT API, Dall-E API for the picture
-        String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
+        String prompt = "Please provide a" + mealType + " recipe using" + ingredients
+             + ". Can you format the response to have zero newlines with fields \"Title:\",\"Ingredients:\", and \"Instructions:\" .These" 
+             + " fields will be formated such that it looks like \"Title:\"+\"Ingredients:\"+\"Instructions\" with one newline between each field";
         System.out.println("PROMPT +++ " + prompt);
         String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
         fullRecipe = response;
@@ -262,9 +277,9 @@ public class Controller {
         response = response.replace("+", "\n");
 
         String dallePrompt = "Generate a real picture of " + recipeTitle;
-        String dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
+        dalleResponse = model.performRequest("POST", null, null, dallePrompt, null, "dalle");
 
-        Image image = new Image(dalleResponse); 
+        Image image = new Image(dalleResponse);
 
         view.getGptFrame().getImageView().setImage(image);
         view.getGptFrame().getRecipeText().setText(response);
@@ -295,8 +310,9 @@ public class Controller {
         displayMealType(newRecipe, mealType);
         newRecipe.setViewButtonAction(this::handleViewButton);
 
-        fullRecipe += "+" + mealType;
+        fullRecipe += "+" + mealType + "+" + dalleResponse;
         String fullRecipeList = model.performRequest("GET", null, null, null, username, "load-recipe");
+
 
         //check if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
@@ -310,6 +326,8 @@ public class Controller {
         updateRecipeIndices();
         
         model.performRequest("POST", username, null, fullRecipe, null, "");
+        
+
 
         // Redirect back to Home Page
         frameController.getFrame("home");
@@ -319,7 +337,9 @@ public class Controller {
     // tells ChatGPT to regenerate response with the set of ingredients
     private void handleGptRefreshButton(ActionEvent event) {
         
-        String prompt = "Make me a " + mealType + " recipe using " + ingredients + " presented in JSON format with the \"title\" as the first key with its value as one string, \"ingredients\" as another key with its value as one string, and \"instructions\" as the last key with its value as one string";
+        String prompt = "Please provide a" + mealType + " recipe using" + ingredients
+             + ". Can you format the response to have zero newlines with fields \"Title:\",\"Ingredients:\", and \"Instructions:\" .These" 
+             + " fields will be formated such that it looks like \"Title:\"+\"Ingredients:\"+\"Instructions\" with one newline between each field";
         String response = model.performRequest("POST", null, null, prompt, null, "chatgpt");
         //check if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
@@ -403,7 +423,7 @@ public class Controller {
 
     //===================== FilterFrame Handlers ================================
 
-    public void handleFilterBreakfastButton(ActionEvent event) {
+    private void handleFilterBreakfastButton(ActionEvent event) {
         String response = model.performRequest("GET", username, null, null, "breakfast", "mealtype");
         checkServer();
         clearRecipes();
@@ -411,7 +431,7 @@ public class Controller {
         frameController.getFrame("home");
     }
 
-    public void handleFilterLunchButton(ActionEvent event) {
+    private void handleFilterLunchButton(ActionEvent event) {
         checkServer();
         String response = model.performRequest("GET", username, null, null, "lunch", "mealtype");
 
@@ -420,7 +440,7 @@ public class Controller {
         frameController.getFrame("home");
     }
 
-    public void handleFilterDinnerButton(ActionEvent event) {
+    private void handleFilterDinnerButton(ActionEvent event) {
         String response = model.performRequest("GET", username, null, null, "dinner", "mealtype");
         //check if server is still running
         boolean checker = ServerChecker.isServerRunning("localhost", 8100);
@@ -433,13 +453,22 @@ public class Controller {
         frameController.getFrame("home");
     }
 
+    private void handleFilterAllButton(ActionEvent event) {
+        String response = model.performRequest("GET", null, null, null, username, "load-recipe");
+        clearRecipes();
+        loadRecipes(response);
+        frameController.getFrame("home");
+    }
+
+    private void handleFilterCancelButton(ActionEvent event) {
+        frameController.getFrame("home");
+    }
+    
     //=================== ShareFrame EventListner ==============
 
     private void handleShareCancelButton(ActionEvent event) {
         frameController.getFrame("recipe");
     }
-
-
 
     //=================== HELPER FUNCTIONS ====================
     
@@ -466,6 +495,15 @@ public class Controller {
             System.out.println("RECIPE TEXT ON GET:" + recipeText);
             view.getRecipeFrame().getRecipeSteps().getRecipeName().setText(recipeName);
             view.getRecipeFrame().getRecipeSteps().getTextArea().setText(recipeText);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void displayImage(String img){
+        try {
+            Image image = new Image(img);
+            view.getRecipeFrame().getRecipeSteps().getImageView().setImage(image);
         } catch (Exception e) {
             e.printStackTrace();
         }

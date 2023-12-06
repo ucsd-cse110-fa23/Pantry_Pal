@@ -8,7 +8,6 @@ import com.sun.net.httpserver.HttpHandler;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;

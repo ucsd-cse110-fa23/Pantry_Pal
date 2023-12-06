@@ -1,6 +1,5 @@
 package app.server;
 
-import com.mongodb.client.internal.MongoBatchCursorAdapter;
 import com.sun.net.httpserver.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -40,6 +39,7 @@ public class MyServer {
         server.createContext("/share", new ShareHandler());
         server.createContext("/mockGPT", new MockGPT());
         server.createContext("/mockwhisper", new MockWhisper());
+        server.createContext("/picture", new pictureHandler());
 
         server.setExecutor(threadPoolExecutor);
         server.start();

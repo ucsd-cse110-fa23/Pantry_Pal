@@ -8,7 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.BorderPane;
@@ -43,7 +42,7 @@ class Header extends HBox {
 // Home Page Footer
 class HomeFooter extends HBox {
 
-    private Button newRecipeButton, filterMealTypeButton;
+    private Button newRecipeButton, filterMealTypeButton, signOutButton;
 
     HomeFooter() {
         this.setPrefSize(500, 60);
@@ -58,8 +57,11 @@ class HomeFooter extends HBox {
 
         filterMealTypeButton = new Button("Filter Meal");
         filterMealTypeButton.setStyle(defaultButtonStyle);
+
+        signOutButton = new Button("Sign Out");
+        signOutButton.setStyle(defaultButtonStyle);
         
-        this.getChildren().addAll(newRecipeButton, filterMealTypeButton); // adding button to footer
+        this.getChildren().addAll(newRecipeButton, filterMealTypeButton,signOutButton); // adding button to footer
         this.setAlignment(Pos.CENTER); // aligning the buttons to center
     }
 
@@ -69,6 +71,10 @@ class HomeFooter extends HBox {
 
     public Button getFilterMealTypeButton() {
         return filterMealTypeButton;
+    }
+
+    public Button getSignOutButton() {
+        return signOutButton;
     }
 
 }
@@ -348,19 +354,25 @@ class RecipeList extends VBox {
 class RecipeSteps extends VBox {
 
     private Label recipeName;
-    private TextArea recipeSteps;
+    private TextArea recipeSteps = new TextArea();
+    private ImageView imageView = new ImageView();
 
     RecipeSteps() {
         // this.setPrefSize(500, 500);
         // this.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0; -fx-font-weight: bold;"); // sets background color of task
+        
         recipeName = new Label();
-        recipeSteps = new TextArea();
+        recipeName.setAlignment(Pos.CENTER);
+        //recipeName.setStyle("-fx-font-size: 20");
+        
         recipeSteps.setEditable(true);
         recipeSteps.setPrefSize(400, 500); // set size of text field
         recipeSteps.setWrapText(true);
         recipeSteps.setStyle("-fx-background-color: #DAE5EA; -fx-border-width: 0;"); // set background color of texfield
         
-        this.getChildren().addAll(recipeName, recipeSteps);
+        HBox container = new HBox();
+        container.getChildren().addAll(imageView,recipeSteps);
+        this.getChildren().addAll(recipeName, container);
     }
 
     public Label getRecipeName() {
@@ -369,6 +381,10 @@ class RecipeSteps extends VBox {
 
     public TextArea getTextArea() {
         return recipeSteps;
+    }
+
+    public ImageView getImageView() {
+        return imageView;
     }
 
 }
@@ -434,7 +450,7 @@ class Prompt extends VBox {
 class FilterPrompt extends VBox {
 
     private Label text;
-    private Button breakfastButton, lunchButton, dinnerButton;
+    private Button breakfastButton, lunchButton, dinnerButton, allButton;
     private HBox buttonContainer = new HBox(5);
 
     FilterPrompt() {
@@ -450,7 +466,10 @@ class FilterPrompt extends VBox {
         dinnerButton = new Button("Dinner");
         dinnerButton.setStyle("-fx-background-color: #BE3144; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px");
 
-        buttonContainer.getChildren().addAll(breakfastButton, lunchButton, dinnerButton);
+        allButton = new Button("All");
+        allButton.setStyle("-fx-background-color: #7D7C7C; -fx-font: 13 monaco; -fx-text-fill: #FFFFFF; -fx-pref-width: 175px; -fx-pref-height: 50px; -fx-border-radius: 10px");
+
+        buttonContainer.getChildren().addAll(breakfastButton, lunchButton, dinnerButton, allButton);
         this.getChildren().addAll(text, buttonContainer);
 
     }
@@ -465,6 +484,10 @@ class FilterPrompt extends VBox {
 
     public Button getDinnerButton() {
         return dinnerButton;
+    }
+
+    public Button getAllButton() {
+        return allButton;
     }
 
 }
@@ -513,7 +536,7 @@ class HomeFrame extends BorderPane {
     private Header header;
     private HomeFooter footer;
     private RecipeList recipeList;
-    private Button newRecipeButton, filterMealTypeButton;
+    private Button newRecipeButton, filterMealTypeButton, signOutButton;
 
     HomeFrame() {
 
@@ -538,6 +561,8 @@ class HomeFrame extends BorderPane {
         // Initialise Button Variables through the getters in Footer
         newRecipeButton = footer.getNewRecipeButton();
         filterMealTypeButton = footer.getFilterMealTypeButton();
+        signOutButton = footer.getSignOutButton();
+
     }
 
     public RecipeList getRecipeList() {
@@ -560,6 +585,10 @@ class HomeFrame extends BorderPane {
         filterMealTypeButton.setOnAction(eventHandler);
     }
 
+    public void setSignOutButtonAction(EventHandler<ActionEvent> eventHandler) {
+        signOutButton.setOnAction(eventHandler);
+    }
+
 }
 
 // Filter Recipe Window to Display Recipes Based on a Specific Meal Type
@@ -568,7 +597,7 @@ class FilterFrame extends BorderPane {
     private Header header;
     private FilterPrompt filterPrompt;
     private RecordingFooter footer;
-    private Button breakfastButton, lunchButton, dinnerButton;
+    private Button breakfastButton, lunchButton, dinnerButton, allButton, cancelButton;
 
     FilterFrame() {
 
@@ -583,6 +612,8 @@ class FilterFrame extends BorderPane {
         breakfastButton = filterPrompt.getBreakfastButton();
         lunchButton = filterPrompt.getLunchButton();
         dinnerButton = filterPrompt.getDinnerButton();
+        allButton = filterPrompt.getAllButton();
+        cancelButton = footer.getCancelButton();
 
     }
 
@@ -596,6 +627,14 @@ class FilterFrame extends BorderPane {
 
     public void setDinnerButtonAction(EventHandler<ActionEvent> eventHandler) {
         dinnerButton.setOnAction(eventHandler);
+    }
+
+    public void setAllButtonAction(EventHandler<ActionEvent> eventHandler) {
+        allButton.setOnAction(eventHandler);
+    }
+
+    public void setCancelButtonAction(EventHandler<ActionEvent> eventHandler) {
+        cancelButton.setOnAction(eventHandler);
     }
 
 }
@@ -922,7 +961,7 @@ class ShareFrame extends BorderPane{
         footer = new RecordingFooter();
         
         // Set properties for the page
-        this.setPrefSize(370, 120);
+        this.setPrefSize(500, 120);
         shareLink = new TextArea("");
 
         

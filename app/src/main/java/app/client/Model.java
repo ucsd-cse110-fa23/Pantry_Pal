@@ -34,8 +34,6 @@ public class Model {
         audioFormat = getAudioFormat();
     }
 
-    
-
     /**
      * 
      * @param method 
@@ -98,11 +96,6 @@ public class Model {
             String response = in.readLine();
             System.out.println("[ MODEL RESPONSE ]: " + response);
 
-            int responseCode = ((HttpURLConnection) conn).getResponseCode();
-            System.out.println("Response code: [" + responseCode + "]");
-
-            errorMessage = errorHandler(responseCode);
-            System.out.println("error message: " + errorMessage);
             in.close();
             return response;
         } catch (Exception ex) {
